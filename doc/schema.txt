@@ -1,0 +1,207 @@
+Category Table(category)
+
+id: not null, primary key, auto_incremented
+name: not null, unique
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+			id							int(3)			                         |		
+------------------------------------------------------------
+		 name           varchar(50)		     category name       |
+============================================================
+
+City Table(city)
+
+id: not null, primary key, auto_incremented
+name: not null, unique
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+			id				 |		int(4)		|	                         |		
+------------------------------------------------------------
+		 name				 |	varchar(50) |        city name         |
+============================================================
+
+Store Table(store)
+
+id: not null, primary key, auto_incremented
+name: not null, unique
+category_id: not null, foreign key reference category:id
+city_id: not null, foreign key reference city:id
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+		  id				 |		int(10)		|					 /               |
+------------------------------------------------------------
+		 name        |  varchar(100)|        store name        |
+------------------------------------------------------------
+		category_id	 |  varchar(50) |        store category    |
+------------------------------------------------------------
+		address	     |  varchar(200)|        store address     |
+------------------------------------------------------------
+		city_id			 |	varchar(50) |        store city        |
+------------------------------------------------------------
+	  coord_x			 |	 float			|			store x coordinate   |
+------------------------------------------------------------
+		coord_y			 |	 float			|			store y coordinate   |
+------------------------------------------------------------
+		owner				 |	varchar(100)|			store's owner	name   |
+------------------------------------------------------------
+		image				 |	varchar(250)|     store's image URL    |
+============================================================
+
+Food Table(food)
+
+id: not null, primary key, auto_incremented
+name: not null
+store_id: foreign key reference store:id
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+		  id				 |		int(10)		|					 /               |
+------------------------------------------------------------
+		 name				 |  varchar(100)|         food name        |
+------------------------------------------------------------
+     image       |  varchar(250)|        image URL         |
+------------------------------------------------------------
+    store_id     |   int(10)    |       store's id         |
+------------------------------------------------------------
+     rate        |     int(2)   | customer cumulative rate |
+------------------------------------------------------------
+     price       |    float     |        food price        |
+------------------------------------------------------------
+   description   | varchar(500) |      food description    |
+============================================================
+
+Order Table(order)
+
+id: not null, primary key, auto_incremented
+food_id: not null, foreign key reference food:id
+cart_id: not null, foreign key reference cart:id
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+		  id				 |		int(10)		|					 /               |
+------------------------------------------------------------
+		food_id			 |    int(10)   |       food's id          |
+------------------------------------------------------------
+    quantity     |    int(10)   |       order quantity     |
+------------------------------------------------------------
+   order_time    |    date      |       order's time       |
+------------------------------------------------------------
+    cart_id      |    int(10)   |        cart's id         |
+============================================================
+
+Cart Table(cart)
+
+id: not null, primary key, auto_incremented
+user_id: not null, foreign key reference user:id
+delivery_id: foreign key reference delivery:id
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+      id         |    int(10)   |           /              |
+------------------------------------------------------------
+    user_id      |    int(10)   |        cart's user id    |
+------------------------------------------------------------
+   delivery_id   |    int(10)   |    delivery's id         |
+------------------------------------------------------------
+    delivery_fee |    float     |     cart's delivery fee  |
+============================================================
+
+Delivery Table(delivery)
+
+id: not null, primary key, auto_incremented
+store_id: not null, foreign key reference store:id
+drop_coord_x: not null
+drop_coord_y: not null
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+      id         |    int(10)   |           /              |
+------------------------------------------------------------
+   pickup_time   |    date      |       pickup time        |
+------------------------------------------------------------
+   delivery_time |    date      |       delivery time      |
+------------------------------------------------------------
+	 store_id      |    int(10)   |        store id          |
+------------------------------------------------------------
+	 drop_coord_x  |     float    |drop off location x coord |
+------------------------------------------------------------
+   drop_coord_y  |     float    |drop off location y coord |
+------------------------------------------------------------
+       fee       |   float      |       delivery fee       |
+============================================================
+
+User Table(user)
+
+id: not null, primary key, auto_incremented
+login_name: not null, unique
+hashed_password: not null
+pwd_salt: not null
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+      id         |    int(10)   |           /              |
+------------------------------------------------------------
+    login_name   | varchar(50)  |   user's login name      |
+------------------------------------------------------------
+     name        |  varchar(50) |    user's name           |
+------------------------------------------------------------
+ hashed_password | varchar(50)  |hash value of user's pwd  |
+------------------------------------------------------------
+ pwd_salt        | varchar(10)  | password salt            |
+============================================================
+
+Review Table(review)
+id: not null, primary key, auto_incremented
+user_id: not null, foreign key reference user:id
+food_id: not null, foreign key reference food:id
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+      id         |    int(10)   |           /              |
+------------------------------------------------------------
+   user_id       |    int(10)   |         user's id        |
+------------------------------------------------------------
+     food_id     |    int(10)   |      food's id           |
+------------------------------------------------------------
+     content     |  varchar(500)|       review's body      |
+------------------------------------------------------------
+    time         |  date        |         review's time    |
+============================================================
+
+Delivery Location Table(delivery_location)
+
+id: not null, primary key, auto_incremented
+user_id: not null, foreign key reference user:id
+city_id: not null, foreign key reference city:id
+coord_x: not null
+coord_y: not null
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+      id         |    int(10)   |           /              |
+------------------------------------------------------------
+		name         |    int(10)   |   delivery location alias|
+------------------------------------------------------------
+   user_id       |    int(10)   |         user's id        |
+------------------------------------------------------------
+	 address       |  varchar(100)|        address           |
+------------------------------------------------------------
+	 city_id       |     int(4)   |      city id             |
+------------------------------------------------------------
+   coord_x       |    float     |       drop off coord x   |
+------------------------------------------------------------
+   coord_y       |    float     |      drop off coord y    |
+============================================================
