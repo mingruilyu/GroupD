@@ -11,7 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160319102652) do
+ActiveRecord::Schema.define(version: 20160321090257) do
+
+  create_table "cities", force: :cascade do |t|
+    t.string "name", limit: 100, null: false
+  end
+
+  add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer  "user_id",    limit: 8,     default: 0, null: false
+    t.integer  "food_id",    limit: 8,     default: 0, null: false
+    t.text     "content",    limit: 65535
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
@@ -26,6 +40,9 @@ ActiveRecord::Schema.define(version: 20160319102652) do
     t.string   "last_sign_in_ip",        limit: 255
     t.datetime "created_at",                                      null: false
     t.datetime "updated_at",                                      null: false
+    t.float    "current_coord_x",        limit: 24
+    t.float    "current_coord_y",        limit: 24
+    t.integer  "city_id",                limit: 4,   default: 1,  null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree

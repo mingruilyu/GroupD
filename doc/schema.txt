@@ -77,7 +77,7 @@ store_id: foreign key reference store:id
    description   | varchar(500) |      food description    |
 ============================================================
 
-Order Table(order)
+Cart Item Table(order)
 
 id: not null, primary key, auto_incremented
 food_id: not null, foreign key reference food:id
@@ -106,9 +106,23 @@ delivery_id: foreign key reference delivery:id
 ============================================================
   Column Name    |     type     |       description        |
 ============================================================
-      id         |    int(10)   |           /              |
+      id         |    int(10)   |           primary key    |
 ------------------------------------------------------------
     user_id      |    int(10)   |        cart's user id    |
+------------------------------------------------------------
+		created_time |    date      |    cart created time     |
+============================================================
+
+Order Table(order)
+
+============================================================
+  Column Name    |     type     |       description        |
+============================================================
+			id				 |   int(10)    | primary key              |	
+------------------------------------------------------------
+		cart_id      |    int(10)   | cart's id                |
+------------------------------------------------------------
+		order_time   |    date      |   order time             |
 ------------------------------------------------------------
    delivery_id   |    int(10)   |    delivery's id         |
 ------------------------------------------------------------
@@ -143,26 +157,25 @@ drop_coord_y: not null
 User Table(user)
 
 id: not null, primary key, auto_incremented
-login_name: not null, unique
-hashed_password: not null
-pwd_salt: not null
+encrypted_password: not null
 
 ============================================================
-  Column Name    |     type     |       description        |
+  Column Name      |     type     |       description        |
 ============================================================
-      id         |    int(10)   |           /              |
+      id           |    int(10)   |           /              |
 ------------------------------------------------------------
-    login_name   | varchar(50)  |   user's login name      |
+	    email        | string(255)  |   user's email address   |
 ------------------------------------------------------------
-     name        |  varchar(50) |    user's name           |
+encrypted_password | varchar(50)  |   encrypted  user's pwd  |
 ------------------------------------------------------------
- hashed_password | varchar(50)  |hash value of user's pwd  |
+current_coord_x    | float        |   user's current x coord |
 ------------------------------------------------------------
- pwd_salt        | varchar(10)  | password salt            |
+current_coord_y    | float        |   user's current y coord |
+------------------------------------------------------------
+    city_id        |    int(4)    |   user's city            |
 ============================================================
 
 Review Table(review)
-id: not null, primary key, auto_incremented
 user_id: not null, foreign key reference user:id
 food_id: not null, foreign key reference food:id
 
