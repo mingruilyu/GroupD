@@ -3,5 +3,6 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
-	validates :city_id, presence: true
+	has_many :reviews, dependent: :destroy
+	belongs_to :city
 end

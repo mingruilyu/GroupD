@@ -20,8 +20,9 @@
 				<td><%= current_user.city_id%></td>
 			</tr>
 		</table>
+		<p>The user has <%= current_user.reviews.count%>  reviews </p>
+		<p>The user belongs to <%= current_user.city.name%></p>
 	</div>
 <% else %>
-	<h1>Welcome, please login first %> </h1>
+	<h1>Welcome, please login first</h1>
 <% end %>
-
