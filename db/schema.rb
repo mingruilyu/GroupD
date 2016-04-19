@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160324063851) do
+ActiveRecord::Schema.define(version: 20160419051639) do
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -19,24 +19,23 @@ ActiveRecord::Schema.define(version: 20160324063851) do
 
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
 
-  create_table "foods", force: :cascade do |t|
-    t.string   "name",        limit: 255,                  null: false
-    t.string   "image_url",   limit: 255,                  null: false
-    t.integer  "store_id",    limit: 8,                    null: false
-    t.float    "price",       limit: 24,    default: 10.0, null: false
-    t.text     "description", limit: 65535
-    t.float    "rate",        limit: 24,    default: 10.0, null: false
-    t.datetime "update_at",                                null: false
-    t.datetime "created_at",                               null: false
+  create_table "merchants", force: :cascade do |t|
+    t.string   "email",                  limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "reset_password_token",   limit: 255
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip",     limit: 255
+    t.string   "last_sign_in_ip",        limit: 255
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
   end
 
-  create_table "reviews", force: :cascade do |t|
-    t.integer  "user_id",    limit: 8,     default: 0, null: false
-    t.integer  "food_id",    limit: 8,     default: 0, null: false
-    t.text     "content",    limit: 65535
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-  end
+  add_index "merchants", ["email"], name: "index_merchants_on_email", unique: true, using: :btree
+  add_index "merchants", ["reset_password_token"], name: "index_merchants_on_reset_password_token", unique: true, using: :btree
 
   create_table "stores", force: :cascade do |t|
     t.string  "name",        limit: 255,               null: false
@@ -65,9 +64,12 @@ ActiveRecord::Schema.define(version: 20160324063851) do
     t.float    "current_coord_x",        limit: 24
     t.float    "current_coord_y",        limit: 24
     t.integer  "city_id",                limit: 4,   default: 1,  null: false
+    t.string   "telephone",              limit: 20,  default: "", null: false
+    t.integer  "company_id",             limit: 4
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["telephone"], name: "index_users_on_telephone", using: :btree
 
 end
