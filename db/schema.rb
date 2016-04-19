@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160419051639) do
+ActiveRecord::Schema.define(version: 20160419051640) do
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -49,22 +49,22 @@ ActiveRecord::Schema.define(version: 20160419051639) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "", null: false
-    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "email",                  limit: 255, default: "",  null: false
+    t.string   "encrypted_password",     limit: 255, default: "",  null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
+    t.integer  "sign_in_count",          limit: 4,   default: 0,   null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.float    "current_coord_x",        limit: 24
-    t.float    "current_coord_y",        limit: 24
-    t.integer  "city_id",                limit: 4,   default: 1,  null: false
-    t.string   "telephone",              limit: 20,  default: "", null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.float    "current_coord_x",        limit: 24,  default: 0.0
+    t.float    "current_coord_y",        limit: 24,  default: 0.0
+    t.integer  "city_id",                limit: 4,   default: 1,   null: false
+    t.string   "telephone",              limit: 20,  default: "",  null: false
     t.integer  "company_id",             limit: 4
   end
 
