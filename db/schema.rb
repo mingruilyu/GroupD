@@ -63,17 +63,6 @@ ActiveRecord::Schema.define(version: 20160422160337) do
   add_index "merchants", ["email"], name: "index_merchants_on_email", unique: true, using: :btree
   add_index "merchants", ["reset_password_token"], name: "index_merchants_on_reset_password_token", unique: true, using: :btree
 
-  create_table "stores", force: :cascade do |t|
-    t.string  "name",        limit: 255,               null: false
-    t.integer "category_id", limit: 4,   default: 1,   null: false
-    t.string  "address",     limit: 255
-    t.integer "city_id",     limit: 4,                 null: false
-    t.float   "coord_x",     limit: 24,  default: 0.0, null: false
-    t.float   "coord_y",     limit: 24,  default: 0.0, null: false
-    t.string  "image_url",   limit: 255
-    t.integer "owner_id",    limit: 4,                 null: false
-  end
-
   create_table "users", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
     t.string   "encrypted_password",     limit: 255, default: "",  null: false
