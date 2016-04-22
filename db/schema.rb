@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160419150737) do
+ActiveRecord::Schema.define(version: 20160422062352) do
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -40,9 +40,9 @@ ActiveRecord::Schema.define(version: 20160419150737) do
     t.float    "coord_y",                limit: 24
     t.integer  "category_id",            limit: 4,   default: 0
     t.string   "certificate_url",        limit: 255, default: ""
-    t.datetime "order_start_at",                     default: '2016-04-19 15:29:06'
-    t.datetime "order_end_at",                       default: '2016-04-19 15:29:06'
-    t.datetime "est_delivery_at",                    default: '2016-04-19 15:29:06'
+    t.datetime "order_start_at",                     default: '2016-04-20 06:46:29'
+    t.datetime "order_end_at",                       default: '2016-04-20 06:46:30'
+    t.datetime "est_delivery_at",                    default: '2016-04-20 06:46:30'
     t.float    "ave_price",              limit: 24,  default: 0.0
     t.string   "image",                  limit: 255, default: ""
     t.integer  "city_id",                limit: 4,   default: 0
@@ -68,12 +68,13 @@ ActiveRecord::Schema.define(version: 20160419150737) do
     t.float    "current_coord_x",        limit: 24,  default: 0.0
     t.float    "current_coord_y",        limit: 24,  default: 0.0
     t.integer  "city_id",                limit: 4,   default: 1,   null: false
-    t.string   "telephone",              limit: 20,  default: "",  null: false
+    t.string   "cellphone",              limit: 20,  default: "",  null: false
     t.integer  "company_id",             limit: 4
+    t.string   "username",               limit: 255, default: ""
   end
 
+  add_index "users", ["cellphone"], name: "index_users_on_cellphone", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
-  add_index "users", ["telephone"], name: "index_users_on_telephone", using: :btree
 
 end
