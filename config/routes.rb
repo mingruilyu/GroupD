@@ -1,9 +1,5 @@
 Rails.application.routes.draw do
   resources :dishes
-  devise_for :merchants
-  resources :stores
-  devise_for :users
-	resources :users
   devise_for :merchants, controllers: {
 		sessions: 			'merchants/sessions',
 		registrations:	'merchants/registrations',
