@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Mechant:</strong>
+  <%= @menu.mechant_id %>
+</p>
+
+<p>
+  <strong>Date:</strong>
+  <%= @menu.date %>
+</p>
+
+<%= link_to 'Edit', edit_menu_path(@menu) %> |
+<%= link_to 'Back', menus_path %>

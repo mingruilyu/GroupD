@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  mechant_id: 1
+  date: 2016-04-23 12:35:36
+
+two:
+  mechant_id: 1
+  date: 2016-04-23 12:35:36

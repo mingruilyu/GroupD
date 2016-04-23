@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :menus
+  resources :menuitems
   resources :dishes
   devise_for :merchants, controllers: {
 		sessions: 			'merchants/sessions',
