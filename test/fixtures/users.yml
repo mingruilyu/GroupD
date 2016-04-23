@@ -5,7 +5,9 @@
 # below each fixture, per the syntax in the comments below
 #
 one: {
+  username:             david,
   email:                david@gmail.com,
+  cellphone:            12345678901,
   encrypted_password:   123456,
   current_coord_x:      123,
   current_coord_y:      456,
@@ -15,7 +17,9 @@ one: {
 # column: value
 #
 two: {
+  username:             jack,
   email:                jack@gmail.com,
+  cellphone:            2345678901,
   encrypted_password:   123456,
   current_coord_x:      123,
   current_coord_y:      456,
