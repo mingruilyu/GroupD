@@ -11,13 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160422062352) do
+ActiveRecord::Schema.define(version: 20160422160337) do
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
   end
 
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
+
+  create_table "dishes", force: :cascade do |t|
+    t.string   "name",        limit: 255,                           default: ""
+    t.decimal  "price",                     precision: 8, scale: 2, default: 0.0
+    t.string   "image_url",   limit: 255,                           default: ""
+    t.text     "desc",        limit: 65535
+    t.integer  "count",       limit: 4,                             default: 0
+    t.integer  "merchant_id", limit: 4,                             default: 0
+    t.datetime "created_at",                                                      null: false
+    t.datetime "updated_at",                                                      null: false
+  end
 
   create_table "merchants", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",                    null: false
@@ -34,7 +45,7 @@ ActiveRecord::Schema.define(version: 20160422062352) do
     t.datetime "updated_at",                                                         null: false
     t.string   "restaurant_name",        limit: 255, default: ""
     t.string   "owner_name",             limit: 255, default: ""
-    t.string   "tel",                    limit: 255, default: ""
+    t.string   "cellphone",              limit: 255, default: ""
     t.string   "addr",                   limit: 255, default: ""
     t.float    "coord_x",                limit: 24,  default: 0.0
     t.float    "coord_y",                limit: 24
