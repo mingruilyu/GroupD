@@ -1,4 +1,5 @@
 class Menuitem < ActiveRecord::Base
-    has_many :dishes
+    belongs_to :menu
+    belongs_to :dish
     validates :dish_id, :menu_id, presence: true
 end
