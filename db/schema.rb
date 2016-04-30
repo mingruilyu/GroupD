@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160422160337) do
+ActiveRecord::Schema.define(version: 20160428072443) do
+
+  create_table "cellphones", force: :cascade do |t|
+    t.string   "number",               limit: 20, default: "0000000000", null: false
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string   "confirmation_token",   limit: 10, default: "000000",     null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+  end
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -79,12 +88,12 @@ ActiveRecord::Schema.define(version: 20160422160337) do
     t.float    "current_coord_x",        limit: 24,  default: 0.0
     t.float    "current_coord_y",        limit: 24,  default: 0.0
     t.integer  "city_id",                limit: 4,   default: 1,   null: false
-    t.string   "cellphone",              limit: 20,  default: "",  null: false
+    t.string   "cellphone_id",           limit: 20,  default: "",  null: false
     t.integer  "company_id",             limit: 4
     t.string   "username",               limit: 255, default: ""
   end
 
-  add_index "users", ["cellphone"], name: "index_users_on_cellphone", using: :btree
+  add_index "users", ["cellphone_id"], name: "index_users_on_cellphone_id", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 

@@ -1,0 +1,16 @@
+<h1>New Cellphone</h1>
+
+<%= form_for @cellphone, url: cellphone_path, remote: true do |f|%>
+cellphone <%= @cellphone.to_s%>
+  <%= f.label :cellphone_number %><br />
+  <%= f.text_field :number, autofocus: true %><br />
+  <%= f.submit 'Send Confirmation' %>
+<% end %>
+cellphone <%= @cellphone.to_s%>
+<%= form_for @cellphone, url: cellphone_path, method: "put", remote: true do |f|%>
+cellphone <%= @cellphone.to_s%>
+  <%= f.label :confirmation_token %><br />
+  <%= f.text_field :confirmation_token, autofocus: true %><br />
+  <%= f.hidden_field :number, number: @cellphone.number %>
+  <%= f.submit 'Verify' %>
+<% end %>

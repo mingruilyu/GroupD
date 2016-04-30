@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class User < ActiveRecord::Base
 	belongs_to :city
 
@@ -12,6 +14,25 @@ class User < ActiveRecord::Base
 	}
 	validate :cellphone_should_be_valid
 
+  def login=(login)
+		@login = login
+	end
+
+	def login
+		@login || self.cellphone || self.email
+	end
+
+  #validate methods
+  
+  def cellphone_should_be_valid
+		if cellphone !~ /^1?\d{10}$/
+			errors.add(:cellphone, "Please provide a valid cellphone number!")
+		end
+	end
+  
+
+
+  # methods override database_authenticable
 	def self.find_for_database_authentication(warden_conditions)
 		conditions = warden_conditions.dup
 		login = conditions.delete(:login)
@@ -22,20 +43,6 @@ class User < ActiveRecord::Base
 			where(conditions).where(["email = :value", { :value => login }]).first
 		else
 			where(conditions).where(["cellphone = :value", { :value => login }]).first
-		end
-	end
-	
-	def login=(login)
-		@login = login
-	end
-
-	def login
-		@login || self.cellphone || self.email
-	end
-
-	def cellphone_should_be_valid
-		if cellphone !~ /^1?\d{10}$/
-			errors.add(:cellphone, "Please provide a valid cellphone number!")			
 		end
 	end
 end

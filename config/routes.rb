@@ -1,16 +1,23 @@
 Rails.application.routes.draw do
+  resource :cellphone, only: [:new, :create, :update, :edit]
   resources :dishes
+  devise_for :merchants
+  devise_for :users
+=begin 
   devise_for :merchants, controllers: {
-		sessions: 			'merchants/sessions',
-		registrations:	'merchants/registrations',
-		passwords:			'merchants/passwords'
+		#sessions: 			'merchants/sessions',
+    registrations:  'registrations',
 	}
 	devise_for :users, controllers: {
-		sessions: 			'users/sessions',
-		registrations:	'users/registrations',
-		passwords:			'users/passwords'
+		#sessions: 			'users/sessions',
+    #registrations:  'registrations',
 	}
-
+=begin 
+  namespace :confirmations do
+    get   'new'
+    post  'create'
+  end
+=end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
