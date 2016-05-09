@@ -4,7 +4,8 @@ class MenusController < ApplicationController
   # GET /menus
   # GET /menus.json
   def index
-    @menus = Menu.all
+     @menus = Menu.all
+     
   end
 
   # GET /menus/1
@@ -54,9 +55,11 @@ class MenusController < ApplicationController
   # DELETE /menus/1
   # DELETE /menus/1.json
   def destroy
+    @menu = current_menu
     @menu.destroy
+    session[:menu_id] = nil
     respond_to do |format|
-      format.html { redirect_to menus_url, notice: 'Menu was successfully destroyed.' }
+      format.html { redirect_to dishes_url, notice: 'Menu was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -69,6 +72,6 @@ class MenusController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def menu_params
-      params.require(:menu).permit(:mechant_id, :date)
+      params.require(:menu).permit(:merchant_id, :date)
     end
 end

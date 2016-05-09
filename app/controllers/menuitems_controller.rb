@@ -24,11 +24,14 @@ class MenuitemsController < ApplicationController
   # POST /menuitems
   # POST /menuitems.json
   def create
-    @menuitem = Menuitem.new(menuitem_params)
+    @menu = current_menu
+    dish = Dish.find(params[:dish_id])
+    @menuitem = @menu.menuitems.build(dish: dish)  
+#   @menuitem = Menuitem.new(menuitem_params)
 
     respond_to do |format|
       if @menuitem.save
-        format.html { redirect_to @menuitem, notice: 'Menuitem was successfully created.' }
+        format.html { redirect_to @menuitem.menu, notice: 'Menuitem was successfully created.' }
         format.json { render :show, status: :created, location: @menuitem }
       else
         format.html { render :new }

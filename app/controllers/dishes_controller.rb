@@ -5,6 +5,7 @@ class DishesController < ApplicationController
   # GET /dishes.json
   def index
     @dishes = Dish.all
+    @menu = current_menu
   end
 
   # GET /dishes/1
