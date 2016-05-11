@@ -7,7 +7,7 @@
 one: {
   username:             david,
   email:                david@gmail.com,
-  cellphone:            12345678901,
+  cellphone_id:         1,
   encrypted_password:   123456,
   current_coord_x:      123,
   current_coord_y:      456,
@@ -19,7 +19,7 @@ one: {
 two: {
   username:             jack,
   email:                jack@gmail.com,
-  cellphone:            2345678901,
+  cellphone_id:         2,
   encrypted_password:   123456,
   current_coord_x:      123,
   current_coord_y:      456,

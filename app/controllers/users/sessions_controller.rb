@@ -1,5 +1,5 @@
 class Users::SessionsController < Devise::SessionsController
-# before_filter :configure_sign_in_params, only: [:create]
+ before_filter :check_cellphone_confirmation, only: [:create]
 
   # GET /resource/sign_in
   # def new
@@ -22,4 +22,11 @@ class Users::SessionsController < Devise::SessionsController
   # def configure_sign_in_params
   #   devise_parameter_sanitizer.for(:sign_in) << :attribute
   # end
+private
+  def check_cellphone_confirmation
+    puts "CHEKCING CONFIRMATION"
+    unless current_user.confirmed_at
+      redirect_to confirmations_new_path
+    end
+  end
 end

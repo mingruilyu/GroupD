@@ -1,21 +1,38 @@
 Rails.application.routes.draw do
-  resources :dishes
+=begin
+    scope :users do
+      resource :cellphone, only: [:new, :create, :update, :edit], as: 'users_cellphone'
+    end
+    scope :merchants do
+      resource :cellphone, only: [:new, :create, :update, :edit], as: 'merchants_cellphone'
+    end
+=end
+    resources :cellphones, only: [:new, :create, :update, :edit]
+    devise_for :merchants
+    devise_for :users
+
+    resources :dishes
+   
+    # You can have the root of your site routed with "root"
+    root 'welcome#index'
+  
+=begin 
   devise_for :merchants, controllers: {
-		sessions: 			'merchants/sessions',
-		registrations:	'merchants/registrations',
-		passwords:			'merchants/passwords'
+		#sessions: 			'merchants/sessions',
+    registrations:  'registrations',
 	}
 	devise_for :users, controllers: {
-		sessions: 			'users/sessions',
-		registrations:	'users/registrations',
-		passwords:			'users/passwords'
+		#sessions: 			'users/sessions',
+    #registrations:  'registrations',
 	}
-
+=begin 
+  namespace :confirmations do
+    get   'new'
+    post  'create'
+  end
+=end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  root 'welcome#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
