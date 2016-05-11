@@ -1,8 +1,21 @@
 Rails.application.routes.draw do
-  resource :cellphone, only: [:new, :create, :update, :edit]
-  resources :dishes
-  devise_for :merchants
-  devise_for :users
+=begin
+    scope :users do
+      resource :cellphone, only: [:new, :create, :update, :edit], as: 'users_cellphone'
+    end
+    scope :merchants do
+      resource :cellphone, only: [:new, :create, :update, :edit], as: 'merchants_cellphone'
+    end
+=end
+    resources :cellphones, only: [:new, :create, :update, :edit]
+    devise_for :merchants
+    devise_for :users
+
+    resources :dishes
+   
+    # You can have the root of your site routed with "root"
+    root 'welcome#index'
+  
 =begin 
   devise_for :merchants, controllers: {
 		#sessions: 			'merchants/sessions',
@@ -20,9 +33,6 @@ Rails.application.routes.draw do
 =end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  root 'welcome#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

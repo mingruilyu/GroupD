@@ -20,4 +20,14 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  notice:
+    CONFIRMATION_SENT:    'A confirmation has been sent to the number %{number}!'
+    CONFIRMATION_RESENT:  'A confirmation has been resent to the number %{number}!'
+    VERIFY_SUCCESS:       'The number %{number} is successfully verified!'
+  error:
+    SEND_BEFORE_VERIFY:   'Please send confirmation first!'
+    NUMBER_USED:          'The number %{number} has already been used!'
+    TOKEN_EXPIRED:        'The confirmation token has expired. Please resent the\
+                          confirmation and verify within 2mins!'
+    TOKEN_INCORRECT:      'Please input the correct token!'
+    INVALID_NUMBER:       'Please provide a valid number!'

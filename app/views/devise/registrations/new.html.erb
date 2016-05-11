@@ -13,11 +13,6 @@
     <%= f.email_field :email %>
   </div>
 
-	<div class="field"
-    <%= f.label :cellphone %><br />
-    <%= f.text_field :cellphone %>
-	</div>
-
   <div class="field">
     <%= f.label :password %>
     <% if @minimum_password_length %>
@@ -29,6 +24,10 @@
   <div class="field">
     <%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, autocomplete: "off" %>
+  </div>
+
+  <div class="field">
+    <%= f.hidden_field :cellphone_id, value: session[:cellphone_id] %><br />
   </div>
 
   <div class="actions">

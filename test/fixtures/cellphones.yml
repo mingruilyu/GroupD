@@ -4,8 +4,15 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one: {}
+one:
+  number:               8058955364
+  confirmation_token:   123456
+  confirmed_at:         <%= Time.now %>
+
 # column: value
 #
-two: {}
+two: {
+  number:               8058955365,
+  confirmation_token:   123456
+}
 #  column: value

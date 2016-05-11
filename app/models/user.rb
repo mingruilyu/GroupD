@@ -2,35 +2,22 @@ require 'securerandom'
 
 class User < ActiveRecord::Base
 	belongs_to :city
-
+  belongs_to :cellphone
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, 
 				 :validatable, :authentication_keys => {login: true}
 
-	validates :cellphone, uniqueness: {
-		message: "One cellphone could only be used to sign up a user account!"
-	}
-	validate :cellphone_should_be_valid
+	validates :cellphone_id, uniqueness: true, presence: true
 
   def login=(login)
 		@login = login
 	end
 
 	def login
-		@login || self.cellphone || self.email
+		@login || self.cellphone_id || self.email
 	end
-
-  #validate methods
-  
-  def cellphone_should_be_valid
-		if cellphone !~ /^1?\d{10}$/
-			errors.add(:cellphone, "Please provide a valid cellphone number!")
-		end
-	end
-  
-
 
   # methods override database_authenticable
 	def self.find_for_database_authentication(warden_conditions)
@@ -42,7 +29,8 @@ class User < ActiveRecord::Base
 		if login =~ /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 			where(conditions).where(["email = :value", { :value => login }]).first
 		else
-			where(conditions).where(["cellphone = :value", { :value => login }]).first
+			User.joins(:cellphone).where(conditions)
+      .where("cellphones.number = :number", { number: login }).first
 		end
 	end
 end
