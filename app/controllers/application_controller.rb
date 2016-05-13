@@ -20,4 +20,13 @@ class ApplicationController < ActionController::Base
 				:password_confirmation, :current_password)
 		}
 	end
+    
+    private
+        def current_menu
+            Menu.find(session[:menu_id])
+        rescue ActiveRecord::RecordNotFound
+            menu = Menu.create
+            session[:menu_id] = menu.id
+            menu
+        end
 end

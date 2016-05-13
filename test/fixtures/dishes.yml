@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-   name: MyString
+  name: MyString
   price: 1.5
   image_url: MyString
   desc: MyText
@@ -9,7 +9,7 @@ one:
   merchant_id: 1
 
 two:
-   name: MyString
+  name: MyString
   price: 1.5
   image_url: MyString
   desc: MyText

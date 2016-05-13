@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Merchant:</strong>
+  <%= @menu.merchant_id %>
+</p>
+
+<p>
+  <strong>Date:</strong>
+  <%= @menu.date %>
+</p>
+<h2>Dishes in this menu</h2>
+<ul>
+    <% @menu.menuitems.each do |item| %>
+        <li><%= item.dish.name %></li>
+        <li><%= item.dish.price %></li>
+    <% end %>
+</ul>
+<%= link_to 'Edit', edit_menu_path(@menu) %> |
+<%= link_to 'Back', menus_path %>

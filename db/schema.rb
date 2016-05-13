@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160422160337) do
+ActiveRecord::Schema.define(version: 20160426163858) do
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -28,6 +28,20 @@ ActiveRecord::Schema.define(version: 20160422160337) do
     t.integer  "merchant_id", limit: 4,                             default: 0
     t.datetime "created_at",                                                      null: false
     t.datetime "updated_at",                                                      null: false
+  end
+
+  create_table "menuitems", force: :cascade do |t|
+    t.integer  "dish_id",    limit: 4, default: 0
+    t.integer  "menu_id",    limit: 4, default: 0
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
+
+  create_table "menus", force: :cascade do |t|
+    t.integer  "merchant_id", limit: 4, default: 0
+    t.datetime "date",                  default: '2016-04-23 16:37:07'
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
   end
 
   create_table "merchants", force: :cascade do |t|
@@ -51,9 +65,9 @@ ActiveRecord::Schema.define(version: 20160422160337) do
     t.float    "coord_y",                limit: 24
     t.integer  "category_id",            limit: 4,   default: 0
     t.string   "certificate_url",        limit: 255, default: ""
-    t.datetime "order_start_at",                     default: '2016-04-20 06:46:29'
-    t.datetime "order_end_at",                       default: '2016-04-20 06:46:30'
-    t.datetime "est_delivery_at",                    default: '2016-04-20 06:46:30'
+    t.datetime "order_start_at",                     default: '2016-04-19 15:29:06'
+    t.datetime "order_end_at",                       default: '2016-04-19 15:29:06'
+    t.datetime "est_delivery_at",                    default: '2016-04-19 15:29:06'
     t.float    "ave_price",              limit: 24,  default: 0.0
     t.string   "image",                  limit: 255, default: ""
     t.integer  "city_id",                limit: 4,   default: 0
@@ -62,6 +76,17 @@ ActiveRecord::Schema.define(version: 20160422160337) do
 
   add_index "merchants", ["email"], name: "index_merchants_on_email", unique: true, using: :btree
   add_index "merchants", ["reset_password_token"], name: "index_merchants_on_reset_password_token", unique: true, using: :btree
+
+  create_table "stores", force: :cascade do |t|
+    t.string  "name",        limit: 255,               null: false
+    t.integer "category_id", limit: 4,   default: 1,   null: false
+    t.string  "address",     limit: 255
+    t.integer "city_id",     limit: 4,                 null: false
+    t.float   "coord_x",     limit: 24,  default: 0.0, null: false
+    t.float   "coord_y",     limit: 24,  default: 0.0, null: false
+    t.string  "image_url",   limit: 255
+    t.integer "owner_id",    limit: 4,                 null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
