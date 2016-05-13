@@ -41,6 +41,20 @@ ActiveRecord::Schema.define(version: 20160512072403) do
     t.datetime "updated_at",                                                      null: false
   end
 
+  create_table "menuitems", force: :cascade do |t|
+    t.integer  "dish_id",    limit: 4, default: 0
+    t.integer  "menu_id",    limit: 4, default: 0
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
+
+  create_table "menus", force: :cascade do |t|
+    t.integer  "merchant_id", limit: 4, default: 0
+    t.datetime "date",                  default: '2016-05-13 02:13:51'
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
+  end
+
   create_table "merchants", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
     t.string   "encrypted_password",     limit: 255, default: "", null: false
