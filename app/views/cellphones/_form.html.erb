@@ -1,0 +1,17 @@
+<%= form_for(@cellphone) do |f| %>
+  <% if @cellphone.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@cellphone.errors.count, "error") %> prohibited this cellphone from being saved:</h2>
+
+      <ul>
+      <% @cellphone.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

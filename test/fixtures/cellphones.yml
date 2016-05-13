@@ -1,0 +1,18 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# This model initially had no columns defined.  If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one:
+  number:               8058955364
+  confirmation_token:   123456
+  confirmed_at:         <%= Time.now %>
+
+# column: value
+#
+two: {
+  number:               8058955365,
+  confirmation_token:   123456
+}
+#  column: value

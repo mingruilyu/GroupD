@@ -2,7 +2,7 @@
 
 one:
   name: MyString
-  price: 1.5
+  price: 1.50
   image_url: MyString
   desc: MyText
   count: 1
@@ -10,7 +10,7 @@ one:
 
 two:
   name: MyString
-  price: 1.5
+  price: 2.50
   image_url: MyString
   desc: MyText
   count: 1
