@@ -29,4 +29,13 @@ class ApplicationController < ActionController::Base
             session[:menu_id] = menu.id
             menu
         end
+  
+  def after_sign_in_path_for(resource)
+    if resource_name == :user
+      root_path
+    else
+      merchant_path
+    end
+  end
+
 end

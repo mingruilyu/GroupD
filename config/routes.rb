@@ -2,16 +2,13 @@ Rails.application.routes.draw do
   resources :menus
   resources :menuitems
   resources :dishes
-  devise_for :merchants, controllers: {
-		sessions: 			'merchants/sessions',
-		registrations:	'merchants/registrations',
-		passwords:			'merchants/passwords'
-	}
-	devise_for :users, controllers: {
-		sessions: 			'users/sessions',
-		registrations:	'users/registrations',
-		passwords:			'users/passwords'
-	}
+  resources :restaurants
+  resources :cellphones, only: [:new, :create, :update, :edit]
+  
+  devise_for :merchants
+  devise_for :users
+
+  resources :dishes
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

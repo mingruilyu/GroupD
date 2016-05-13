@@ -7,10 +7,15 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, 
 				 :validatable, :authentication_keys => {login: true}
 
-	validates :cellphone, uniqueness: {
-		message: "One cellphone could only be used to sign up a user account!"
-	}
-	validate :cellphone_should_be_valid
+	validates :cellphone_id, uniqueness: true, presence: true
+
+  def login=(login)
+		@login = login
+	end
+
+	def login
+		@login #|| self.cellphone_id || self.email
+	end
 
 	def self.find_for_database_authentication(warden_conditions)
 		conditions = warden_conditions.dup

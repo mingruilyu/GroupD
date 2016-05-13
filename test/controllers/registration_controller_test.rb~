@@ -1,0 +1,22 @@
+class RegistrationsControllerTest < ActionController::TestCase
+  include Devise::TestHelpers
+
+  def setup
+    @number = '8058955367'
+    xhr :post, :create, { cellphone: { number: @number }, send: '' }
+    session[:type] = 'users'
+    cellphone = Cellphone.find_by_number(@number)
+    xhr :post, :create, { 
+                          cellphone: { 
+                            number: @number, 
+                            confirmation_token: cellphone.confirmation_token
+                          },
+                          verify: '' 
+                        }
+
+    @request.env["devise.mapping"] = Devise.mappings[:users]
+  end
+
+
+
+end

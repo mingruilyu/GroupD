@@ -1,27 +1,18 @@
-<% if user_signed_in? %>
-	<h1>Welcome, <%= current_user.email%> </h1>
-	<div>
-		<h2>The user's basic info</h2>
-		<table>
-			<tr>
-				<th>Key</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td>current_coord_x</td>
-				<td><%= current_user.current_coord_x%></td>
-			</tr>
-			<tr>
-				<td>current_coord_y</td>
-				<td><%= current_user.current_coord_y%></td>
-			</tr>
-			<tr>
-				<td>city_id</td>
-				<td><%= current_user.city_id%></td>
-			</tr>
-		</table>
-		<p>The user belongs to <%= current_user.city.name%></p>
-	</div>
-<% else %>
-	<h1>Welcome, please login first</h1>
-<% end %>
+<h1>Listing Restaurants</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Image Url</th>
+    </tr>
+
+    <tbody>
+      <% @merchants.each do |merchant| %>
+        <tr>
+          <td>Name: <%= merchant.restaurant_name %></td>
+          <td>Image: <%= merchant.image_url %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </thead>
+</table>
