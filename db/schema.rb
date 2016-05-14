@@ -11,18 +11,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160512072403) do
+ActiveRecord::Schema.define(version: 20160513230420) do
 
-  create_table "cellphones", force: :cascade do |t|
-    t.string   "number",               limit: 20, default: "", null: false
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string   "confirmation_token",   limit: 10, default: "", null: false
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+  create_table "cart_items", force: :cascade do |t|
+    t.integer  "quantity",   limit: 4, default: 1, null: false
+    t.integer  "user_id",    limit: 4,             null: false
+    t.integer  "cart_id",    limit: 4,             null: false
+    t.integer  "dish_id",    limit: 4,             null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
   end
 
-  add_index "cellphones", ["number"], name: "index_cellphones_on_number", using: :btree
+  create_table "carts", force: :cascade do |t|
+    t.integer  "restaurant_id", limit: 4,             null: false
+    t.integer  "shipping_id",   limit: 4,             null: false
+    t.integer  "status",        limit: 1, default: 0, null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  create_table "cellphones", force: :cascade do |t|
+    t.string   "number",               limit: 20, default: "0000000000", null: false
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string   "confirmation_token",   limit: 10, default: "",           null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+  end
 
   create_table "cities", force: :cascade do |t|
     t.string "name", limit: 100, null: false
@@ -50,7 +65,7 @@ ActiveRecord::Schema.define(version: 20160512072403) do
 
   create_table "menus", force: :cascade do |t|
     t.integer  "merchant_id", limit: 4, default: 0
-    t.datetime "date",                  default: '2016-05-13 02:13:51'
+    t.datetime "date",                  default: '2016-05-13 22:34:49'
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
   end
@@ -98,6 +113,16 @@ ActiveRecord::Schema.define(version: 20160512072403) do
     t.integer  "city_id",         limit: 4,   default: 1,    null: false
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+  end
+
+  create_table "shippings", force: :cascade do |t|
+    t.integer  "status",     limit: 1,  default: 0, null: false
+    t.float    "coord_x",    limit: 24
+    t.float    "coord_y",    limit: 24
+    t.float    "price",      limit: 24
+    t.integer  "channel_id", limit: 4
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   create_table "users", force: :cascade do |t|

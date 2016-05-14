@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :shippings
+  resources :carts
   resources :menus
   resources :menuitems
   resources :dishes
