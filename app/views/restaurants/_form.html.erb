@@ -1,17 +1,55 @@
 <%= form_for(@restaurant) do |f| %>
-  <% if @restaurant.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@restaurant.errors.count, "error") %> prohibited this restaurant from being saved:</h2>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name, autofocus: true %>
+  </div>
 
-      <ul>
-      <% @restaurant.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <div class="field">
+    <%= f.label :address %><br />
+    <%= f.text_field :address, autofocus: true %>
+  </div>
 
-  <div class="actions">
-    <%= f.submit %>
+  <div class="field">
+    <%= f.label :city %><br />
+    <%= f.collection_select :city_id, City.all, :id, :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :open_time %><br />
+    <%= f.select :open_at, time_array %>
+  </div>
+
+  <div class="field">
+    <%= f.label :category %><br />
+    <%= f.collection_select :category, Category.all, :id, :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :close_time %><br />
+    <%= f.select :close_at, time_array %>
+  </div>
+
+  <div class="field">
+    <%= f.label :image_url %><br />
+    <%= f.text_field :image_url, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :certificate_url %><br />
+    <%= f.text_field :certificate_url, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :coord_x %><br />
+    <%= f.text_field :coord_x, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :coord_y %><br />
+    <%= f.text_field :coord_y, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.submit "Create"%>
   </div>
 <% end %>

@@ -1,53 +1,32 @@
 <h1>Listing Dishes</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Price</th>
-      <th>Image url</th>
-      <th>Desc</th>
-      <th>Count</th>
-      <th>Merchant</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @dishes.each do |dish| %>
+<% if @dishes.nil? %>
+  <p>You don't have any dishes in your menu.</p>
+<% else %>
+  <table>
+    <thead>
       <tr>
-        <td><%= dish.name %></td>
-        <td><%= dish.price %></td>
-        <td><%= dish.image_url %></td>
-        <td><%= dish.desc %></td>
-        <td><%= dish.count %></td>
-        <td><%= dish.merchant_id %></td>
-        <td><%= link_to 'Show', dish %></td>
-        <td><%= link_to 'Edit', edit_dish_path(dish) %></td>
-        <td><%= link_to 'Destroy', dish, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        <td><%= button_to 'Add to Menu', menuitems_path(dish_id: dish)%></td>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Image url</th>
+        <th>Desc</th>
+        <th colspan="3"></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= link_to 'New Dish', new_dish_path %>
-<p>
-  <strong>Merchant:</strong>
-  <%= @menu.merchant_id %>
-</p>
-
-<p>
-  <strong>Date:</strong>
-  <%= @menu.date %>
-</p>
-<h2>Dishes in this menu</h2>
-<ul>
-    <% @menu.menuitems.each do |item| %>
-        <li><%= item.dish.name %></li>
-        <li><%= item.dish.price %></li>
-    <% end %>
-</ul>
-<%= button_to 'Empty Menu', @menu, method: :delete, confirm: 'Are you sure?' %>
-<br>
-
+    </thead>
+  
+    <tbody>
+      <% @dishes.each do |dish| %>
+        <tr>
+          <td><%= dish.name %></td>
+          <td><%= dish.price %></td>
+          <td><%= dish.image_url %></td>
+          <td><%= dish.desc %></td>
+          <td><%= link_to 'Show', dish %></td>
+          <td><%= link_to 'Edit', edit_dish_path(dish) %></td>
+          <td><%= link_to 'Destroy', dish, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+<%= link_to 'Add New Dish', new_dish_path %>
+<%= link_to 'Back to restaurant', merchant_path(current_merchant) %>

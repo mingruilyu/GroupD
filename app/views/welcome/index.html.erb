@@ -1,18 +1,5 @@
 <h1>Listing Restaurants</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Image Url</th>
-    </tr>
-
-    <tbody>
-      <% @merchants.each do |merchant| %>
-        <tr>
-          <td>Name: <%= merchant.restaurant_name %></td>
-          <td>Image: <%= merchant.image_url %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </thead>
-</table>
+  <% @restaurants.each do |restaurant| %>
+    <%= render restaurant %>
+    <%= link_to 'Show Restaurant', restaurant_path(restaurant) %><br /><br />
+  <% end %>

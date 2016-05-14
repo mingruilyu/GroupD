@@ -1,4 +1,3 @@
-require 'securerandom'
 class CellphonesController < ApplicationController
   
   # GET /cellphones/new
@@ -17,7 +16,7 @@ class CellphonesController < ApplicationController
     @redirect = false
     # check whether the cellphone number has been verified
     if @cellphone.present? && @cellphone.has_confirmed?
-      flash.now[:error] = I18n.t('error.NUMBER_USED', 
+      flash.now[:error] = I18n.t('cellphone.error.NUMBER_USED', 
                             number: @cellphone.number)
     elsif params[:send]    
       send_confirmation
@@ -36,18 +35,18 @@ class CellphonesController < ApplicationController
 
     def verify_token
       if @cellphone.nil?
-        flash.now[:error] = I18n.t('error.SEND_BEFORE_VERIFY')
+        flash.now[:error] = I18n.t('cellphone.error.SEND_BEFORE_VERIFY')
       elsif @cellphone.has_confirmation_expired? 
-        flash.now[:error] = I18n.t('error.TOKEN_EXPIRED')
+        flash.now[:error] = I18n.t('cellphone.error.TOKEN_EXPIRED')
       elsif @cellphone.verify? cellphones_params[:confirmation_token]
         session[:cellphone_number] = @cellphone.number
         @cellphone.verify!
-        flash[:notice] = I18n.t('notice.VERIFY_SUCCESS', 
+        flash[:notice] = I18n.t('cellphone.notice.VERIFY_SUCCESS', 
                            number: @cellphone.number)
         session[:cellphone_id] = @cellphone.id
         @redirect = true
       else
-        flash.now[:error] = I18n.t('error.TOKEN_INCORRECT') 
+        flash.now[:error] = I18n.t('cellphone.error.TOKEN_INCORRECT') 
       end
     end
    
@@ -57,7 +56,7 @@ class CellphonesController < ApplicationController
         @cellphone = Cellphone.new(cellphones_params)
         @cellphone.generate_cellphone_confirmation_token
         if @cellphone.save 
-          flash.now[:notice] = I18n.t('notice.CONFIRMATION_SENT',
+          flash.now[:notice] = I18n.t('cellphone.notice.CONFIRMATION_SENT',
                                 number:  @cellphone.number)
         else
           flash.now[:error] = @cellphone.errors[:number].first
@@ -67,7 +66,7 @@ class CellphonesController < ApplicationController
         # cellphone record created, not confirmed, the user probably
         # resent the confirmation
         @cellphone.generate_cellphone_confirmation_token
-        flash.now[:notice] = I18n.t('notice.CONFIRMATION_RESENT',
+        flash.now[:notice] = I18n.t('cellphone.notice.CONFIRMATION_RESENT',
                                number: @cellphone.number)
       end
     end

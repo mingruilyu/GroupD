@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
   resources :shippings
   resources :carts
-  resources :menus
-  resources :menuitems
   resources :dishes
   resources :restaurants
   resources :cellphones, only: [:new, :create, :update, :edit]
@@ -10,7 +8,9 @@ Rails.application.routes.draw do
   devise_for :merchants
   devise_for :users
 
-  resources :dishes
+  get 'merchants/:id' => 'merchants#show', as: :merchant
+
+  root      'welcome#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -1,5 +1,7 @@
 class Restaurant < ActiveRecord::Base
   belongs_to :merchant
+  belongs_to :category
+  has_many   :dishes
   
   def transactions
     @transactions

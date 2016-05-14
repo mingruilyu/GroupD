@@ -4,8 +4,7 @@ class DishesController < ApplicationController
   # GET /dishes
   # GET /dishes.json
   def index
-    @dishes = Dish.all
-    @menu = current_menu
+    @dishes = Dish.where(restaurant_id: current_merchant.restaurant.id)
   end
 
   # GET /dishes/1
@@ -26,10 +25,14 @@ class DishesController < ApplicationController
   # POST /dishes.json
   def create
     @dish = Dish.new(dish_params)
-
+    @dish.restaurant_id = current_merchant.restaurant.id
     respond_to do |format|
       if @dish.save
-        format.html { redirect_to @dish, notice: 'Dish was successfully created.' }
+        format.html { 
+          flash[:notice] = I18n.t('dish.notice.DISH_CREATED',
+                                name: @dish.name)
+          redirect_to action: 'index' 
+        }
         format.json { render :show, status: :created, location: @dish }
       else
         format.html { render :new }
@@ -70,6 +73,7 @@ class DishesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def dish_params
-      params.require(:dish).permit(:name, :price, :image_url, :desc, :count, :merchant_id)
+      params.require(:dish).permit(:name, :price, :image_url, :desc, 
+                                   :count, :merchant_id)
     end
 end

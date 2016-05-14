@@ -3,15 +3,9 @@
   <p>You currently has not restaurant. Please add restaurant!<p>
   <%= link_to "Add Restaurant", controller: "restaurants", 
     action: "new", id: current_merchant.id %>
-<% else %>
-  <table>
-    <tr>
-      <td>Name</td>
-      <td><%= @restaurant.name%></td>
-      <td>Image</td>
-      <td><%= @restaurant.image_url%></td>
-      <td>Pending Orders</td>
-      <td><%= %></td>
-    </tr>
-  </table>
+<% else %> 
+  <%= render @restaurant %>
 <% end %>
+<%= link_to "Manage Menus", dishes_path %>  
+<h1>Pending transaction</h1>
+<h1>Revenue Summary</h1>

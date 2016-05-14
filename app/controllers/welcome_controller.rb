@@ -1,5 +1,5 @@
 class WelcomeController < ApplicationController
   def index
-    @merchants = Merchant.all
+    @restaurants = Restaurant.all
   end
 end

@@ -1,4 +1,5 @@
-<p id="notice"><%= notice %></p>
-
+<% @restaurant.dishes.each do |dish| %>
+  <%= render dish %>
+<% end %>
 <%= link_to 'Edit', edit_restaurant_path(@restaurant) %> |
 <%= link_to 'Back', restaurants_path %>

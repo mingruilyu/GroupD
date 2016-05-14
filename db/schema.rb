@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160513230420) do
+ActiveRecord::Schema.define(version: 20160514222011) do
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",   limit: 4, default: 1, null: false
@@ -30,6 +30,12 @@ ActiveRecord::Schema.define(version: 20160513230420) do
     t.datetime "updated_at",                          null: false
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.string   "name",       limit: 255, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "cellphones", force: :cascade do |t|
     t.string   "number",               limit: 20, default: "0000000000", null: false
     t.datetime "confirmed_at"
@@ -46,28 +52,16 @@ ActiveRecord::Schema.define(version: 20160513230420) do
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
 
   create_table "dishes", force: :cascade do |t|
-    t.string   "name",        limit: 255,                           default: ""
-    t.decimal  "price",                     precision: 8, scale: 2, default: 0.0
-    t.string   "image_url",   limit: 255,                           default: ""
-    t.text     "desc",        limit: 65535
-    t.integer  "count",       limit: 4,                             default: 0
-    t.integer  "merchant_id", limit: 4,                             default: 0
-    t.datetime "created_at",                                                      null: false
-    t.datetime "updated_at",                                                      null: false
-  end
-
-  create_table "menuitems", force: :cascade do |t|
-    t.integer  "dish_id",    limit: 4, default: 0
-    t.integer  "menu_id",    limit: 4, default: 0
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-  end
-
-  create_table "menus", force: :cascade do |t|
-    t.integer  "merchant_id", limit: 4, default: 0
-    t.datetime "date",                  default: '2016-05-13 22:34:49'
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.string   "name",          limit: 255,                           default: ""
+    t.decimal  "price",                       precision: 8, scale: 2, default: 0.0
+    t.string   "image_url",     limit: 255,                           default: ""
+    t.text     "desc",          limit: 65535
+    t.integer  "count",         limit: 4,                             default: 0
+    t.integer  "restaurant_id", limit: 4,                             default: 0
+    t.datetime "created_at",                                                          null: false
+    t.datetime "updated_at",                                                          null: false
+    t.boolean  "is_combo",                                            default: false, null: false
+    t.boolean  "sold_out",                                            default: false, null: false
   end
 
   create_table "merchants", force: :cascade do |t|

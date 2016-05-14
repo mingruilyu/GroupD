@@ -19,16 +19,12 @@
   <strong>Desc:</strong>
   <%= @dish.desc %>
 </p>
-
+<% if current_merchant.present? %>
 <p>
   <strong>Count:</strong>
   <%= @dish.count %>
 </p>
-
-<p>
-  <strong>Merchant:</strong>
-  <%= @dish.merchant_id %>
-</p>
+<% end %>
 
 <%= link_to 'Edit', edit_dish_path(@dish) %> |
 <%= link_to 'Back', dishes_path %>
