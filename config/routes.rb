@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   get 'merchants/:id' => 'merchants#show', as: :merchant
+  resources :cart_items
 
   root      'welcome#index'
 

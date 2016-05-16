@@ -15,5 +15,5 @@
   <%= dish.desc %>
 </p>
 
-<%= link_to 'Add to Cart', cart%>
+<%= link_to 'Order', new_cart_item_path(dish_id: dish.id), remote: true %>
 <br /><br />
