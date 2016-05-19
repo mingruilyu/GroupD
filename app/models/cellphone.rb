@@ -1,4 +1,4 @@
-require 'secure_random'
+require 'securerandom'
 class Cellphone < ActiveRecord::Base
   before_validation do
    self.number = self.class.strip_area_code(self.number) 

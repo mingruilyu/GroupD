@@ -10,5 +10,6 @@ class User < ActiveRecord::Base
 	validates :cellphone_id, uniqueness: true, presence: true
 
   include FlexibleAuthentication
-
+  
+  GUEST_USER_ID = 0
 end

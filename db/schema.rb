@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160515001043) do
+ActiveRecord::Schema.define(version: 20160518052338) do
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
@@ -24,11 +24,12 @@ ActiveRecord::Schema.define(version: 20160515001043) do
   end
 
   create_table "carts", force: :cascade do |t|
-    t.integer  "restaurant_id", limit: 4,             null: false
-    t.integer  "shipping_id",   limit: 4,             null: false
-    t.integer  "status",        limit: 1, default: 0, null: false
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.integer  "restaurant_id",  limit: 4
+    t.integer  "status",         limit: 1, default: 0,    null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.boolean  "public_visible",           default: true, null: false
+    t.integer  "user_id",        limit: 4,                null: false
   end
 
   create_table "categories", force: :cascade do |t|
@@ -118,6 +119,7 @@ ActiveRecord::Schema.define(version: 20160515001043) do
     t.integer  "channel_id", limit: 4
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
+    t.integer  "cart_id",    limit: 4,              null: false
   end
 
   create_table "users", force: :cascade do |t|
