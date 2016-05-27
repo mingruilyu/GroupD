@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :drop_offs
   resources :shippings
   resources :carts
   resources :dishes

@@ -39,6 +39,10 @@ class CartItemsController < ApplicationController
     respond_to :js
   end
 
-  def show
+  def destroy
+    CartItem.destroy(params[:id])
+    @cart = current_cart
+    respond_to :js
   end
+
 end

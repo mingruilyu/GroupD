@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160518052338) do
+ActiveRecord::Schema.define(version: 20160525070314) do
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20160518052338) do
     t.datetime "updated_at",                              null: false
     t.boolean  "public_visible",           default: true, null: false
     t.integer  "user_id",        limit: 4,                null: false
+    t.integer  "shipping_id",    limit: 4,                null: false
   end
 
   create_table "categories", force: :cascade do |t|
@@ -66,6 +67,13 @@ ActiveRecord::Schema.define(version: 20160518052338) do
     t.boolean  "sold_out",                                            default: false, null: false
   end
 
+  create_table "dropoffs", force: :cascade do |t|
+    t.integer  "company_id",    limit: 4, null: false
+    t.integer  "restaurant_id", limit: 4, null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
   create_table "merchants", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
     t.string   "encrypted_password",     limit: 255, default: "", null: false
@@ -85,6 +93,13 @@ ActiveRecord::Schema.define(version: 20160518052338) do
 
   add_index "merchants", ["email"], name: "index_merchants_on_email", unique: true, using: :btree
   add_index "merchants", ["reset_password_token"], name: "index_merchants_on_reset_password_token", unique: true, using: :btree
+
+  create_table "orders", force: :cascade do |t|
+    t.integer  "dropoff_id", limit: 4, null: false
+    t.integer  "cart_id",    limit: 4, null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
 
   create_table "payments", force: :cascade do |t|
     t.integer  "merchant_id", limit: 4,                null: false
@@ -116,10 +131,10 @@ ActiveRecord::Schema.define(version: 20160518052338) do
     t.float    "coord_x",    limit: 24
     t.float    "coord_y",    limit: 24
     t.float    "price",      limit: 24
-    t.integer  "channel_id", limit: 4
+    t.integer  "dropoff_id", limit: 4
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
-    t.integer  "cart_id",    limit: 4,              null: false
+    t.integer  "user_count", limit: 4,  default: 0, null: false
   end
 
   create_table "users", force: :cascade do |t|

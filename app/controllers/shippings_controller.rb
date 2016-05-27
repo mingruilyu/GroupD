@@ -4,7 +4,15 @@ class ShippingsController < ApplicationController
   # GET /shippings
   # GET /shippings.json
   def index
-    @shippings = Shipping.all
+    channel = Channel.find_by_company_id_and_restaurant_id(
+      current_cart.restaurant_id, current_user.company_id)
+    if channel.nil? 
+      channel = Channel.create(
+        company_id:     current_user.company_id,
+        restaurant_id:  current_cart.restaurant_id
+      )
+    end
+    @shippings = Shipping.find_by_
   end
 
   # GET /shippings/1
