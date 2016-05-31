@@ -1,0 +1,18 @@
+<h1>New Order</h1>
+<% if @shippings.nil? %>
+  <p>There is currently no awaiting shipping.</p>
+<% else %>
+  <%= form_for @order, remote: true do |f| %>
+    <% count = 0 %>
+    <% @shippings.each do |shipping| %>
+      <%= f.radio_button :shipping_id, shipping.id.to_s, checked: count == 0 %>
+      <p>current user number: <%= shipping.user_count %></p>
+      <p>delivery price: <%= shipping.price %></p>
+      <p>estimated delivery time: <%= shipping.estimated_arrival_at.to_s %></p>
+      <% count += 1 %>
+    <% end %>
+    <%= f.submit "Place Order"%>
+  <% end %>
+<% end %>
+<%= link_to "Create new shipping to company", new_shipping_path %>
+

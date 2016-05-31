@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :drop_offs
+  resources :dropoffs
   resources :shippings
   resources :carts
   resources :dishes
@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   get 'merchants/:id' => 'merchants#show', as: :merchant
   resources :cart_items
+  resources :orders
 
   root      'welcome#index'
 

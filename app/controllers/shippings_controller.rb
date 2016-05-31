@@ -4,15 +4,6 @@ class ShippingsController < ApplicationController
   # GET /shippings
   # GET /shippings.json
   def index
-    channel = Channel.find_by_company_id_and_restaurant_id(
-      current_cart.restaurant_id, current_user.company_id)
-    if channel.nil? 
-      channel = Channel.create(
-        company_id:     current_user.company_id,
-        restaurant_id:  current_cart.restaurant_id
-      )
-    end
-    @shippings = Shipping.find_by_
   end
 
   # GET /shippings/1
@@ -23,6 +14,7 @@ class ShippingsController < ApplicationController
   # GET /shippings/new
   def new
     @shipping = Shipping.new
+    @shipping.price = 10
   end
 
   # GET /shippings/1/edit
@@ -33,16 +25,17 @@ class ShippingsController < ApplicationController
   # POST /shippings.json
   def create
     @shipping = Shipping.new(shipping_params)
-
-    respond_to do |format|
-      if @shipping.save
-        format.html { redirect_to @shipping, notice: 'Shipping was successfully created.' }
-        format.json { render :show, status: :created, location: @shipping }
-      else
-        format.html { render :new }
-        format.json { render json: @shipping.errors, status: :unprocessable_entity }
-      end
+    @dropoff = Dropoff.find_by_company_id_and_restaurant_id(current_user.company_id, current_cart.restaurant_id)
+    if @dropoff.nil?
+      @dropoff = Dropoff.create(
+        company_id:    current_user.company_id,
+        restaurant_id: current_cart.restaurant_id
+      )
     end
+    @shipping.dropoff_id = @dropoff.id
+    @shipping.save
+    @shipping.user_count = 1
+    redirect_to new_order_path
   end
 
   # PATCH/PUT /shippings/1
@@ -77,6 +70,6 @@ class ShippingsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shipping_params
-      params.fetch(:shipping, {})
+      params.require(:shipping).permit(:estimated_arrival_at)
     end
 end

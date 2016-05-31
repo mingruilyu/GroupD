@@ -1,4 +1,7 @@
 class CartsController < ApplicationController
+  def show
+    @cart = current_cart
+  end
 
   # PATCH/PUT /carts/1
   # PATCH/PUT /carts/1.json

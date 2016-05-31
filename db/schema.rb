@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160525070314) do
+ActiveRecord::Schema.define(version: 20160531004033) do
+
+  create_table "buildings", force: :cascade do |t|
+    t.string   "name",        limit: 255, default: "", null: false
+    t.integer  "location_id", limit: 4,                null: false
+    t.integer  "company_id",  limit: 4,                null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.integer  "user_count",  limit: 4,   default: 0,  null: false
+    t.integer  "city_id",     limit: 4,   default: 1,  null: false
+  end
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
@@ -54,6 +64,12 @@ ActiveRecord::Schema.define(version: 20160525070314) do
 
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
 
+  create_table "companies", force: :cascade do |t|
+    t.string   "name",       limit: 255, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "dishes", force: :cascade do |t|
     t.string   "name",          limit: 255,                           default: ""
     t.decimal  "price",                       precision: 8, scale: 2, default: 0.0
@@ -68,10 +84,18 @@ ActiveRecord::Schema.define(version: 20160525070314) do
   end
 
   create_table "dropoffs", force: :cascade do |t|
-    t.integer  "company_id",    limit: 4, null: false
+    t.integer  "building_id",   limit: 4, null: false
     t.integer  "restaurant_id", limit: 4, null: false
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.float    "coord_x",    limit: 24,  null: false
+    t.float    "coord_y",    limit: 24,  null: false
+    t.string   "address",    limit: 255, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "merchants", force: :cascade do |t|
@@ -95,10 +119,10 @@ ActiveRecord::Schema.define(version: 20160525070314) do
   add_index "merchants", ["reset_password_token"], name: "index_merchants_on_reset_password_token", unique: true, using: :btree
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "dropoff_id", limit: 4, null: false
-    t.integer  "cart_id",    limit: 4, null: false
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.integer  "shipping_id", limit: 4, null: false
+    t.integer  "cart_id",     limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "payments", force: :cascade do |t|
@@ -112,9 +136,6 @@ ActiveRecord::Schema.define(version: 20160525070314) do
   create_table "restaurants", force: :cascade do |t|
     t.integer  "merchant_id",     limit: 4,                  null: false
     t.string   "name",            limit: 255, default: "",   null: false
-    t.string   "address",         limit: 255, default: "",   null: false
-    t.float    "coord_x",         limit: 24
-    t.float    "coord_y",         limit: 24
     t.integer  "category_id",     limit: 4,   default: 0,    null: false
     t.integer  "open_at",         limit: 4,   default: 900,  null: false
     t.integer  "close_at",        limit: 4,   default: 2000, null: false
@@ -124,38 +145,39 @@ ActiveRecord::Schema.define(version: 20160525070314) do
     t.integer  "city_id",         limit: 4,   default: 1,    null: false
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.integer  "location_id",     limit: 4,                  null: false
   end
 
   create_table "shippings", force: :cascade do |t|
-    t.integer  "status",     limit: 1,  default: 0, null: false
-    t.float    "coord_x",    limit: 24
-    t.float    "coord_y",    limit: 24
-    t.float    "price",      limit: 24
-    t.integer  "dropoff_id", limit: 4
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-    t.integer  "user_count", limit: 4,  default: 0, null: false
+    t.integer  "status",               limit: 1,  default: 0,    null: false
+    t.float    "price",                limit: 24
+    t.integer  "dropoff_id",           limit: 4
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
+    t.integer  "user_count",           limit: 4,  default: 0,    null: false
+    t.datetime "estimated_arrival_at"
+    t.integer  "coordinate_id",        limit: 4,                 null: false
+    t.boolean  "public_visible",                  default: true, null: false
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "",  null: false
-    t.string   "encrypted_password",     limit: 255, default: "",  null: false
+    t.string   "email",                  limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,   null: false
+    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
-    t.float    "current_coord_x",        limit: 24,  default: 0.0
-    t.float    "current_coord_y",        limit: 24,  default: 0.0
-    t.integer  "city_id",                limit: 4,   default: 1,   null: false
-    t.integer  "cellphone_id",           limit: 4,   default: 0,   null: false
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.integer  "city_id",                limit: 4,   default: 1,  null: false
+    t.integer  "cellphone_id",           limit: 4,   default: 0,  null: false
     t.integer  "company_id",             limit: 4
     t.string   "username",               limit: 255, default: ""
+    t.integer  "coordinate_id",          limit: 4
   end
 
   add_index "users", ["cellphone_id"], name: "index_users_on_cellphone_id", using: :btree
