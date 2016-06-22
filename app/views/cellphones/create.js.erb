@@ -1,5 +1,5 @@
 <% if not @redirect %>
   $("#message").html("<%= escape_javascript(render 'layouts/messages').html_safe %>");
 <% else %>
-  window.location = "<%= new_registration_path %>"
+  window.location = "<%= new_account_registration_path %>"
 <% end %>

@@ -14,7 +14,15 @@ class ShippingsController < ApplicationController
   # GET /shippings/new
   def new
     @shipping = Shipping.new
-    @shipping.price = 10
+    restaurant = current_cart.restaurant
+    @shipping.price = Shipping.calculate_shipping_price(
+                        current_account.building.location,
+                        restaurant.location)
+
+    @closed = restaurant.closed_now?
+    respond_to do |format|
+      format.js {}
+    end
   end
 
   # GET /shippings/1/edit
@@ -24,18 +32,25 @@ class ShippingsController < ApplicationController
   # POST /shippings
   # POST /shippings.json
   def create
-    @shipping = Shipping.new(shipping_params)
-    @dropoff = Dropoff.find_by_company_id_and_restaurant_id(current_user.company_id, current_cart.restaurant_id)
+    @shipping = Shipping.new()
+    @dropoff = Dropoff.find_by_building_id_and_restaurant_id(
+      current_account.building_id, current_cart.restaurant_id)
     if @dropoff.nil?
       @dropoff = Dropoff.create(
-        company_id:    current_user.company_id,
-        restaurant_id: current_cart.restaurant_id
+        building_id:    current_account.building_id,
+        restaurant_id:  current_cart.restaurant_id
       )
     end
     @shipping.dropoff_id = @dropoff.id
+    @shipping.customer_count = 1
+    @shipping.set_delivery_time(shipping_params[:delivery_date].to_i,
+                                shipping_params[:delivery_time].to_i,
+                                shipping_params[:asap])
     @shipping.save
-    @shipping.user_count = 1
-    redirect_to new_order_path
+
+    respond_to do |format|
+      format.js {}
+    end
   end
 
   # PATCH/PUT /shippings/1
@@ -70,6 +85,7 @@ class ShippingsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shipping_params
-      params.require(:shipping).permit(:estimated_arrival_at)
+      params.require(:shipping).permit(:delivery_date, :delivery_time, :asap)
     end
+
 end

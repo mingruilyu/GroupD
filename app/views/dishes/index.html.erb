@@ -20,13 +20,14 @@
           <td><%= dish.price %></td>
           <td><%= dish.image_url %></td>
           <td><%= dish.desc %></td>
-          <td><%= link_to 'Show', dish %></td>
-          <td><%= link_to 'Edit', edit_dish_path(dish) %></td>
-          <td><%= link_to 'Destroy', dish, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to 'Show', restaurant_dish_path(@restaurant, dish) %></td>
+          <td><%= link_to 'Edit', edit_restaurant_dish_path(@restaurant, dish) %></td>
+          <td><%= link_to 'Destroy', restaurant_dish_path(@restaurant, dish), 
+                    method: :delete, data: { confirm: 'Are you sure?' } %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% end %>
-<%= link_to 'Add New Dish', new_dish_path %>
-<%= link_to 'Back to restaurant', merchant_path(current_merchant) %>
+<%= link_to 'Add New Dish', new_restaurant_dish_path(@restaurant) %>
+<%= link_to 'Back to restaurant', merchant_path(current_account) %>
