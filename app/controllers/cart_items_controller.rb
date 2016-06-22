@@ -28,7 +28,7 @@ class CartItemsController < ApplicationController
     
     @cart_item = CartItem.create(
       quantity:             params[:cart_item][:quantity],
-      user_id:              current_user.id,
+      account_id:           current_account.id,
       dish_id:              dish.id,
       cart_id:              cart.id,
       special_instruction:  params[:cart_item][:special_instruction]

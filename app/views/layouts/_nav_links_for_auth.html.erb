@@ -1,15 +1,8 @@
-<% if user_signed_in? %>
-  <li><%= link_to 'Edit account', edit_user_registration_path %></li>
-  <li><%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %></li>
-<% elsif merchant_signed_in? %>
-  <li><%= link_to 'Edit account', edit_merchant_registration_path %></li>
-  <li><%= link_to 'Sign out', destroy_merchant_session_path, :method=>'delete' %></li>
+<% if account_signed_in? %>
+  <li><%= link_to 'Edit account', edit_account_registration_path %></li>
+  <li><%= link_to 'Sign out', destroy_account_session_path, :method=>'delete' %></li>
 <% else %>
-  
-  <li><%= link_to 'Sign in as User', new_user_session_path %></li>
-  <li><%= link_to 'Sign in as Merchant', new_merchant_session_path %></li>
-  <li><%= link_to 'Sign up as User', 
-          new_cellphone_path(type: 'users') %></li>
-  <li><%= link_to 'Sign up as Merchant', 
-          new_cellphone_path(type: 'merchants') %></li>
+  <li><%= link_to 'Sign in', new_account_session_path %></li>
+  <li><%= link_to 'Sign up as User', new_cellphone_path(type: :Customer) %></li>
+  <li><%= link_to 'Sign up as Merchant', new_cellphone_path(type: :Merchant) %></li>
 <% end %>

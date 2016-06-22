@@ -1,4 +1,7 @@
-<%= form_for(@dish) do |f| %>
+<%= form_for @dish, url: restaurant_dishes_path do |f| %>
+  <div class="field">
+    <%= f.hidden_field :restaurant_id, value: @dish.restaurant_id %>
+  </div>
   <div class="field">
     <%= f.label :name %><br>
     <%= f.text_field :name %>
@@ -16,6 +19,7 @@
     <%= f.text_area :desc %>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <% puts @dish.restaurant_id.to_s %>
+    <%= f.submit "Create Dish" %>
   </div>
 <% end %>

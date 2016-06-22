@@ -1,6 +1,10 @@
-<% if user_signed_in? %>
-  <li><%= link_to 'Cart', cart_path(current_cart) %></li>
-  <li><%= link_to "#{current_cart.total_items}", cart_path(current_cart) %></li>
-<% elsif merchant_signed_in? %>
-  <li><%= link_to 'Create Dishes', new_dish_path %></li>
+<% if account_signed_in? and current_account.is_customer? %>
+  <li>
+    <%= link_to "#{current_cart.total_items}", cart_path(current_cart) %>
+  </li>
+  <% unless action_name == 'add_address' %>
+    <li>
+      <%= link_to "#{current_account.building.city_company_name}", '#' %>
+    </li>
+  <% end %>
 <% end %>

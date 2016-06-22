@@ -1,15 +1,15 @@
 module ApplicationHelper
  def time_array
     array = Array.new
-    (0..24).each do |hour|
-      array.push(["#{hour}:00", time_format(hour, false)])
-        .push(["#{hour}:30", time_format(hour)])
+    (0..23).each do |hour|
+      array.push(["#{hour}:00", time_format(hour)])
+        .push(["#{hour}:30", time_format(hour, half = true)])
     end
     return array
   end
 
-  def time_format(time, half = true)
-    time * 100 + (half ? 0 : 30)
+  def time_format(time, half = false)
+    time * 100 + (half ? 30 : 0)
   end
 
   def time_display(time)

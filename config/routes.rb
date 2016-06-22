@@ -1,17 +1,27 @@
 Rails.application.routes.draw do
+  resources :merchants
+  resources :customers do
+    member do
+      get 'add_address'
+      post 'update_address'
+    end
+  end
+  resources :cellphones
+  devise_for :accounts, controllers: { registrations: 'registrations' }
+
   resources :dropoffs
   resources :shippings
   resources :carts
-  resources :dishes
-  resources :restaurants
-  resources :cellphones, only: [:new, :create, :update, :edit]
-  
-  devise_for :merchants
-  devise_for :users
-
-  get 'merchants/:id' => 'merchants#show', as: :merchant
+  resources :restaurants do
+    resources :dishes
+    member do
+      get 'list_dishes' => 'restaurants#list_dishes', as: :list_dishes
+    end
+  end
+ 
   resources :cart_items
   resources :orders
+  resources :locations
 
   root      'welcome#index'
 

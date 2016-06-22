@@ -1,17 +1,29 @@
-<%= form_for(@restaurant) do |f| %>
-  <div class="field">
-    <%= f.label :name %><br />
-    <%= f.text_field :name, autofocus: true %>
-  </div>
-
+<%= form_for @location, remote: true do |f| %>
   <div class="field">
     <%= f.label :address %><br />
     <%= f.text_field :address, autofocus: true %>
   </div>
+  <div class="field">
+    <%= f.label :coord_x %><br />
+    <%= f.text_field :coord_x, autofocus: true %>
+  </div>
+  <div class="field">
+    <%= f.label :coord_y %><br />
+    <%= f.text_field :coord_y, autofocus: true %>
+  </div>
+  <div class="field">
+    <%= f.submit "Localize" %>
+  </div>
+<% end %>
+
+<%= form_for(@restaurant) do |f| %>
+  <div class="field">
+    <%= f.hidden_field :location_id %>
+  </div>
 
   <div class="field">
-    <%= f.label :city %><br />
-    <%= f.collection_select :city_id, City.all, :id, :name %>
+    <%= f.label :name %><br />
+    <%= f.text_field :name, autofocus: true %>
   </div>
 
   <div class="field">
@@ -20,13 +32,13 @@
   </div>
 
   <div class="field">
-    <%= f.label :category %><br />
-    <%= f.collection_select :category, Category.all, :id, :name %>
+    <%= f.label :close_time %><br />
+    <%= f.select :close_at, time_array %>
   </div>
 
   <div class="field">
-    <%= f.label :close_time %><br />
-    <%= f.select :close_at, time_array %>
+    <%= f.label :category %><br />
+    <%= f.collection_select :category_id, Category.all, :id, :name %>
   </div>
 
   <div class="field">
@@ -37,16 +49,6 @@
   <div class="field">
     <%= f.label :certificate_url %><br />
     <%= f.text_field :certificate_url, autofocus: true %>
-  </div>
-
-  <div class="field">
-    <%= f.label :coord_x %><br />
-    <%= f.text_field :coord_x, autofocus: true %>
-  </div>
-
-  <div class="field">
-    <%= f.label :coord_y %><br />
-    <%= f.text_field :coord_y, autofocus: true %>
   </div>
 
   <div class="field">

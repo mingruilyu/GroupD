@@ -1,0 +1,11 @@
+<%= form_tag shippings_path, remote: true do %>
+  <% count = 0 %>
+  <% @shippings.each do |shipping| %>
+    <%= radio_button_tag :shipping_id, shipping.id.to_s, checked: count == 0 %>
+    <p>current user number: <%= shipping.customer_count %></p>
+    <p>delivery price: <%= shipping.price %></p>
+    <p>estimated delivery time: <%= shipping.estimated_arrival_at.to_s %></p>
+    <% count += 1 %>
+  <% end %>
+  <%= submit_tag "Place Order"%>
+<% end %>

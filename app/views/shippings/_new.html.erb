@@ -1,0 +1,23 @@
+<%= form_for @shipping, remote: true do |f| %>
+  <p>shipping price: <%= @shipping.price %></p>
+  <div>
+    <% unless @closed %>
+      <%= f.radio_button :asap, true, checked: true %>
+      <%= f.label :asap %>
+    <% end %>
+  </div>
+  <div>
+    <% unless @closed %>
+      <%= f.radio_button :asap, true, checked: false %>
+      <%= f.label :schedule_delivery %><br />
+    <% end %>
+    <%= f.label :delivery_date %>
+    <%= f.select :delivery_date, date_array %>
+    <%= f.label :delivery_time %>
+    <%= f.select :delivery_time, time_array %>
+  </div>
+  <div>
+    <%= f.submit "Create"%>
+  </div>
+<% end %>
+ 

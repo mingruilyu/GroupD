@@ -2,10 +2,10 @@
 <% if @restaurant.nil? %>
   <p>You currently has not restaurant. Please add restaurant!<p>
   <%= link_to "Add Restaurant", controller: "restaurants", 
-    action: "new", id: current_merchant.id %>
+    action: "new", id: current_account.id %>
 <% else %> 
   <%= render @restaurant %>
+  <%= link_to "Manage Menus", restaurant_dishes_path(@restaurant) %>  
 <% end %>
-<%= link_to "Manage Menus", dishes_path %>  
 <h1>Pending transaction</h1>
 <h1>Revenue Summary</h1>
