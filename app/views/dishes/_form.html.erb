@@ -1,6 +1,7 @@
-<%= form_for @dish, url: restaurant_dishes_path do |f| %>
+<%= form_for @dish, url: restaurant_dishes_path(
+                          restaurant_id: @dish.restaurant_id) do |f| %>
   <div class="field">
-    <%= f.hidden_field :restaurant_id, value: @dish.restaurant_id %>
+    <%= f.hidden_field :type, value: @dish.type %>
   </div>
   <div class="field">
     <%= f.label :name %><br>

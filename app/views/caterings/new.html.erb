@@ -1,0 +1,24 @@
+<h1>Create New Catering</h1>
+<%= form_for @catering, url: restaurant_caterings_path, remote: true do |f| %>
+  <%= f.hidden_field :combo_id, value: @catering.combo_id %>
+  <div class="field">
+    <%= f.label :select_building %><br />
+    <%= f.collection_check_boxes :building_list, Building.all, :id, 
+          :city_company_name %>
+  </div>
+  <div class="field">
+    <%= f.label :delivery_date %><br />
+    <%= f.select :delivery_date, date_array %>
+  </div>
+  <div class="field">
+    <%= f.label :delivery_time %><br />
+    <%= f.select :delivery_time, time_array %>
+  </div>
+  <div class="field">
+    <%= f.label :available_until %><br />
+    <%= f.select :available_until, time_array %>
+  </div>
+  <div class="action">
+    <%= f.submit 'Create' %>
+  </div>
+<% end %>

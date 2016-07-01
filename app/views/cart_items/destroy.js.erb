@@ -1,1 +1,5 @@
-$('#show_cart').html("<%= escape_javascript(render @cart ).html_safe %>");
+<% if @combo_item_destroy %>
+  $('#show_cart').html("<%= escape_javascript(render @cart ).html_safe %>");
+<% else %>
+  window.location = "<%= root_path %>"
+<% end %>

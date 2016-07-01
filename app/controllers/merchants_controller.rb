@@ -10,7 +10,7 @@ class MerchantsController < ApplicationController
   # GET /merchants/1
   # GET /merchants/1.json
   def show
-    @restaurant = Restaurant.find_by_account_id(current_account.id)
+    @restaurants = Restaurant.where(account_id: current_account.id)
   end
 
   # GET /merchants/new

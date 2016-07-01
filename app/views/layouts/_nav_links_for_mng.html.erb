@@ -1,10 +1,11 @@
-<% if account_signed_in? and current_account.is_customer? %>
+<% if current_or_guest_account.is_customer? %>
   <li>
-    <%= link_to "#{current_cart.total_items}", cart_path(current_cart) %>
+  <%= link_to "#{current_dish_cart.total_items}",
+        cart_path(current_dish_cart) %>
   </li>
-  <% unless action_name == 'add_address' %>
+<% end %>
+<% unless action_name == 'add_address' %>
     <li>
-      <%= link_to "#{current_account.building.city_company_name}", '#' %>
+      <%= link_to "#{current_or_guest_account.building.city_company_name}", '#' %>
     </li>
-  <% end %>
 <% end %>

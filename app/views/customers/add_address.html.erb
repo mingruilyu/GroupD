@@ -1,10 +1,10 @@
 <h1>Select Company</h1>
-<%= form_tag update_address_customer_path(current_account), remote: true do %>
+<%= form_tag update_address_customer_path(current_or_guest_account), remote: true do %>
   <div class="field">
     <%= select_tag :building_id, options_from_collection_for_select(
                                   Building.all, :id, :city_company_name) %>
   </div>
   <div class="action">
-    <%= submit_tag "Select"%>
+    <%= submit_tag 'Select' %>
   </div>
 <% end %>

@@ -1,5 +1,5 @@
 $('#dish_placeholder').html(
-  "<%= escape_javascript(render @dish) %>");
+  "<%= escape_javascript(render 'dishes/dish', dish: @dish) %>");
 $('#cart_item_placeholder').html(
   "<%= escape_javascript(render 'form') %>");
 $('.modal').modal();

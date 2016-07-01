@@ -1,4 +1,6 @@
 <%= render "cart_items/modal" %>
 <% @restaurant.dishes.each do |dish| %>
   <%= render dish %>
+  <%= link_to 'Order', new_cart_cart_item_path(current_dish_cart, 
+        dish_id: dish.id), remote: true %>
 <% end %>

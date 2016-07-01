@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
+  get 'caterings/new'
+
   resources :merchants
   resources :customers do
+    resources :orders
     member do
       get 'add_address'
       post 'update_address'
@@ -11,16 +14,20 @@ Rails.application.routes.draw do
 
   resources :dropoffs
   resources :shippings
-  resources :carts
+  resources :carts do
+    resources :cart_items
+    member do
+      get 'combo_summary'
+    end
+  end
   resources :restaurants do
     resources :dishes
+    resources :caterings
     member do
       get 'list_dishes' => 'restaurants#list_dishes', as: :list_dishes
     end
   end
  
-  resources :cart_items
-  resources :orders
   resources :locations
 
   root      'welcome#index'

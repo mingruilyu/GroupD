@@ -4,7 +4,7 @@ class DishesController < ApplicationController
   # GET /dishes
   # GET /dishes.json
   def index
-    @dishes = Dish.where(restaurant_id: params[:restaurant_id])
+    @dishes = Dish.where(restaurant_id: params[:restaurant_id], type: 'Dish')
     @restaurant = Restaurant.find(params[:restaurant_id])
   end
 
@@ -15,7 +15,7 @@ class DishesController < ApplicationController
 
   # GET /dishes/new
   def new
-    @dish = Dish.new
+    @dish = params[:combo] ? Combo.new : Dish.new
     @dish.restaurant_id = params[:restaurant_id]
   end
 
@@ -26,14 +26,22 @@ class DishesController < ApplicationController
   # POST /dishes
   # POST /dishes.json
   def create
-    @dish = Dish.new(dish_params)
-    @dish.restaurant_id = dish_params[:restaurant_id]
+    @dish = params[:dish] ? Dish.new(dish_params) 
+              : Combo.new(combo_params)
+    @dish.restaurant_id = params[:restaurant_id]
     respond_to do |format|
       if @dish.save
         format.html { 
-          flash[:notice] = I18n.t('dish.notice.DISH_CREATED',
-                                name: @dish.name)
-          redirect_to  
+          if @dish.instance_of? Combo
+            redirect_to new_restaurant_catering_path(
+              restaurant_id: params[:restaurant_id],
+              dish_id: @dish.id) 
+          else
+            flash[:notice] = I18n.t('dish.notice.DISH_CREATED',
+                                    name: @dish.name)
+            redirect_to restaurant_dishes_path(
+              restaurant_id: params[:restaurant_id])  
+          end
         }
         format.json { render :show, status: :created, location: @dish }
       else
@@ -62,7 +70,7 @@ class DishesController < ApplicationController
   def destroy
     @dish.destroy
     respond_to do |format|
-      format.html { redirect_to dishes_url, notice: 'Dish was successfully destroyed.' }
+      format.html { redirect_to restaurant_dishes_path, notice: 'Dish was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -75,7 +83,11 @@ class DishesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def dish_params
-      params.require(:dish).permit(:name, :price, :image_url, :desc, 
-                                   :count, :merchant_id, :restaurant_id)
+      dparams = params.require(:dish).permit(:name, :price, :image_url, :desc)
+      dparams.store(:type, 'Dish')
+      return dparams
+    end
+    def combo_params
+      params.require(:combo).permit(:name, :price, :image_url, :desc)
     end
 end

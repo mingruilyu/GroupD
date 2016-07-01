@@ -1,3 +1,7 @@
-$("#message").html("<%= escape_javascript(render 'layouts/messages').html_safe %>");
-$modal = $('.modal').modal("hide")
-// do something to update item quantity in cart at the nav bar
+<% if @dish.is_dish? %>
+  $("#message").html("<%= escape_javascript(render 'layouts/messages').html_safe %>");
+  $modal = $('.modal').modal("hide")
+<% else %>
+  window.location = "<%= combo_summary_cart_path(current_combo_cart) %>"
+<% end %>
+// Todo do something to update item quantity in cart at the nav bar

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160621031200) do
+ActiveRecord::Schema.define(version: 20160626224815) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -71,6 +71,13 @@ ActiveRecord::Schema.define(version: 20160621031200) do
     t.datetime "updated_at",             null: false
   end
 
+  create_table "caterings", force: :cascade do |t|
+    t.integer  "shipping_id", limit: 4, null: false
+    t.integer  "combo_id",    limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
   create_table "cellphones", force: :cascade do |t|
     t.string   "number",               limit: 20, default: "", null: false
     t.datetime "confirmed_at"
@@ -101,8 +108,8 @@ ActiveRecord::Schema.define(version: 20160621031200) do
     t.integer  "restaurant_id", limit: 4,                             default: 0
     t.datetime "created_at",                                                          null: false
     t.datetime "updated_at",                                                          null: false
-    t.boolean  "is_combo",                                            default: false, null: false
     t.boolean  "sold_out",                                            default: false, null: false
+    t.string   "type",          limit: 255
   end
 
   create_table "dropoffs", force: :cascade do |t|
@@ -160,6 +167,7 @@ ActiveRecord::Schema.define(version: 20160621031200) do
     t.datetime "estimated_arrival_at"
     t.integer  "coordinate_id",        limit: 4
     t.boolean  "public_visible",                  default: true, null: false
+    t.datetime "available_until",                                null: false
   end
 
 end

@@ -10,7 +10,7 @@
         <% else %>
           <li><%= cart_item.dish.name %> &times; <%= cart_item.quantity %></li>
         <% end %>
-        <%= link_to 'X', cart_item_path(cart_item), method: 'delete', 
+        <%= link_to 'X', cart_cart_item_path(@cart, cart_item), method: 'delete', 
           remote: true %>
       <% end %>
     </ol>

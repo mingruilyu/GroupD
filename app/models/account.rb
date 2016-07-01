@@ -1,6 +1,10 @@
 class Account < ActiveRecord::Base
+
   ACCOUNT_TYPE_CUSTOMER = 'Customer'
   ACCOUNT_TYPE_MERCHANT = 'Merchant'
+  GUEST_CELLPHONE_ID    = 0
+  GUEST_USERNAME        = 'guest'
+
   belongs_to :cellphone
   
   # Include default devise modules. Others available are:
@@ -25,6 +29,10 @@ class Account < ActiveRecord::Base
 
   def is_merchant?
       type == Account::ACCOUNT_TYPE_MERCHANT
+  end
+
+  def self.guest_email
+    "guest_#{Time.now.to_i}#{rand(100)}@dpool.com"
   end
 
   # methods override database_authenticable

@@ -14,7 +14,7 @@ class ShippingsController < ApplicationController
   # GET /shippings/new
   def new
     @shipping = Shipping.new
-    restaurant = current_cart.restaurant
+    restaurant = current_dish_cart.restaurant
     @shipping.price = Shipping.calculate_shipping_price(
                         current_account.building.location,
                         restaurant.location)
@@ -34,11 +34,11 @@ class ShippingsController < ApplicationController
   def create
     @shipping = Shipping.new()
     @dropoff = Dropoff.find_by_building_id_and_restaurant_id(
-      current_account.building_id, current_cart.restaurant_id)
+      current_account.building_id, current_dish_cart.restaurant_id)
     if @dropoff.nil?
       @dropoff = Dropoff.create(
         building_id:    current_account.building_id,
-        restaurant_id:  current_cart.restaurant_id
+        restaurant_id:  current_dish_cart.restaurant_id
       )
     end
     @shipping.dropoff_id = @dropoff.id

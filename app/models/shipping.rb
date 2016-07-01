@@ -12,6 +12,12 @@ class Shipping < ActiveRecord::Base
   SHIPPING_PICKING_UP = 3
   SHIPPING_DONE       = 4
 
+  scope :active, -> { where(status: SHIPPING_WAITING) }
+  scope :by_restaurant, ->(restaurant_id) \
+    { joins(:dropoff).merge(Dropoff.by_restaurant(restaurant_id)) }
+  scope :active_by_restaurant, ->(restaurant_id) \
+    { joins(:dropoff).merge(Dropoff.by_restaurant(restaurant_id)).active }
+
   def self.calculate_shipping_price(des_location, src_location)
     10
   end
@@ -25,5 +31,12 @@ class Shipping < ActiveRecord::Base
                                     hour: time_int / 100,
                                     min: time_int % 100)
     end
+  end
+
+  def set_deadline(date, time_int)
+    self.available_until = DateTime.now.beginning_of_day.change(
+                                    day: date,
+                                    hour: time_int / 100, 
+                                    min: time_int % 100)
   end
 end

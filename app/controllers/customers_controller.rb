@@ -44,7 +44,7 @@ class CustomersController < ApplicationController
 
   def update_address
     respond_to do |format|
-      if current_account.update_attribute(:building_id, params[:building_id])
+      if current_or_guest_account.update_attribute(:building_id, params[:building_id])
         format.js { }
       end
     end

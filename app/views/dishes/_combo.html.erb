@@ -14,3 +14,6 @@
   <strong> description: </strong>
   <%= dish.desc %>
 </p>
+
+<%= link_to 'Order', new_cart_cart_item_path(current_cart, dish_id: dish.id), remote: true %>
+<br /><br />
