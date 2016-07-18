@@ -43,13 +43,17 @@ class ShippingsController < ApplicationController
     end
     @shipping.dropoff_id = @dropoff.id
     @shipping.customer_count = 1
+    @shipping.restaurant_id = @dropoff.restaurant_id
     @shipping.set_delivery_time(shipping_params[:delivery_date].to_i,
                                 shipping_params[:delivery_time].to_i,
                                 shipping_params[:asap])
-    @shipping.save
-
-    respond_to do |format|
-      format.js {}
+    @shipping.set_deadline(shipping_params[:delivery_date].to_i,
+                          shipping_params[:delivery_time].to_i - 
+                            Shipping::SHIPPING_DEADLINE_BUFFER_TIME)
+    if @shipping.save
+      respond_to do |format|
+        format.js {}
+      end
     end
   end
 

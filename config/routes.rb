@@ -4,18 +4,23 @@ Rails.application.routes.draw do
   resources :merchants
   resources :customers do
     resources :orders
+    resources :payments
     member do
       get 'add_address'
       post 'update_address'
     end
   end
   resources :cellphones
-  devise_for :accounts, controllers: { registrations: 'registrations' }
+  devise_for :accounts, controllers: { 
+    registrations:  'registrations',
+    sessions:       'sessions'
+  }
 
   resources :dropoffs
   resources :shippings
   resources :carts do
-    resources :cart_items
+    resources :dish_cart_items
+    resources :combo_cart_items
     member do
       get 'combo_summary'
     end

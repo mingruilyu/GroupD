@@ -1,0 +1,14 @@
+<%= form_for @payment, url: customer_payments_path(current_account), 
+  remote: true do |f| %>
+  <div class="field">
+    <%= f.label :payment_type %>
+    <%= f.select :payment_type, Payment.type_options %>
+  </div>
+  <div class="field">
+    <%= f.label :cart_number %>
+    <%= f.text_field :method %>
+  </div>
+  <div class="action">
+    <%= f.submit 'Add Payment' %>
+  </div>
+<% end %>

@@ -1,0 +1,8 @@
+<% if @success %>
+  $('#message').html('<%= escape_javascript(
+    render 'layouts/messages').html_safe %>');
+  $('#order_payment_id').html('<%= escape_javascript(
+    options_from_collection_for_select(@payments, :id, :type_method)) %>');
+  $('#payment_modal').modal('hide');
+<% else %>
+<% end %>

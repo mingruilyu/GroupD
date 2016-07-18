@@ -1,4 +1,5 @@
 class Order < ActiveRecord::Base
-  has_one :shipping
-  has_one :cart
+  belongs_to :shipping
+  belongs_to :cart
+  belongs_to :payment
 end

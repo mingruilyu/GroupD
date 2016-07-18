@@ -1,5 +1,11 @@
 <%= form_for @cart_item, url: cart_cart_items_path, remote: true do |f| %>
-  <%= f.hidden_field :dish_id, value: @dish.id %>
+
+  <% if @catering.present? %>
+    <%= f.hidden_field :catering_id, value: @catering.id %>
+  <% else %>
+    <%= f.hidden_field :dish_id, value: @dish.id %>
+  <% end %>
+
   <div class="field">
     <%= f.label :quantity %>
     <%= f.select(:quantity, [['1', 1], ['2', 2], ['3', 3]]) %>
@@ -11,7 +17,6 @@
   <div class="actions">
     <% if @confirmation_required.present? %>
       <%= f.submit 'Add to Cart', data: { 
-        dish_id: @dish.id,
         confirm: I18n.t('cart.notice.MENU_CHANGED') }%>
     <% else %>
       <%= f.submit 'Add to Cart' %>

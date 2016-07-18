@@ -13,9 +13,7 @@ class CateringsController < ApplicationController
 
     success = []
     fail = []
-
-    # Todo check if there is another shipping to the same building recently 
-    # scheduled.
+    warning = []
     
     # Todo check if deadline is at least half an hour before delivery_time.
 
@@ -27,10 +25,31 @@ class CateringsController < ApplicationController
           dropoff = Dropoff.create(building_id: building, 
                                    restaurant_id: params[:restaurant_id])
         end
-        shipping = Shipping.new(dropoff_id: dropoff.id)
+
+        # We assume that if there are multiple catering to the same building
+        # on the same day, they should merge into one shipping. However, if either
+        # the delivery time or the deadline chosen by the merchant is different
+        # from the existing active shipping to the same building, we should let
+        # the merchant know by a warning.
+        shipping = Shipping.new(dropoff_id: dropoff.id,
+          restaurant_id: params[:restaurant_id])    
         shipping.set_delivery_time delivery_date, delivery_time, false
         shipping.set_deadline(delivery_date, deadline)
-        unless shipping.save && Catering.create(shipping_id: shipping.id, 
+        active_shipping = Shipping.find_by_dropoff_id_and_status(
+                            dropoff.id, Shipping::SHIPPING_WAITING)
+        if active_shipping.present? && shipping.same_date?(active_shipping)
+          unless shipping.same_time?(active_shipping)
+            # Todo I18n warning and display in alert
+            warning.append(building)
+          end
+          shipping = active_shipping
+        else
+          unless shipping.save
+            fail.append(building)
+          end
+        end
+        
+        unless Catering.create(shipping_id: shipping.id, 
                           combo_id: catering_params[:combo_id])
           fail.append(building)
         else
@@ -38,16 +57,24 @@ class CateringsController < ApplicationController
         end
       end
     end
+
     @alert_msg = "Successful creating shipping for building: "
     success.each do |building|
-      @alert_msg << Building.find(building).name << '\t'
+      @alert_msg << Building.find(building).city_company_name << '\t'
     end
     unless fail.blank?
       @alert_msg << "Fail to create shipping for building: "
       fail.each do |building|
-        @alert_msg << Building.find(building).name << '\t'
+        @alert_msg << Building.find(building).city_company_name << '\t'
       end
     end
+    unless warning.blank?
+      @alert_msg << "Automatic shipping merge for building: "
+      warning.each do |building|
+        @alert_msg << Building.find(building).city_company_name << '\t'
+      end
+    end
+
     respond_to :js
   end
 

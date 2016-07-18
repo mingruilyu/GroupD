@@ -1,11 +1,8 @@
-<%= render 'shippings/modal' %>
 <h1>New Order</h1>
 <% if @shippings.nil? %>
   <p>There is currently no awaiting shipping.</p>
 <% else %>
-  <div id="shipping_list">
-    <%= render 'form' %> 
-  </div>
+  <%= render 'shippings/list' %> 
 <% end %>
-<%= link_to "Create new shipping to company", new_shipping_path, remote: true %>
-
+<br /><br />
+<%= render 'form' %>

@@ -1,11 +1,22 @@
-<%= form_tag shippings_path, remote: true do %>
-  <% count = 0 %>
-  <% @shippings.each do |shipping| %>
-    <%= radio_button_tag :shipping_id, shipping.id.to_s, checked: count == 0 %>
-    <p>current user number: <%= shipping.customer_count %></p>
-    <p>delivery price: <%= shipping.price %></p>
-    <p>estimated delivery time: <%= shipping.estimated_arrival_at.to_s %></p>
-    <% count += 1 %>
-  <% end %>
-  <%= submit_tag "Place Order"%>
+<%= render 'payments/modal' %>
+<%= form_for @order, url: customer_orders_path(current_account),
+  remote: true do |f| %>
+  <div class="field">
+    <%= f.hidden_field :shipping_id, value: @order.shipping_id %>
+  </div>
+  <div class="field">
+    <%= f.hidden_field :cart_id, value: @order.cart_id %>
+  </div>
+  <div class="field">
+    <%= f.hidden_field :total_price, value: @total_price %>
+  </div>
+  <div class="field">
+    <%= f.label :payment %>
+    <%= f.collection_select :payment_id, @payments, :id, :type_method %><br />
+    <%= link_to 'Add Payment', new_customer_payment_path(current_account), 
+      remote: true %>
+  </div>
+  <div class="action">
+    <%= f.submit 'Place Order' %>
+  </div>
 <% end %>

@@ -53,3 +53,13 @@ en:
         empty you current cart. Do you want to do that?'
       DISH_ADDED:
         'The %{name} was successfully added to cart!'
+
+  payment:
+    notice:
+      PAYMENT_CREATED:
+        'New payment was successfully created!'
+
+  order:
+    error:
+      COMBO_OBSOLETE:
+        'The combo is obsolete. Please select new combo!'

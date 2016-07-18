@@ -1,6 +1,7 @@
 class Shipping < ActiveRecord::Base
   belongs_to :coordinate
   belongs_to :dropoff
+  belongs_to :restaurant
 
   attr_accessor :delivery_date
   attr_accessor :delivery_time
@@ -12,6 +13,8 @@ class Shipping < ActiveRecord::Base
   SHIPPING_PICKING_UP = 3
   SHIPPING_DONE       = 4
 
+  SHIPPING_DEADLINE_BUFFER_TIME = 100
+
   scope :active, -> { where(status: SHIPPING_WAITING) }
   scope :by_restaurant, ->(restaurant_id) \
     { joins(:dropoff).merge(Dropoff.by_restaurant(restaurant_id)) }
@@ -20,6 +23,15 @@ class Shipping < ActiveRecord::Base
 
   def self.calculate_shipping_price(des_location, src_location)
     10
+  end
+
+  def same_time?(another_shipping)
+    self.estimated_arrival_at == another_shiping.estimated_arrival_at
+  end
+
+  def same_date?(another_shipping)
+    self.estimated_arrival_at.to_date == 
+      another_shipping.estimated_arrival_at.to_date
   end
 
   def set_delivery_time(date, time_int, asap)
@@ -38,5 +50,9 @@ class Shipping < ActiveRecord::Base
                                     day: date,
                                     hour: time_int / 100, 
                                     min: time_int % 100)
+  end
+
+  def active?
+    self.status == SHIPPING_WAITING
   end
 end

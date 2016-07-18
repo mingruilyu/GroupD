@@ -15,4 +15,16 @@ module ApplicationHelper
   def time_display(time)
     "#{time / 100}:#{time % 100}"
   end
+
+  def resource
+    @resource ||= Account.new
+  end
+
+  def resource_name
+    :account
+  end
+
+  def devise_mapping
+    @devise_mapping ||= Devise.mappings[:account]
+  end
 end

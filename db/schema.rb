@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160626224815) do
+ActiveRecord::Schema.define(version: 20160715065617) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -50,18 +50,18 @@ ActiveRecord::Schema.define(version: 20160626224815) do
     t.integer  "quantity",            limit: 4,     default: 1, null: false
     t.integer  "account_id",          limit: 4,                 null: false
     t.integer  "cart_id",             limit: 4,                 null: false
-    t.integer  "dish_id",             limit: 4,                 null: false
+    t.integer  "dish_id",             limit: 4
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.text     "special_instruction", limit: 65535
+    t.integer  "catering_id",         limit: 4
   end
 
   create_table "carts", force: :cascade do |t|
     t.integer  "restaurant_id", limit: 4
-    t.integer  "status",        limit: 1, default: 0, null: false
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.integer  "account_id",    limit: 4,             null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.integer  "account_id",    limit: 4, null: false
     t.integer  "shipping_id",   limit: 4
   end
 
@@ -72,10 +72,11 @@ ActiveRecord::Schema.define(version: 20160626224815) do
   end
 
   create_table "caterings", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4, null: false
-    t.integer  "combo_id",    limit: 4, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "shipping_id", limit: 4,             null: false
+    t.integer  "combo_id",    limit: 4,             null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.integer  "count",       limit: 4, default: 0, null: false
   end
 
   create_table "cellphones", force: :cascade do |t|
@@ -97,6 +98,14 @@ ActiveRecord::Schema.define(version: 20160626224815) do
     t.string   "name",       limit: 255, null: false
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "debts", force: :cascade do |t|
+    t.integer  "debtor_id",  limit: 4,                null: false
+    t.integer  "loaner_id",  limit: 4,                null: false
+    t.float    "amount",     limit: 24, default: 0.0, null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "dishes", force: :cascade do |t|
@@ -128,18 +137,20 @@ ActiveRecord::Schema.define(version: 20160626224815) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4, null: false
-    t.integer  "cart_id",     limit: 4, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "shipping_id", limit: 4,                null: false
+    t.integer  "cart_id",     limit: 4,                null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.integer  "payment_id",  limit: 4,                null: false
+    t.float    "total_price", limit: 24, default: 0.0, null: false
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer  "merchant_id", limit: 4,                null: false
-    t.integer  "type",        limit: 1,   default: 0,  null: false
-    t.string   "method",      limit: 255, default: "", null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.integer  "customer_id",  limit: 4,                 null: false
+    t.string   "payment_type", limit: 255, default: "0", null: false
+    t.string   "method",       limit: 255, default: "",  null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
   end
 
   create_table "restaurants", force: :cascade do |t|
@@ -168,6 +179,15 @@ ActiveRecord::Schema.define(version: 20160626224815) do
     t.integer  "coordinate_id",        limit: 4
     t.boolean  "public_visible",                  default: true, null: false
     t.datetime "available_until",                                null: false
+    t.integer  "restaurant_id",        limit: 4
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.integer  "sender_id",   limit: 4,                null: false
+    t.integer  "receiver_id", limit: 4,                null: false
+    t.float    "amount",      limit: 24, default: 0.0, null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
 end

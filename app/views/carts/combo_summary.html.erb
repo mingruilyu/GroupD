@@ -1,0 +1,9 @@
+<h1>List Combo Order Summary</h1>
+<% @cart.cart_items.each do |item| %>
+  <p><%= item.catering.combo.name %> X <%= item.quantity %></p> 
+  <p>Delivery time: <%= item.catering.shipping.estimated_arrival_at %></p> 
+  <p>Price: <%= item.catering.combo.price %></p><br /> 
+  <% @total_price += item.catering.combo.price * item.quantity %>
+<% end %>
+<p>Total price: <%= @total_price %></p>
+<%= render 'orders/form' %>

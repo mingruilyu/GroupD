@@ -1,10 +1,15 @@
-<% if current_or_guest_account.is_customer? %>
+<% if not devise_controller? && current_or_guest_account.is_customer? %>
   <li>
-  <%= link_to "#{current_dish_cart.total_items}",
+  <%= link_to "dish cart:#{current_dish_cart.total_items}",
         cart_path(current_dish_cart) %>
   </li>
+  <li>
+  <%= link_to "combo:#{current_combo_cart.total_items}",
+        combo_summary_cart_path(current_combo_cart) %>
+  </li>
 <% end %>
-<% unless action_name == 'add_address' %>
+<% unless devise_controller? || action_name == 'add_address' || 
+     current_or_guest_account.is_merchant? %>
     <li>
       <%= link_to "#{current_or_guest_account.building.city_company_name}", '#' %>
     </li>

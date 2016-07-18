@@ -1,0 +1,28 @@
+<script>
+  function select_shipping() {
+    radios = $(':radio');
+    for(var i = 0; i < radios.length; i ++) {
+      if(radios[i].checked) {
+        $('#order_shipping_id').val(radios[i].value);
+        $('#shipping_selection').hide();
+        alert("Shipping selected: " + radios[i].value);
+        break;
+      }
+    }
+  }
+</script>
+<%= render 'shippings/modal' %>
+<div id="shipping_selection">
+  <% count = 0 %>
+  <% @shippings.each do |shipping| %>
+    <%= radio_button_tag :shipping_id, shipping.id.to_s, checked: count == 0 %>
+    <p>current user number: <%= shipping.customer_count %></p>
+    <p>delivery price: <%= shipping.price %></p>
+    <p>estimated delivery time: <%= shipping.estimated_arrival_at.to_s %></p>
+    <% count += 1 %>
+  <% end %>
+  <% unless @shippings.blank? %>
+    <%= button_tag 'Select Shipping', onclick: 'select_shipping()' %>
+  <% end %>
+</div>
+<%= link_to "Create new shipping to company", new_shipping_path, remote: true %>
