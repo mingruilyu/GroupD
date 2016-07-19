@@ -1,6 +1,7 @@
 class CartsController < ApplicationController
   def show
-    @cart = current_dish_cart
+    @dish_cart = current_dish_cart
+    @combo_cart = current_combo_cart
   end
 
   def combo_summary

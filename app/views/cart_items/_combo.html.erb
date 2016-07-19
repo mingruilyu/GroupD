@@ -1,0 +1,19 @@
+<%= form_for @cart_item, url: cart_combo_cart_items_path, remote: true do |f| %>
+  <%= f.hidden_field :catering_id, value: @catering.id %>
+  <div class="field">
+    <%= f.label :quantity %>
+    <%= f.select(:quantity, [['1', 1], ['2', 2], ['3', 3]]) %>
+  </div>
+  <div class="field">        
+    <%= f.label :special_instruction %>
+    <%= f.text_area :special_instruction %>
+  </div>
+  <div class="actions">
+    <% if @confirmation_required.present? %>
+      <%= f.submit 'Add to Cart', data: { 
+        confirm: I18n.t('cart.notice.MENU_CHANGED') }%>
+    <% else %>
+      <%= f.submit 'Add to Cart' %>
+    <% end %>
+  </div>
+<% end %>

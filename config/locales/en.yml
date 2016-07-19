@@ -53,6 +53,21 @@ en:
         empty you current cart. Do you want to do that?'
       DISH_ADDED:
         'The %{name} was successfully added to cart!'
+      DISH_DELETED:
+        'The %{name} was successfully removed from cart!'
+      COMBO_ADDED:
+        'The combo was successfully added to cart!'
+      COMBO_DELETED:
+        'The combo was successfully removed from cart!'
+    error:
+      DISH_DELETE_FAIL:
+        'Fail to remove %{name}!'
+      DISH_ADD_FAIL:
+        'Fail to add the %{name}!'
+      COMBO_DELETE_FAIL:
+        'Fail to remove the combo!'
+      COMBO_ADD_FAIL:
+        'Fail to add the combo!'
 
   payment:
     notice:

@@ -1,10 +1,5 @@
-<%= form_for @cart_item, url: cart_cart_items_path, remote: true do |f| %>
-
-  <% if @catering.present? %>
-    <%= f.hidden_field :catering_id, value: @catering.id %>
-  <% else %>
-    <%= f.hidden_field :dish_id, value: @dish.id %>
-  <% end %>
+<%= form_for @cart_item, url: cart_dish_cart_items_path, remote: true do |f| %>
+  <%= f.hidden_field :dish_id, value: @dish.id %>
 
   <div class="field">
     <%= f.label :quantity %>

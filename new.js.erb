@@ -2,11 +2,11 @@
   $('#dish_placeholder').html(
     "<%= escape_javascript(render 'dishes/dish', dish: @dish) %>");
   $('#cart_item_placeholder').html(
-    "<%= escape_javascript(render 'cart_items/dish') %>");
+    "<%= escape_javascript(render 'dish') %>");
 <% else %>
   $('#dish_placeholder').html(
     "<%= escape_javascript(render 'dishes/combo', combo: @catering.combo) %>");
   $('#cart_item_placeholder').html(
-    "<%= escape_javascript(render 'cart_items/combo') %>");
+    "<%= escape_javascript(render 'combo') %>");
 <% end %>
 $('#cartitem_modal').modal();
