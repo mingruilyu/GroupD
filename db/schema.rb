@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160715065617) do
+ActiveRecord::Schema.define(version: 20160725025102) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -48,7 +48,6 @@ ActiveRecord::Schema.define(version: 20160715065617) do
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
-    t.integer  "account_id",          limit: 4,                 null: false
     t.integer  "cart_id",             limit: 4,                 null: false
     t.integer  "dish_id",             limit: 4
     t.datetime "created_at",                                    null: false
@@ -59,10 +58,11 @@ ActiveRecord::Schema.define(version: 20160715065617) do
 
   create_table "carts", force: :cascade do |t|
     t.integer  "restaurant_id", limit: 4
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.integer  "account_id",    limit: 4, null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "account_id",    limit: 4,                 null: false
     t.integer  "shipping_id",   limit: 4
+    t.boolean  "status",                  default: false, null: false
   end
 
   create_table "categories", force: :cascade do |t|
@@ -171,7 +171,7 @@ ActiveRecord::Schema.define(version: 20160715065617) do
   create_table "shippings", force: :cascade do |t|
     t.integer  "status",               limit: 1,  default: 0,    null: false
     t.float    "price",                limit: 24
-    t.integer  "dropoff_id",           limit: 4
+    t.integer  "building_id",          limit: 4
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
     t.integer  "customer_count",       limit: 4,  default: 0,    null: false

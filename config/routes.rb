@@ -1,7 +1,14 @@
 Rails.application.routes.draw do
-  get 'caterings/new'
+
+  root      'welcome#index'
+
+  devise_for :accounts, controllers: { 
+    registrations:  'registrations',
+    sessions:       'sessions'
+  }
 
   resources :merchants
+
   resources :customers do
     resources :orders
     resources :payments
@@ -10,14 +17,14 @@ Rails.application.routes.draw do
       post 'update_address'
     end
   end
-  resources :cellphones
-  devise_for :accounts, controllers: { 
-    registrations:  'registrations',
-    sessions:       'sessions'
-  }
 
-  resources :dropoffs
-  resources :shippings
+  resources :cellphones
+
+  scope 'dropoffs/:dropoff_id' do
+    resources :shippings, only: [:index, :new, :create]
+  end
+  resources :shippings, only: [:show]
+
   resources :carts do
     resources :dish_cart_items
     resources :combo_cart_items
@@ -25,6 +32,7 @@ Rails.application.routes.draw do
       get 'combo_summary'
     end
   end
+
   resources :restaurants do
     resources :dishes
     resources :caterings
@@ -34,8 +42,6 @@ Rails.application.routes.draw do
   end
  
   resources :locations
-
-  root      'welcome#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

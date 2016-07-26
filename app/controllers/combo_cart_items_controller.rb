@@ -3,12 +3,17 @@ class ComboCartItemsController < ApplicationController
 
     @cart_item = CartItem.new
     @catering = Catering.find(params[:catering_id])
-    # check whether dish to order is from the same restaurant out of
-    # which the cart in session by adding first dish to the it.
-    if current_combo_cart.restaurant_id != 
-      @catering.combo.restaurant_id || 
-      current_combo_cart.shipping_id != @catering.shipping_id
-      @confirmation_required = true
+    if current_cart.restaurant_id != @catering.combo.restaurant_id 
+      # check whether combo to order is from the same restaurant.
+      # if not, we will have to clear all items in the cart.
+      @clear_all_confirmation = true
+    elsif current_cart.shipping_id.present? && 
+      current_cart.shipping_id != @catering.shipping_id
+      # check whether combo shares the same shipping with ones that
+      # are already in the cart. if not, we will have to clear all
+      # combo items in the cart. dish items are retained because 
+      # shipping for dises are binding at the checkout.
+      @clear_combo_confirmation = true
     end
     respond_to do |format|
       format.js { render 'cart_items/new' }
@@ -17,25 +22,28 @@ class ComboCartItemsController < ApplicationController
 
   def create
 
-    @catering = Catering.find(params[:cart_item][:catering_id])
-    cart = current_combo_cart
+    catering = Catering.find(params[:cart_item][:catering_id])
+    cart = current_cart
 
-    if cart.restaurant_id != @catering.combo.restaurant_id || 
-      cart.shipping_id != @catering.shipping_id
-        cart.cart_items.each do |cart_item|
-          cart_item.destroy
-        end
-        cart.update_attributes(
-          restaurant_id:  @catering.combo.restaurant_id, 
-          shipping_id:    @catering.shipping_id)
+    if cart.restaurant_id != catering.combo.restaurant_id  
+      unless cart.restaurant_id.nil?
+        cart.clear_all
+      end
+      cart.update_attributes(
+        restaurant_id:  catering.combo.restaurant_id, 
+        shipping_id:    catering.shipping_id)
+    elsif cart.shipping_id != catering.shipping_id
+      unless cart.shipping_id.nil?
+        cart.clear_combo
+      end
+      cart.update_attributes(shipping_id: catering.shipping_id)
     end
 
     cart_item = CartItem.create(
       quantity:             params[:cart_item][:quantity],
-      account_id:           current_or_guest_account.id,
       cart_id:              cart.id,
-      special_instruction:  params[:cart_item][:special_instruction],
-      catering_id:          @catering.id
+      catering_id:          catering.id,
+      special_instruction:  params[:cart_item][:special_instruction]
     )
 
     if cart_item.save
@@ -51,7 +59,7 @@ class ComboCartItemsController < ApplicationController
 
   def destroy
     cart_item = CartItem.find(params[:id])
-    @cart = current_combo_cart
+    @cart = current_cart
 
     if cart_item.destroy
       flash.now[:notice] = I18n.t('cart.notice.COMBO_DELETED')

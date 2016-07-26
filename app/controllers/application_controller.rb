@@ -7,8 +7,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :check_address_configuration, unless: :devise_controller?
 
-  helper_method :current_dish_cart
-  helper_method :current_combo_cart
+  helper_method :current_cart
   helper_method :current_or_guest_account
   helper_method :is_guest?
 
@@ -77,38 +76,31 @@ class ApplicationController < ActionController::Base
       # Todo sync the guest cart 
     end
 
-    def current_dish_cart
-      current_cart :dish
-    end
-
-    def current_combo_cart
-      current_cart :combo
-    end
-
-    def current_cart(cart_name)
-      cart_name = cart_name == :combo ? :combo_cart_id : :dish_cart_id
-      if session[cart_name].present?
-        # there is a cart in the current session and has not been checked out
-        Cart.includes(:cart_items).find(session[cart_name])
+    def current_cart
+      if account_signed_in? && session[:cart].present?
+        # there is a cart in the current session and has not been
+        # checked out
+        Cart.includes(:cart_items).find(session[:cart])
       elsif account_signed_in?
-        # a user session starts, retrieve the user's unchecked cart in 
-        # last session
-        cart = Cart.includes(:cart_items).find_by_account_id_and_status!(
-          current_account.id, Cart::UNCHECKOUTED)
-        session[cart_name] = cart.id
+        # account just logged in.
+        cart = Cart.includes(:cart_items).find_by_account_id_and_status(
+          current_account.id, Cart::STATUS_UNCHECKOUT)
+        if cart.nil?
+          # the account does not have any cart that has not checked 
+          # out. use the previous guest cart.
+          cart = Cart.create(account_id: current_account.id)
+        end
+        session[:cart] = cart.id
         cart
+      elsif session[:cart].present?
+        # there is a guest cart in the current session.
+        Cart.includes(:cart_items).find(session[:cart])
       else
         # a guest session starts. create a new cart
         cart = Cart.create(account_id: current_or_guest_account.id)
-        session[cart_name] = cart.id
+        session[:cart] = cart.id
         cart
       end
-    rescue ActiveRecord::RecordNotFound
-        # exception happens when the user does not have any unchecked cart 
-        # in the last session
-        cart = Cart.create(account_id: current_or_guest_account.id)
-        session[cart_name] = cart.id
-        cart
     end  
 
   private

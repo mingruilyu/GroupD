@@ -59,6 +59,8 @@ en:
         'The combo was successfully added to cart!'
       COMBO_DELETED:
         'The combo was successfully removed from cart!'
+      OBSOLETE_COMBO_DELETED:
+        'The obsolete combo items was removed from cart!'
     error:
       DISH_DELETE_FAIL:
         'Fail to remove %{name}!'
@@ -76,5 +78,10 @@ en:
 
   order:
     error:
-      COMBO_OBSOLETE:
-        'The combo is obsolete. Please select new combo!'
+      SHIPPING_OBSOLETE:
+        'The shipping is obsolete. Please select new combo!'
+      NO_SHIPPING:
+        'You have not selected any shipping!'
+    notice:
+      ORDER_CREATED:
+        'Order created successfully!'

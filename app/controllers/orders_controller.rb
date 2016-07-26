@@ -3,17 +3,18 @@ class OrdersController < ApplicationController
   before_filter :check_signed_in
 
   def new
-    @dropoff = Dropoff.find_by_building_id_and_restaurant_id(
-                current_or_guest_account.building_id, 
-                current_dish_cart.restaurant_id)
-    if @dropoff.present?
-      @shippings = Shipping.where(dropoff_id: @dropoff.id, 
-                    status: Shipping::SHIPPING_WAITING).where(
-                      "estimated_arrival_at > now()") 
+
+    @cart = current_cart
+    @order = Order.new(cart_id: @cart.id)
+    @shipping = @cart.shipping
+    if @shipping.present?
+      @payments = current_account.payments.to_a.push(
+        Payment.record_cash)
+      @order.shipping_id = @shipping.id
+      @order.set_taxes(@cart.total_price)
+      @order.total_price = @cart.total_price + @shipping.price + 
+        @order.taxes
     end
-    @order = Order.new(cart_id: current_dish_cart.id)
-    @payments = current_account.payments.to_a.push(
-      Payment.record_payment)
   end
 
   def create
@@ -21,42 +22,40 @@ class OrdersController < ApplicationController
     # the check when users submit order for the cart. 
     # Todo we may later add some filter to the right controller.
     cart = Cart.find(order_params[:cart_id])
-    
-    # Todo this part should be transactional.
-    # Todo make this part locked to ensure that no one else is 
-    # changing the count values.
-    if cart.is_combo_cart?
+    shipping = cart.shipping
+    if shipping.nil?
+      flash[:error] = I18n.t("order.error.NO_SHIPPING")
+    elsif not shipping.active?
+      cart.invalidate_shipping
+      flash[:error] = I18n.t('order.error.SHIPPING_OBSOLETE') 
+    else
+      # Todo this part should be transactional.
+      # Todo make this part locked to ensure that no one else is 
+      # changing the count values.
       cart.shipping.update_attribute(:customer_count, 
         cart.shipping.customer_count + 1)
-    else
-      shipping = Shipping.find(order_params[:shipping_id])
-      shipping.update_attribute(:customer_count, 
-        shipping.customer_count + 1) 
-    end
-    
-    if cart.is_combo_cart? && !cart.shipping.active?
-      flash.now[:error] = I18n.t('order.error.COMBO_OBSOLETE') 
-      cart.clear
-      @combo_obsolete = true
-    else
       order = Order.create(order_params)
-      count_update = {}
-      cart.cart_items.each do |item|
-        if item.is_dish?
-          count_update[item.dish.id] = { 
-            'count': item.dish.count + item.quantity }
-          # update cache
-          item.dish.count += item.quantity
-        elsif item.is_combo?
-          count_update[item.catering.id] = { 
-            'count': item.catering.count + item.quantity }
-          item.catering.count += item.quantity
-        end
+
+      catering_count_update = {}
+      dish_count_update = {}
+      cart.dish_items.each do |item|
+        dish_count_update[item.dish.id] = { 
+          'count': item.dish.count + item.quantity }
+        # update cache
+        item.dish.count += item.quantity
       end
-      if cart.is_combo_cart?
-        Catering.update(count_update.keys, count_update.values)
-      else
-        Dish.update(count_update.keys, count_update.values)
+      cart.combo_items.each do |item|
+        catering_count_update[item.catering.id] = { 
+          'count': item.catering.count + item.quantity }
+        item.catering.count += item.quantity
+      end
+      unless catering_count_update.empty?
+        Catering.update(catering_count_update.keys, 
+          catering_count_update.values)
+      end
+      unless dish_count_update.empty?
+        Dish.update(dish_count_update.keys, 
+          dish_count_update.values)
       end
 
       if order.payment_id == Payment::RECORD_CASH_ID
@@ -69,11 +68,13 @@ class OrdersController < ApplicationController
           receiver_id: cart.restaurant.account_id,
           amount: order_params[:total_price])#
       end
+
+      cart.update_attribute(:status, Cart::STATUS_CHECKOUT)
+      session.delete(:cart)
+      flash[:notice] = I18n.t("order.notice.ORDER_CREATED")
     end
-    respond_to do |format|
-      format.html {}
-      format.js {}
-    end
+    
+    redirect_to root_path
   end
      
 private

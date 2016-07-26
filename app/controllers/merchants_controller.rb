@@ -11,6 +11,12 @@ class MerchantsController < ApplicationController
   # GET /merchants/1.json
   def show
     @restaurants = Restaurant.where(account_id: current_account.id)
+    restaurant_list = []
+    @restaurants.each do |restaurant|
+      restaurant_list.append(restaurant.id)
+    end
+    @active_combos = Combo.distinct.active_by_restaurant(restaurant_list)\
+      .includes(:shippings)
   end
 
   # GET /merchants/new

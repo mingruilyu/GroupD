@@ -11,11 +11,11 @@ class Catering < ActiveRecord::Base
   scope :by_restaurant, ->(restaurant_id) \
     { joins(:shipping).merge(Shipping.by_restaurant(restaurant_id)) }
   scope :active_by_restaurant, ->(restaurant_id) \
-    { joins(shipping: :dropoff).merge(Shipping.active)
-        .merge(Dropoff.by_restaurant(restaurant_id)) }
+    { joins(:shipping).merge(
+        Shipping.by_restaurant(restaurant_id).active) }
   scope :active_by_building, ->(building_id) \
-    { joins(shipping: :dropoff).merge(Shipping.active)
-        .merge(Dropoff.by_building(building_id)) }
+    { joins(:shipping).merge(
+        Shipping.by_building(building_id).active) }
 
 
   def combo_name

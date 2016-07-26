@@ -35,6 +35,7 @@ class CateringsController < ApplicationController
           restaurant_id: params[:restaurant_id])    
         shipping.set_delivery_time delivery_date, delivery_time, false
         shipping.set_deadline(delivery_date, deadline)
+        shipping.price = Shipping::SHIPPING_COMBO_PRICE
         active_shipping = Shipping.find_by_dropoff_id_and_status(
                             dropoff.id, Shipping::SHIPPING_WAITING)
         if active_shipping.present? && shipping.same_date?(active_shipping)

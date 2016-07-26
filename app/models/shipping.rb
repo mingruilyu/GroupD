@@ -1,25 +1,27 @@
 class Shipping < ActiveRecord::Base
   belongs_to :coordinate
-  belongs_to :dropoff
   belongs_to :restaurant
+  belongs_to :building, -> { includes :company, :city }
 
   attr_accessor :delivery_date
   attr_accessor :delivery_time
   attr_accessor :asap
 
-  SHIPPING_WAITING    = 0
-  SHIPPING_DEPART     = 1
-  SHIPPING_ARRIVE     = 2
-  SHIPPING_PICKING_UP = 3
-  SHIPPING_DONE       = 4
+  STATUS_WAITING    = 0
+  STATUS_DEPART     = 1
+  STATUS_ARRIVE     = 2
+  STATUS_PICKING_UP = 3
+  STATUS_DONE       = 4
 
   SHIPPING_DEADLINE_BUFFER_TIME = 100
 
-  scope :active, -> { where(status: SHIPPING_WAITING) }
+  SHIPPING_COMBO_PRICE = 0
+
+  scope :active, -> { where(status: STATUS_WAITING) }
   scope :by_restaurant, ->(restaurant_id) \
-    { joins(:dropoff).merge(Dropoff.by_restaurant(restaurant_id)) }
-  scope :active_by_restaurant, ->(restaurant_id) \
-    { joins(:dropoff).merge(Dropoff.by_restaurant(restaurant_id)).active }
+    { where(restaurant_id: restaurant_id) }
+  scope :by_building, ->(building_id) \
+    { where(building_id: building_id) }
 
   def self.calculate_shipping_price(des_location, src_location)
     10
@@ -53,6 +55,6 @@ class Shipping < ActiveRecord::Base
   end
 
   def active?
-    self.status == SHIPPING_WAITING
+    self.status == STATUS_WAITING
   end
 end

@@ -12,7 +12,7 @@
   <p>Restaurant: <%= catering.restaurant_name %></p>
   <p>Order Number: <%= catering.order_count %> </p>
   <%= link_to 'Order this Combo', new_cart_combo_cart_item_path(
-    cart_id: current_combo_cart.id, catering_id: catering.id), 
+    cart_id: current_cart.id, catering_id: catering.id), 
     remote: true %>
   <br /><br />
 <% end %>

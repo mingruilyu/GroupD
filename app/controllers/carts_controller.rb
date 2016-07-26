@@ -1,17 +1,12 @@
 class CartsController < ApplicationController
   def show
-    @dish_cart = current_dish_cart
-    @combo_cart = current_combo_cart
-  end
-
-  def combo_summary
-    @cart = current_combo_cart
     @total_price = 0
+    @cart = current_cart
 
-    if @cart.cart_items.present?
-      @payments = current_account.payments.to_a.push(Payment.record_cash)
-      @order = Order.new(cart_id: @cart.id, 
-        shipping_id: @cart.shipping.id)
+    shipping = @cart.shipping
+    if shipping.present? && !shipping.active?
+      cart.invalidate_shipping
+      flash.now[:notice] = I18n.t("cart.notice.OBSOLETE_COMBO_DELETED")
     end
   end
 end

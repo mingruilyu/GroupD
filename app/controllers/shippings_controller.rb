@@ -4,6 +4,7 @@ class ShippingsController < ApplicationController
   # GET /shippings
   # GET /shippings.json
   def index
+    @shippings = Shipping.by_dropoff(@dropoff.id).active 
   end
 
   # GET /shippings/1

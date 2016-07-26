@@ -1,8 +1,18 @@
 <h1>New Order</h1>
-<% if @shippings.nil? %>
-  <p>There is currently no awaiting shipping.</p>
+<% if @shipping.nil? %>
+  <%= link_to 'Add Shipping', shippings_path(@shipping.dropoff), 
+    remote: true %>
 <% else %>
-  <%= render 'shippings/list' %> 
+  <div id="shipping_info">
+    <%= render @shipping %> 
+  </div>
+  <hr>
+  <div id="price_info">
+    <p id="delivery_fee">Delivery Fee: <%= @shipping.price %></p>
+    <p>Taxes: <%= @order.taxes %></p>
+    <p>Subtotal: <%= @cart.total_price %></p>
+    <p id="total">Total: <%= @order.total_price %></p>
+  </div>
 <% end %>
-<br /><br />
+<hr>
 <%= render 'form' %>

@@ -12,16 +12,12 @@
   <% end %>
 <% end %>
 <h1>Combo Order</h1>
-<% @restaurants.each do |restaurant| %>
-  <h2>Restaurant: <%= restaurant.name %></h2><br />
-  <h3>Waiting Order</h3>
-  <% restaurant.active_combos.each do |combo| %>
-    <h4><%= combo.name %></h4>
-    <% combo.shippings.each do |shipping| %>
-      <p>Building Name: <%= shipping.dropoff.building.city_company_name %></p>
-      <p>Order Count: <%= shipping.customer_count %></p>
-      <p>Delivery Time: <%= shipping.estimated_arrival_at %></p><br />
-    <% end %>
+<% @active_combos.each do |combo| %>
+  <h4><%= combo.name %></h4>
+  <% combo.caterings.each do |catering| %>
+    <p>Building Name: <%= catering.shipping.building.city_company_name %></p>
+    <p>Order Count: <%= catering.count %></p>
+    <p>Delivery Time: <%= catering.shipping.estimated_arrival_at %></p><br />
   <% end %>
 <% end %>
 <h1>Pending transaction</h1>

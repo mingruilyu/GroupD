@@ -1,6 +1,5 @@
 <%= render 'payments/modal' %>
-<%= form_for @order, url: customer_orders_path(current_account),
-  remote: true do |f| %>
+<%= form_for @order, url: customer_orders_path(current_account) do |f| %>
   <div class="field">
     <%= f.hidden_field :shipping_id, value: @order.shipping_id %>
   </div>
@@ -8,7 +7,7 @@
     <%= f.hidden_field :cart_id, value: @order.cart_id %>
   </div>
   <div class="field">
-    <%= f.hidden_field :total_price, value: @total_price %>
+    <%= f.hidden_field :total_price, value: @order.total_price %>
   </div>
   <div class="field">
     <%= f.label :payment %>
