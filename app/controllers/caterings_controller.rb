@@ -19,25 +19,18 @@ class CateringsController < ApplicationController
 
     buildings.each do |building|
       if building.present?
-        dropoff = Dropoff.find_by_building_id_and_restaurant_id(building, 
-                    params[:restaurant_id])
-        if dropoff.nil?
-          dropoff = Dropoff.create(building_id: building, 
-                                   restaurant_id: params[:restaurant_id])
-        end
-
         # We assume that if there are multiple catering to the same building
         # on the same day, they should merge into one shipping. However, if either
         # the delivery time or the deadline chosen by the merchant is different
         # from the existing active shipping to the same building, we should let
         # the merchant know by a warning.
-        shipping = Shipping.new(dropoff_id: dropoff.id,
+        shipping = Shipping.new(building_id: building,
           restaurant_id: params[:restaurant_id])    
         shipping.set_delivery_time delivery_date, delivery_time, false
         shipping.set_deadline(delivery_date, deadline)
         shipping.price = Shipping::SHIPPING_COMBO_PRICE
-        active_shipping = Shipping.find_by_dropoff_id_and_status(
-                            dropoff.id, Shipping::SHIPPING_WAITING)
+        active_shipping = Shipping.find_by_building_id_and_status(
+                            building, Shipping::STATUS_WAITING)
         if active_shipping.present? && shipping.same_date?(active_shipping)
           unless shipping.same_time?(active_shipping)
             # Todo I18n warning and display in alert

@@ -20,5 +20,9 @@
     <p>Delivery Time: <%= catering.shipping.estimated_arrival_at %></p><br />
   <% end %>
 <% end %>
-<h1>Pending transaction</h1>
+<h1>Record payments</h1>
+<% @payments.each do |payment| %>
+  <p><%= payment.customer.email %>: <%= payment.amount %> </p>
+<% end %>
+<h1>Deposits</h1>
 <h1>Revenue Summary</h1>

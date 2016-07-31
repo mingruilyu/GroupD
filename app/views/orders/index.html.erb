@@ -1,0 +1,23 @@
+<% @customer.orders.each do |order| %>
+  <p>Total: <%= order.total_price %></p>
+  <p>Order Time: <%= order.created_at %></p>
+  <p>Restaurant: <%= order.cart.restaurant.name %></p>
+  <ol>
+  <% if true %>
+    <% order.cart.cart_items.each do |item| %>
+      <% if item.is_combo? %>
+        <li><%= item.catering.combo.name %> &times; <%= item.quantity %></li>
+      <% elsif item.is_dish? %>
+        <li><%= item.dish.name %> &times; <%= item.quantity %></li>
+      <% end %>
+    <% end %> 
+  <% else %>
+    <% order.cart.combo_items.each do |item| %>
+        <li><%= item.catering.includes(:combo).combo.name %> &times; <%= item.quantity %></li>
+    <% end %>
+    <% order.cart.dish_items.each do |item| %>
+        <li><%= item.dish.name %> &times; <%= item.quantity %></li>
+    <% end %>
+  <% end %>
+  </ol><br /><br />
+<% end %>

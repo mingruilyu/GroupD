@@ -17,6 +17,9 @@ class MerchantsController < ApplicationController
     end
     @active_combos = Combo.distinct.active_by_restaurant(restaurant_list)\
       .includes(:shippings)
+
+    @payments = Debt.by_loaner(current_account.id)
+    @deposits = Debt.by_debtor(current_account.id)
   end
 
   # GET /merchants/new

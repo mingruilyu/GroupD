@@ -9,4 +9,15 @@ class CartsController < ApplicationController
       flash.now[:notice] = I18n.t("cart.notice.OBSOLETE_COMBO_DELETED")
     end
   end
+
+  def destroy
+    current_cart.destroy
+    session[:cart] = nil
+    @cart = current_cart
+
+    flash.now[:notice] = I18n.t("cart.notice.CART_DESTROY")
+    respond_to do |format|
+      format.js {}
+    end
+  end
 end

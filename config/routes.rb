@@ -7,23 +7,22 @@ Rails.application.routes.draw do
     sessions:       'sessions'
   }
 
-  resources :merchants
+  resources :merchants do
+    resources :dropoffs
+  end
 
   resources :customers do
     resources :orders
     resources :payments
-    member do
-      get 'add_address'
-      post 'update_address'
-    end
+    resource  :address, only: [:edit, :update]
   end
 
   resources :cellphones
 
   scope 'dropoffs/:dropoff_id' do
-    resources :shippings, only: [:index, :new, :create]
+    resources :shippings, only: [:index]
   end
-  resources :shippings, only: [:show]
+  resources :shippings, only: [:show, :create, :new]
 
   resources :carts do
     resources :dish_cart_items

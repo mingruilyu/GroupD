@@ -2,18 +2,34 @@ class OrdersController < ApplicationController
 
   before_filter :check_signed_in
 
+  def index
+    @customer = Customer.find(params[:customer_id])
+  end
+
   def new
 
     @cart = current_cart
-    @order = Order.new(cart_id: @cart.id)
-    @shipping = @cart.shipping
-    if @shipping.present?
-      @payments = current_account.payments.to_a.push(
-        Payment.record_cash)
-      @order.shipping_id = @shipping.id
-      @order.set_taxes(@cart.total_price)
-      @order.total_price = @cart.total_price + @shipping.price + 
-        @order.taxes
+    if @cart.cart_items.empty?
+      flash[:notice] = I18n.t('order.notice.CART_EMPTY')
+    else
+      @order = Order.new(cart_id: @cart.id)
+      @shipping = @cart.shipping
+      if @shipping.present?
+        @payments = current_account.payments.to_a.push(
+          Payment.record_cash)
+        @order.shipping_id = @shipping.id
+        @order.set_taxes(@cart.total_price)
+        @order.total_price = @cart.total_price + @shipping.price + 
+          @order.taxes
+      end
+    end
+    respond_to do |format|
+      format.js {}
+      format.html {
+        if flash[:notice].present?
+          redirect_to root_path
+        end
+      }
     end
   end
 
@@ -59,15 +75,15 @@ class OrdersController < ApplicationController
       end
 
       if order.payment_id == Payment::RECORD_CASH_ID
-        Debt.create(debtor_id: current_account.id,
-          loaner_id: cart.restaurant.account_id)
+        Debt.add_debt(cart.restaurant.account_id, current_account.id, 
+          order_params[:total_price])
       else
         # Todo embed other online payment platform APIs
         # initiate transaction
-        Transaction.create(sender_id: current_account.id, 
-          receiver_id: cart.restaurant.account_id,
-          amount: order_params[:total_price])#
       end
+      Transaction.create(sender_id: current_account.id, 
+        receiver_id: cart.restaurant.account_id,
+        amount: order_params[:total_price])
 
       cart.update_attribute(:status, Cart::STATUS_CHECKOUT)
       session.delete(:cart)

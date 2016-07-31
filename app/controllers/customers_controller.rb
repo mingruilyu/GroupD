@@ -1,8 +1,6 @@
 class CustomersController < ApplicationController
   before_action :set_customer, only: [:show, :edit, :update, :destroy]
 
-  skip_before_filter :check_address_configuration
-
   # GET /customers
   # GET /customers.json
   def index
@@ -35,17 +33,6 @@ class CustomersController < ApplicationController
       else
         format.html { render :new }
         format.json { render json: @customer.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def add_address
-  end
-
-  def update_address
-    respond_to do |format|
-      if current_or_guest_account.update_attribute(:building_id, params[:building_id])
-        format.js { }
       end
     end
   end

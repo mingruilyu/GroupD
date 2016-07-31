@@ -1,11 +1,24 @@
-<% if not devise_controller? && current_or_guest_account.is_customer? %>
+<% if !devise_controller? && !is_controller?('cellphones') && 
+     !is_controller?('addresses') && 
+     current_or_guest_account.is_customer? %>
   <li>
-    <%= link_to "cart:#{current_cart.total_items}", cart_path(current_cart) %>
+  <%= link_to "cart:#{current_cart.total_items}",
+  cart_path(current_cart) %>
   </li>
 <% end %>
-<% unless devise_controller? || action_name == 'add_address' || 
+
+<% unless devise_controller? || is_controller?('addresses') || 
+     is_controller?('cellphones') ||
      current_or_guest_account.is_merchant? %>
     <li>
-      <%= link_to "#{current_or_guest_account.building.city_company_name}", '#' %>
+    <%= link_to "#{current_or_guest_account.\
+                   building.city_company_name}", '#' %>
     </li>
+<% end %>
+
+<% if account_signed_in? && current_account.is_customer? %>
+  <li>
+  <%= link_to 'History Orders', 
+    customer_orders_path(current_account) %>
+  </li>
 <% end %>

@@ -1,17 +1,17 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  name: dish_1
   price: 1.50
   image_url: MyString
   desc: MyText
   count: 1
-  merchant_id: 1
+  restaurant_id: 1
 
 two:
-  name: MyString
+  name: dish_2
   price: 2.50
   image_url: MyString
   desc: MyText
   count: 1
-  merchant_id: 1
+  restaurant_id: 1

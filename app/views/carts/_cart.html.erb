@@ -1,16 +1,16 @@
 <div id="dish_summary">
   <h1>Dishes Order Summary</h1>
-  <% if @cart.dish_items.empty? %>
+  <% if cart.dish_items.empty? %>
     <p>You don't have any dishes in your cart.</p>
   <% else %>
     <ol>
-      <% @cart.dish_items.each do |item| %>
+      <% cart.dish_items.each do |item| %>
         <% unless item.quantity > 1 %>
           <li><%= item.dish.name %></li>
         <% else %>
           <li><%= item.dish.name %> &times; <%= item.quantity %></li>
         <% end %>
-        <%= link_to 'X', cart_dish_cart_item_path(@cart, item), 
+        <%= link_to 'X', cart_dish_cart_item_path(cart, item), 
           method: 'delete', remote: true %><br />
       <% end %>
     </ol>
@@ -19,21 +19,20 @@
 
 <div id="combo_summary">
   <h1>Combo Order Summary</h1>
-  <% if @cart.combo_items.empty? %>
+  <% if cart.combo_items.empty? %>
     <p>You don't have any combo in your cart! </p>
   <% else %>
     <ol>
-      <% @cart.combo_items.each do |item| %>
+      <% cart.combo_items.each do |item| %>
         <% unless item.quantity > 1 %>
           <li><%= item.catering.combo.name %></li> 
         <% else %>
           <li><%= item.catering.combo.name %> &times; <%= item.quantity %></li> 
         <% end %>
-        <%= link_to 'X', cart_combo_cart_item_path(@cart, item), 
+        <%= link_to 'X', cart_combo_cart_item_path(cart, item), 
           method: 'delete', remote: true %><br /> 
       <% end %>
     </ol>
   <% end %>
 </div>
-<p>Total price: <%= @cart.total_price %></p>
-<%= link_to "Checkout", new_customer_order_path(current_or_guest_account) %>
+<p>Total price: <%= cart.total_price %></p>

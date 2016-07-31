@@ -1,7 +1,6 @@
 <h1>New Order</h1>
 <% if @shipping.nil? %>
-  <%= link_to 'Add Shipping', shippings_path(@shipping.dropoff), 
-    remote: true %>
+  <%= link_to 'Add Shipping', new_shipping_path, remote: true %>
 <% else %>
   <div id="shipping_info">
     <%= render @shipping %> 

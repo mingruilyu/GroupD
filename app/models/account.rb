@@ -6,6 +6,7 @@ class Account < ActiveRecord::Base
   GUEST_USERNAME        = 'guest'
 
   belongs_to :cellphone
+  has_many :orders
   
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable

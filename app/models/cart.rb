@@ -1,5 +1,5 @@
 class Cart < ActiveRecord::Base
-  has_many :cart_items, dependent: :destroy
+  has_many :cart_items
   belongs_to :restaurant
   belongs_to :shipping
 
@@ -37,11 +37,11 @@ class Cart < ActiveRecord::Base
   end
 
   def combo_items
-    CartItem.where(cart_id: self.id).where('catering_id IS NOT NULL')
+    CartItem.where(cart_id: self.id).where('catering_id IS NOT NULL').includes(:catering)
   end
 
   def dish_items
-    CartItem.where(cart_id: self.id).where('dish_id IS NOT NULL')
+    CartItem.where(cart_id: self.id).where('dish_id IS NOT NULL').includes(:dish)
   end
 
   def invalidate_shipping

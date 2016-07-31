@@ -61,6 +61,8 @@ en:
         'The combo was successfully removed from cart!'
       OBSOLETE_COMBO_DELETED:
         'The obsolete combo items was removed from cart!'
+      CART_DESTROY:
+        'The cart is clear now!'
     error:
       DISH_DELETE_FAIL:
         'Fail to remove %{name}!'
@@ -85,3 +87,5 @@ en:
     notice:
       ORDER_CREATED:
         'Order created successfully!'
+      CART_EMPTY:
+        'Cart is empty!'

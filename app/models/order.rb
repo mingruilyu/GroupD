@@ -7,6 +7,9 @@ class Order < ActiveRecord::Base
   attr_accessor :total_price
   attr_reader   :taxes
 
+  scope :by_customer, ->(customer) { 
+    joins(:cart).merge(Cart.where(account_id: customer).includes(:cart_items)) }
+
   def set_taxes(subtotal)
     @taxes = subtotal * TAX_RATE
   end

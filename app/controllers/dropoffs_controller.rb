@@ -1,0 +1,2 @@
+class DropoffsController < ApplicationController
+end

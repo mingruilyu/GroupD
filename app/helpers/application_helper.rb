@@ -1,5 +1,6 @@
 module ApplicationHelper
- def time_array
+  include ControllerHelper
+  def time_array
     array = Array.new
     (0..23).each do |hour|
       array.push(["#{hour}:00", time_format(hour)])

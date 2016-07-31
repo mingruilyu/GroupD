@@ -1,1 +1,5 @@
-<%= render @cart %>
+<div id="cart_display">
+  <%= render @cart %>
+</div>
+<%= link_to "Checkout", new_customer_order_path(current_or_guest_account) %>
+<%= link_to "Clear Cart", current_cart, method: :delete, remote: true %>
