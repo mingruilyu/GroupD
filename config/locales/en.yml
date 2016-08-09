@@ -45,6 +45,9 @@ en:
     notice:
       DISH_CREATED:
         'Dish %{name} was successfully created.'
+    error:
+      TYPE_INVALID:
+        'The type of the dish is invalid.'
   
   cart:
     notice:
@@ -73,6 +76,18 @@ en:
       COMBO_ADD_FAIL:
         'Fail to add the combo!'
 
+  restaurant:
+    error:
+      OPEN_LATER_THAN_CLOSE:
+        'Open time is later than close time!'
+
+  shipping:
+    error:
+      NOT_ENOUGH_PREPARE_TIME:
+        'Not enough time left before delivery!'
+      DEADLINE_IN_PAST:
+        'Deadline has to be in the future!'
+
   payment:
     notice:
       PAYMENT_CREATED:
@@ -89,3 +104,13 @@ en:
         'Order created successfully!'
       CART_EMPTY:
         'Cart is empty!'
+
+  city:
+    error:
+      INVALID_CITY:
+        'The city id provided is invalid!'
+
+  category:
+    error:
+      INVALID_CATEGORY:
+        'The category id provided is invalid!'

@@ -49,7 +49,7 @@ class Cellphone < ActiveRecord::Base
 
     def number_should_be_valid
       if number.length != 10
-        errors.add(:number, I18n.t('error.INVALID_NUMBER'))
+        errors.add(:number, I18n.t('cellphone.error.INVALID_NUMBER'))
       end
     end
     

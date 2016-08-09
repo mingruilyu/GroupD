@@ -29,6 +29,9 @@ class DishesController < ApplicationController
     @dish = params[:dish] ? Dish.new(dish_params) 
               : Combo.new(combo_params)
     @dish.restaurant_id = params[:restaurant_id]
+    if params[:dish]
+      @dish.name = Combo.combo_default_name
+    end
     respond_to do |format|
       if @dish.save
         format.html { 
@@ -38,7 +41,7 @@ class DishesController < ApplicationController
               dish_id: @dish.id) 
           else
             flash[:notice] = I18n.t('dish.notice.DISH_CREATED',
-                                    name: @dish.name)
+              name: @dish.name)
             redirect_to restaurant_dishes_path(
               restaurant_id: params[:restaurant_id])  
           end
@@ -88,6 +91,6 @@ class DishesController < ApplicationController
       return dparams
     end
     def combo_params
-      params.require(:combo).permit(:name, :price, :image_url, :desc)
+      params.require(:combo).permit(:price, :image_url, :desc)
     end
 end

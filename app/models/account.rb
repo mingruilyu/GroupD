@@ -15,6 +15,7 @@ class Account < ActiveRecord::Base
          :validatable, :authentication_keys => { login: true }
 
   validates :cellphone_id, uniqueness: true, presence: true
+  validates_associated :cellphone
 
   def login=(login)
     @login = login

@@ -1,10 +1,12 @@
 class Order < ActiveRecord::Base
   belongs_to :shipping
   belongs_to :cart
-  belongs_to :payment
+
+  validates_associated :cart, :shipping
 
   TAX_RATE = 0.1
   attr_accessor :total_price
+  attr_accessor :payment_id
   attr_reader   :taxes
 
   scope :by_customer, ->(customer) { 

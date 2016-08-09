@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160726054912) do
+ActiveRecord::Schema.define(version: 20160808023659) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 20160726054912) do
     t.integer  "restaurant_id", limit: 4
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.integer  "account_id",    limit: 4,                 null: false
+    t.integer  "customer_id",   limit: 4,                 null: false
     t.integer  "shipping_id",   limit: 4
     t.boolean  "status",                  default: false, null: false
   end
@@ -138,12 +138,10 @@ ActiveRecord::Schema.define(version: 20160726054912) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4,                null: false
-    t.integer  "cart_id",     limit: 4,                null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "payment_id",  limit: 4,                null: false
-    t.float    "total_price", limit: 24, default: 0.0, null: false
+    t.integer  "shipping_id", limit: 4, null: false
+    t.integer  "cart_id",     limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "payments", force: :cascade do |t|
@@ -155,7 +153,7 @@ ActiveRecord::Schema.define(version: 20160726054912) do
   end
 
   create_table "restaurants", force: :cascade do |t|
-    t.integer  "account_id",      limit: 4,                  null: false
+    t.integer  "merchant_id",     limit: 4,                  null: false
     t.string   "name",            limit: 255, default: "",   null: false
     t.integer  "category_id",     limit: 4,   default: 0,    null: false
     t.integer  "open_at",         limit: 4,   default: 900,  null: false

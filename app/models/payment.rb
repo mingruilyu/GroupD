@@ -1,5 +1,10 @@
 class Payment < ActiveRecord::Base
-  belongs_to :account
+  belongs_to :customer
+
+  validates :method, presence: true, uniqueness: { scope: :customer }
+  validates :payment_type, numericality: { in: [0, 1, 2, 3] }
+
+  validates_associated :customer
 
   TYPE_RECORD_CASH_PAYMENT = 'Record'
   TYPE_CREDIT_CARD = 'Credit'

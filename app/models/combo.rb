@@ -14,4 +14,8 @@ class Combo < Dish
   def active_shippings
     self.shippings.merge(Shipping.active)
   end
+
+  def self.combo_default_name
+    'COMBO' + Time.now.to_formatted_s(:number)
+  end
 end

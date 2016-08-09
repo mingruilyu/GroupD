@@ -2,6 +2,8 @@ class Catering < ActiveRecord::Base
   belongs_to :shipping
   belongs_to :combo
 
+  validates_associated :combo
+
   attr_accessor :building_list
   attr_accessor :delivery_date
   attr_accessor :delivery_time
