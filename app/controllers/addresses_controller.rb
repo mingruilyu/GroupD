@@ -6,7 +6,8 @@ class AddressesController < ApplicationController
 
   def update
     respond_to do |format|
-      if current_or_guest_account.update_attribute(:building_id, params[:building_id])
+      if current_or_guest_account.update_attribute(:building_id, 
+        params[:building_id])
         format.js { }
       end
     end

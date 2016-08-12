@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808023659) do
+ActiveRecord::Schema.define(version: 20160811075631) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -101,12 +101,12 @@ ActiveRecord::Schema.define(version: 20160808023659) do
   end
 
   create_table "debts", force: :cascade do |t|
-    t.integer  "debtor_id",  limit: 4,                  null: false
-    t.integer  "loaner_id",  limit: 4,                  null: false
-    t.float    "amount",     limit: 24, default: 0.0,   null: false
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.boolean  "status",                default: false, null: false
+    t.integer  "debtor_id",  limit: 4,                                null: false
+    t.integer  "loaner_id",  limit: 4,                                null: false
+    t.decimal  "amount",               precision: 10, default: 0,     null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.boolean  "status",                              default: false, null: false
   end
 
   create_table "dishes", force: :cascade do |t|
@@ -130,11 +130,11 @@ ActiveRecord::Schema.define(version: 20160808023659) do
   end
 
   create_table "locations", force: :cascade do |t|
-    t.float    "coord_x",    limit: 24,  null: false
-    t.float    "coord_y",    limit: 24,  null: false
-    t.string   "address",    limit: 255, null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.decimal  "coord_x",                precision: 10, null: false
+    t.decimal  "coord_y",                precision: 10, null: false
+    t.string   "address",    limit: 255,                null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -153,40 +153,40 @@ ActiveRecord::Schema.define(version: 20160808023659) do
   end
 
   create_table "restaurants", force: :cascade do |t|
-    t.integer  "merchant_id",     limit: 4,                  null: false
-    t.string   "name",            limit: 255, default: "",   null: false
-    t.integer  "category_id",     limit: 4,   default: 0,    null: false
-    t.integer  "open_at",         limit: 4,   default: 900,  null: false
-    t.integer  "close_at",        limit: 4,   default: 2000, null: false
-    t.float    "ave_price",       limit: 24,  default: 0.0,  null: false
-    t.string   "image_url",       limit: 255, default: "",   null: false
-    t.string   "certificate_url", limit: 255, default: "",   null: false
-    t.integer  "city_id",         limit: 4,   default: 1,    null: false
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
-    t.integer  "location_id",     limit: 4,                  null: false
+    t.integer  "merchant_id",     limit: 4,                                 null: false
+    t.string   "name",            limit: 255,                default: "",   null: false
+    t.integer  "category_id",     limit: 4,                  default: 0,    null: false
+    t.integer  "open_at",         limit: 4,                  default: 900,  null: false
+    t.integer  "close_at",        limit: 4,                  default: 2000, null: false
+    t.decimal  "ave_price",                   precision: 10, default: 0,    null: false
+    t.string   "image_url",       limit: 255,                default: "",   null: false
+    t.string   "certificate_url", limit: 255,                default: "",   null: false
+    t.integer  "city_id",         limit: 4,                  default: 1,    null: false
+    t.datetime "created_at",                                                null: false
+    t.datetime "updated_at",                                                null: false
+    t.integer  "location_id",     limit: 4,                                 null: false
   end
 
   create_table "shippings", force: :cascade do |t|
-    t.integer  "status",               limit: 1,  default: 0,    null: false
-    t.float    "price",                limit: 24
+    t.integer  "status",               limit: 1,                default: 0,    null: false
+    t.decimal  "price",                          precision: 10
     t.integer  "building_id",          limit: 4
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.integer  "customer_count",       limit: 4,  default: 0,    null: false
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
+    t.integer  "customer_count",       limit: 4,                default: 0,    null: false
     t.datetime "estimated_arrival_at"
     t.integer  "coordinate_id",        limit: 4
-    t.boolean  "public_visible",                  default: true, null: false
-    t.datetime "available_until",                                null: false
+    t.boolean  "public_visible",                                default: true, null: false
+    t.datetime "available_until",                                              null: false
     t.integer  "restaurant_id",        limit: 4
   end
 
   create_table "transactions", force: :cascade do |t|
-    t.integer  "sender_id",   limit: 4,                null: false
-    t.integer  "receiver_id", limit: 4,                null: false
-    t.float    "amount",      limit: 24, default: 0.0, null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.integer  "sender_id",   limit: 4,                            null: false
+    t.integer  "receiver_id", limit: 4,                            null: false
+    t.decimal  "amount",                precision: 10, default: 0, null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
   end
 
 end

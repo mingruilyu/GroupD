@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :shipping do
-    restaurant
+    restaurant_id         1
     building
 
     status                Shipping::STATUS_WAITING

@@ -1,8 +1,6 @@
 FactoryGirl.define do
   factory :cart do
-   restaurant
-   shipping
-   customer
-   status   false
+    sequence(:shipping_id) { |n| n }
+    status   false
   end
 end

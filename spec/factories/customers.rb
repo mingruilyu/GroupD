@@ -1,5 +1,6 @@
 FactoryGirl.define do
   factory :customer do
+    building
     cellphone
     sequence(:email)        { |n| "david#{n}@dpool.com" }
     username                'David'

@@ -85,12 +85,12 @@ class ApplicationController < ActionController::Base
         @cart ||= Cart.includes(:cart_items).find(session[:cart])
       elsif account_signed_in?
         # account just logged in.
-        @cart = Cart.includes(:cart_items).find_by_account_id_and_status(
+        @cart = Cart.includes(:cart_items).find_by_customer_id_and_status(
           current_account.id, Cart::STATUS_UNCHECKOUT)
         if @cart.nil?
           # the account does not have any cart that has not checked 
           # out. use the previous guest cart.
-          @cart = Cart.create(account_id: current_account.id)
+          @cart = Cart.create(customer_id: current_account.id)
         end
         session[:cart] = @cart.id
         @cart
@@ -99,7 +99,7 @@ class ApplicationController < ActionController::Base
         @cart ||= Cart.includes(:cart_items).find(session[:cart])
       else
         # a guest session starts. create a new cart
-        @cart = Cart.create(account_id: current_or_guest_account.id)
+        @cart = Cart.create(customer_id: current_or_guest_account.id)
         session[:cart] = @cart.id
         @cart
       end
