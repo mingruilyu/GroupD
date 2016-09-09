@@ -25,11 +25,7 @@ Rails.application.routes.draw do
   resources :shippings, only: [:show, :create, :new]
 
   resources :carts do
-    resources :dish_cart_items
-    resources :combo_cart_items
-    member do
-      get 'combo_summary'
-    end
+    resources :cart_items
   end
 
   resources :restaurants do

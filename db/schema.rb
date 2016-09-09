@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160811075631) do
+ActiveRecord::Schema.define(version: 20160907062135) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -49,7 +49,6 @@ ActiveRecord::Schema.define(version: 20160811075631) do
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
     t.integer  "cart_id",             limit: 4,                 null: false
-    t.integer  "dish_id",             limit: 4
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.text     "special_instruction", limit: 65535
@@ -61,7 +60,6 @@ ActiveRecord::Schema.define(version: 20160811075631) do
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
     t.integer  "customer_id",   limit: 4,                 null: false
-    t.integer  "shipping_id",   limit: 4
     t.boolean  "status",                  default: false, null: false
   end
 
@@ -72,11 +70,10 @@ ActiveRecord::Schema.define(version: 20160811075631) do
   end
 
   create_table "caterings", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4,             null: false
-    t.integer  "combo_id",    limit: 4,             null: false
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-    t.integer  "count",       limit: 4, default: 0, null: false
+    t.integer  "shipping_id", limit: 4, null: false
+    t.integer  "combo_id",    limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "cellphones", force: :cascade do |t|
@@ -93,6 +90,14 @@ ActiveRecord::Schema.define(version: 20160811075631) do
   end
 
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
+
+  create_table "combos", force: :cascade do |t|
+    t.integer  "combo_item_id", limit: 4,                             null: false
+    t.integer  "count",         limit: 4,                default: 0,  null: false
+    t.decimal  "price",                   precision: 10, default: 10, null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+  end
 
   create_table "companies", force: :cascade do |t|
     t.string   "name",       limit: 255, null: false
@@ -114,12 +119,9 @@ ActiveRecord::Schema.define(version: 20160811075631) do
     t.decimal  "price",                       precision: 8, scale: 2, default: 0.0
     t.string   "image_url",     limit: 255,                           default: ""
     t.text     "desc",          limit: 65535
-    t.integer  "count",         limit: 4,                             default: 0
     t.integer  "restaurant_id", limit: 4,                             default: 0
-    t.datetime "created_at",                                                          null: false
-    t.datetime "updated_at",                                                          null: false
-    t.boolean  "sold_out",                                            default: false, null: false
-    t.string   "type",          limit: 255
+    t.datetime "created_at",                                                        null: false
+    t.datetime "updated_at",                                                        null: false
   end
 
   create_table "dropoffs", force: :cascade do |t|

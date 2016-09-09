@@ -1,4 +1,4 @@
-class DishCartItemsController < ApplicationController
+class CartItemsController < ApplicationController
   def new
 
     @cart_item = CartItem.new

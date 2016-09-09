@@ -1,19 +1,19 @@
-class ComboCartItemsController < ApplicationController
+class CartItemsController < ApplicationController
   def new
 
     @cart_item = CartItem.new
-    @catering = Catering.find(params[:catering_id])
+    begin
+      @catering = Catering.find(params[:catering_id])
+    rescue ActiveRecord::RecordNotFound
+      respond_to do |format|
+        format.js { render nothing: true, status: :not_found }
+      end
+    end
+    puts 'CURRENT_CART ' + current_cart.to_s
     if current_cart.restaurant_id != @catering.combo.restaurant_id 
       # check whether combo to order is from the same restaurant.
       # if not, we will have to clear all items in the cart.
       @clear_all_confirmation = true
-    elsif current_cart.shipping_id.present? && 
-      current_cart.shipping_id != @catering.shipping_id
-      # check whether combo shares the same shipping with ones that
-      # are already in the cart. if not, we will have to clear all
-      # combo items in the cart. dish items are retained because 
-      # shipping for dises are binding at the checkout.
-      @clear_combo_confirmation = true
     end
     respond_to do |format|
       format.js { render 'cart_items/new' }
@@ -22,7 +22,7 @@ class ComboCartItemsController < ApplicationController
 
   def create
 
-    catering = Catering.find(params[:cart_item][:catering_id])
+    catering = Catering.find(cart_item_params[:catering_id])
     cart = current_cart
 
     if cart.restaurant_id != catering.combo.restaurant_id  
@@ -30,20 +30,14 @@ class ComboCartItemsController < ApplicationController
         cart.clear_all
       end
       cart.update_attributes(
-        restaurant_id:  catering.combo.restaurant_id, 
-        shipping_id:    catering.shipping_id)
-    elsif cart.shipping_id != catering.shipping_id
-      unless cart.shipping_id.nil?
-        cart.clear_combo
-      end
-      cart.update_attributes(shipping_id: catering.shipping_id)
+        restaurant_id:  catering.combo.restaurant_id)
     end
 
     cart_item = CartItem.create(
-      quantity:             params[:cart_item][:quantity],
+      quantity:             cart_item_params[:quantity],
       cart_id:              cart.id,
       catering_id:          catering.id,
-      special_instruction:  params[:cart_item][:special_instruction]
+      special_instruction:  cart_item_params[:special_instruction]
     )
 
     if cart_item.save
@@ -55,6 +49,13 @@ class ComboCartItemsController < ApplicationController
     respond_to do |format|
       format.js { render 'cart_items/create' }
     end
+  end
+
+  # Never trust parameters from the scary internet, only allow the
+  # white list through.
+  def cart_item_params
+    @params ||= params.require(:cart_item).permit(:quantity, :cart_id,
+      :catering_id, :special_instruction)
   end
 
   def destroy
