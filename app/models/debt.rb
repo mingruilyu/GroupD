@@ -11,12 +11,13 @@ class Debt < ActiveRecord::Base
   scope :by_loaner, ->(loaner) { where(loaner_id: loaner) }
   scope :by_debtor, ->(debtor) { where(debtor_id: debtor) }
 
-  def self.add_debt(loaner, debtor, amount)
-    debt = Debt.find_by_loaner_id_and_debtor_id(loaner, debtor)
-    if debt.nil?
-      Debt.create(loaner_id: loaner, debtor_id: debtor, amount: amount)
-    else
-      debt.update_attribute(:amount, debt.amount + amount)
+  def self.T_add_debt(loaner, debtor, amount)
+    begin
+      debt = Debt.find_by_loaner_id_and_debtor_id! loaner, debtor
+    rescue ActiveRecord::RecordNotFound
+      debt = Debt.create(loaner_id: loaner, debtor_id: debtor, 
+          amount: amount)
     end
+    debt.update_attribute(:amount, debt.amount + amount)
   end
 end

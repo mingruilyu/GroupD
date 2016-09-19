@@ -12,4 +12,8 @@ class Building < ActiveRecord::Base
   def self.test_print
     puts 'BUILDING TEST'
   end
+
+  def as_json(options={})
+    super(except: [:created_at, :updated_at])
+  end
 end

@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :combo do    
-    restaurant
-    price   10.0
-    desc        'This is an example combo'
+    price       10
+    restaurant_id 1
   end
 end

@@ -13,6 +13,11 @@ class Payment < ActiveRecord::Base
 
   RECORD_CASH_ID = 0
 
+  PAYMENT_TYPES = [
+    [TYPE_RECORD_CASH_PAYMENT, TYPE_RECORD_CASH_PAYMENT],
+    [TYPE_DEBI_CARD, TYPE_DEBI_CARD],
+    [TYPE_PAYPAL, TYPE_PAYPAL]]
+
   def self.record_cash
     Payment.new(id: RECORD_CASH_ID, 
       payment_type: TYPE_RECORD_CASH_PAYMENT)
@@ -22,12 +27,7 @@ class Payment < ActiveRecord::Base
     "#{self.payment_type} #{self.method}"
   end
 
-  def self.type_options
-    type = []
-    type.push([TYPE_CREDIT_CARD, TYPE_CREDIT_CARD])
-      .push([TYPE_DEBI_CARD, TYPE_DEBI_CARD])
-      .push([TYPE_PAYPAL, TYPE_PAYPAL])
-    type
+  def belongs_to_customer? customer_id 
+    self.customer_id == customer_id
   end
-
 end

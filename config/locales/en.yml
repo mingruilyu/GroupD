@@ -114,3 +114,8 @@ en:
     error:
       INVALID_CATEGORY:
         'The category id provided is invalid!'
+
+  dropoff:
+    notice:
+      DROPOFF_CREATED:
+        'The dropoff has been created!'

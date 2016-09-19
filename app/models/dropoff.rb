@@ -1,7 +1,10 @@
 class Dropoff < ActiveRecord::Base
-  has_many :shippings
   belongs_to :building
 
-  scope :by_restaurant, ->(restaurant) { where(restaurant_id: restaurant) }
+  scope :by_merchant, ->(merchant) { where(merchant_id: merchant) }
   scope :by_building, ->(building) { where(building_id: building) }
+
+  def as_json(options={})
+    super(only: :building_id)
+  end
 end

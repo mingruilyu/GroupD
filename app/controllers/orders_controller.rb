@@ -1,104 +1,124 @@
 class OrdersController < ApplicationController
 
-  before_filter :check_signed_in
+  skip_before_action :check_address_configuration
+  before_action :authenticate_account!
+  before_action :sanitize_payment_id, only: :create
 
   def index
-    @customer = Customer.find(params[:customer_id])
+    @orders = Order.by_customer @customer.id
   end
 
   def new
 
-    @cart = current_cart
+    @cart = current_cart.reload
     if @cart.cart_items.empty?
       flash[:notice] = I18n.t('order.notice.CART_EMPTY')
-    else
-      @order = Order.new(cart_id: @cart.id)
-      @shipping = @cart.shipping
-      if @shipping.present?
-        @payments = current_account.payments.to_a.push(
-          Payment.record_cash)
-        @order.shipping_id = @shipping.id
-        @order.set_taxes(@cart.total_price)
-        @order.total_price = @cart.total_price + @shipping.price + 
-          @order.taxes
-      end
+      respond_to do |format|
+        format.html { redirect_to root_path }
+      end and return
     end
+      
+    @order = Order.new cart_id: @cart.id
+    @payments = current_account.payments.to_a.push(
+      Payment.record_cash)
+    @order.set_taxes(@cart.total_price)
+    @order.total_price = @cart.total_price + @order.taxes
     respond_to do |format|
-      format.js {}
-      format.html {
-        if flash[:notice].present?
-          redirect_to root_path
-        end
-      }
+      format.html { render 'new' }
     end
   end
 
   def create
-    # check if the cart_items is still valid. For now, we only do
-    # the check when users submit order for the cart. 
-    # Todo we may later add some filter to the right controller.
-    cart = Cart.find(order_params[:cart_id])
-    shipping = cart.shipping
-    if shipping.nil?
-      flash[:error] = I18n.t("order.error.NO_SHIPPING")
-    elsif not shipping.active?
-      cart.invalidate_shipping
-      flash[:error] = I18n.t('order.error.SHIPPING_OBSOLETE') 
-    else
-      # Todo this part should be transactional.
-      # Todo make this part locked to ensure that no one else is 
-      # changing the count values.
-      cart.shipping.update_attribute(:customer_count, 
-        cart.shipping.customer_count + 1)
-      order = Order.create(order_params)
 
-      catering_count_update = {}
-      dish_count_update = {}
-      cart.dish_items.each do |item|
-        dish_count_update[item.dish.id] = { 
-          'count': item.dish.count + item.quantity }
-        # update cache
-        item.dish.count += item.quantity
-      end
-      cart.combo_items.each do |item|
-        catering_count_update[item.catering.id] = { 
-          'count': item.catering.count + item.quantity }
-        item.catering.count += item.quantity
-      end
-      unless catering_count_update.empty?
-        Catering.update(catering_count_update.keys, 
-          catering_count_update.values)
-      end
-      unless dish_count_update.empty?
-        Dish.update(dish_count_update.keys, 
-          dish_count_update.values)
-      end
+    cart = current_cart
 
-      if order.payment_id == Payment::RECORD_CASH_ID
-        Debt.add_debt(cart.restaurant.account_id, current_account.id, 
-          order_params[:total_price])
-      else
-        # Todo embed other online payment platform APIs
-        # initiate transaction
-      end
-      Transaction.create(sender_id: current_account.id, 
-        receiver_id: cart.restaurant.account_id,
-        amount: order_params[:total_price])
-
-      cart.update_attribute(:status, Cart::STATUS_CHECKOUT)
-      session.delete(:cart)
-      flash[:notice] = I18n.t("order.notice.ORDER_CREATED")
+    if cart.cart_items.empty?
+      flash[:notice] = I18n.t('order.notice.CART_EMPTY')
+      respond_to do |format|
+        format.html { redirect_to root_path }
+      end and return
     end
-    
+
+    # Check whether any item in the cart has expired. There could 
+    # also be moment the merchant switched the catering status. To
+    # avoid race condition, we simply forbid user's order 
+    # TIME_BEFORE_ORDER_DEADLINE before the catering's real deadline.
+    if cart.has_expired?
+      cart.cart_items.clear
+      flash[:notice] = I18n.t("order.notice.CART_EXPIRED")
+      respond_to do |format|
+        format.html { redirect_to root_path }
+      end and return
+    end
+
+    # Merge the same items and update in one go before transaction.
+    catering_count_update = {}
+    cart.cart_items.each do |item|
+      if catering_count_update.has_key? item.catering_id
+        catering_count_update[item.catering_id] += item.quantity
+      else
+        catering_count_update[item.catering_id] = item.quantity
+      end
+    end
+    order = Order.new payment_id: @payment.id, 
+      total_price: cart.total_price, customer_id: params[:customer_id],
+      cart_id: cart.id
+    merchant = cart.restaurant.merchant_id
+    begin
+      Catering.transaction do
+        Catering.T_update_order_count catering_count_update
+
+        if order.payment_id == Payment::RECORD_CASH_ID
+          Debt.T_add_debt merchant, current_account.id, 
+            order.total_price
+        else
+          # Todo embed other online payment platform APIs
+          # initiate transaction
+        end
+
+        transaction = Transaction.create sender_id: current_account.id, 
+          receiver_id: merchant, amount: order.total_price
+        order.transaction_id = transaction.id
+        cart.T_checkout!
+        order.save!
+      end
+    rescue
+      flash[:error] = I18n.t("order.error.ORDER_CREATION_FAILED")
+      respond_to do |format|
+        format.html { redirect_to root_path }
+      end and return
+    end
+
+    session.delete :cart
+    flash[:notice] = I18n.t("order.notice.ORDER_CREATED")
     redirect_to root_path
+
   end
      
 private
 
   def order_params
-    oparams = params.require(:order).permit(:payment_id, 
-      :shipping_id, :cart_id, :total_price)
-    oparams[:total_price] = oparams[:total_price].to_f
-    oparams
+    params.require(:order).permit(:payment_id)
+  end
+
+  def sanitize_payment_id
+    begin
+      unless order_params[:payment_id].to_i == Payment::RECORD_CASH_ID
+        @payment = Payment.find order_params[:payment_id] 
+        unless @payment.belongs_to_customer? current_account.id
+          render nothing: true, status: :unauthorized
+        end
+      else
+        @payment = Payment.record_cash 
+      end
+    rescue ActiveRecord::RecordNotFound
+      render nothing: true, status: :unauthorized
+    end
+  end
+
+  def verify_authorization
+    if params[:customer_id].to_i != current_account.id
+      render nothing: true, status: :unauthorized
+    end
   end
 end

@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :cart do
     status        false
-    restaurant_id 1
+    restaurant
     customer_id    1
   end
 end

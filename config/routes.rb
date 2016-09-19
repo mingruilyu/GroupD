@@ -19,14 +19,11 @@ Rails.application.routes.draw do
 
   resources :cellphones
 
-  scope 'dropoffs/:dropoff_id' do
-    resources :shippings, only: [:index]
-  end
-  resources :shippings, only: [:show, :create, :new]
-
   resources :carts do
     resources :cart_items
   end
+    
+  resources :shippings
 
   resources :restaurants do
     resources :dishes

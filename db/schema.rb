@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160907062135) do
+ActiveRecord::Schema.define(version: 20160918200834) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(version: 20160907062135) do
   add_index "accounts", ["email"], name: "index_accounts_on_email", unique: true, using: :btree
   add_index "accounts", ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
 
+  create_table "address_books", force: :cascade do |t|
+    t.integer  "merchant_id", limit: 4, null: false
+    t.integer  "building_id", limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
   create_table "buildings", force: :cascade do |t|
     t.string   "name",           limit: 255, default: "", null: false
     t.integer  "location_id",    limit: 4,                null: false
@@ -48,7 +55,7 @@ ActiveRecord::Schema.define(version: 20160907062135) do
 
   create_table "cart_items", force: :cascade do |t|
     t.integer  "quantity",            limit: 4,     default: 1, null: false
-    t.integer  "cart_id",             limit: 4,                 null: false
+    t.integer  "cart_id",             limit: 4
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
     t.text     "special_instruction", limit: 65535
@@ -70,10 +77,15 @@ ActiveRecord::Schema.define(version: 20160907062135) do
   end
 
   create_table "caterings", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4, null: false
-    t.integer  "combo_id",    limit: 4, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "shipping_id",          limit: 4,             null: false
+    t.integer  "combo_id",             limit: 4,             null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+    t.integer  "restaurant_id",        limit: 4,             null: false
+    t.datetime "available_until",                            null: false
+    t.integer  "order_count",          limit: 4, default: 0, null: false
+    t.datetime "estimated_arrival_at",                       null: false
+    t.integer  "building_id",          limit: 4,             null: false
   end
 
   create_table "cellphones", force: :cascade do |t|
@@ -91,12 +103,18 @@ ActiveRecord::Schema.define(version: 20160907062135) do
 
   add_index "cities", ["name"], name: "index_cities_on_name", unique: true, using: :btree
 
+  create_table "combo_items", force: :cascade do |t|
+    t.integer  "dish_id",    limit: 4, null: false
+    t.integer  "combo_id",   limit: 4, null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
   create_table "combos", force: :cascade do |t|
-    t.integer  "combo_item_id", limit: 4,                             null: false
-    t.integer  "count",         limit: 4,                default: 0,  null: false
     t.decimal  "price",                   precision: 10, default: 10, null: false
     t.datetime "created_at",                                          null: false
     t.datetime "updated_at",                                          null: false
+    t.integer  "restaurant_id", limit: 4,                             null: false
   end
 
   create_table "companies", force: :cascade do |t|
@@ -114,6 +132,8 @@ ActiveRecord::Schema.define(version: 20160907062135) do
     t.boolean  "status",                              default: false, null: false
   end
 
+  add_index "debts", ["loaner_id", "debtor_id"], name: "index_debts_on_loaner_id_and_debtor_id", unique: true, using: :btree
+
   create_table "dishes", force: :cascade do |t|
     t.string   "name",          limit: 255,                           default: ""
     t.decimal  "price",                       precision: 8, scale: 2, default: 0.0
@@ -125,10 +145,10 @@ ActiveRecord::Schema.define(version: 20160907062135) do
   end
 
   create_table "dropoffs", force: :cascade do |t|
-    t.integer  "building_id",   limit: 4, null: false
-    t.integer  "restaurant_id", limit: 4, null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.integer  "building_id", limit: 4, null: false
+    t.integer  "merchant_id", limit: 4, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "locations", force: :cascade do |t|
@@ -140,10 +160,12 @@ ActiveRecord::Schema.define(version: 20160907062135) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "shipping_id", limit: 4, null: false
-    t.integer  "cart_id",     limit: 4, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "cart_id",        limit: 4,                null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "transaction_id", limit: 4
+    t.decimal  "total_price",              precision: 10, null: false
+    t.integer  "customer_id",    limit: 4,                null: false
   end
 
   create_table "payments", force: :cascade do |t|
@@ -170,17 +192,13 @@ ActiveRecord::Schema.define(version: 20160907062135) do
   end
 
   create_table "shippings", force: :cascade do |t|
-    t.integer  "status",               limit: 1,                default: 0,    null: false
-    t.decimal  "price",                          precision: 10
-    t.integer  "building_id",          limit: 4
-    t.datetime "created_at",                                                   null: false
-    t.datetime "updated_at",                                                   null: false
-    t.integer  "customer_count",       limit: 4,                default: 0,    null: false
+    t.integer  "status",               limit: 1, default: 0, null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
     t.datetime "estimated_arrival_at"
     t.integer  "coordinate_id",        limit: 4
-    t.boolean  "public_visible",                                default: true, null: false
-    t.datetime "available_until",                                              null: false
-    t.integer  "restaurant_id",        limit: 4
+    t.datetime "available_until",                            null: false
+    t.integer  "catering_id",          limit: 4
   end
 
   create_table "transactions", force: :cascade do |t|

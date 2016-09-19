@@ -8,16 +8,4 @@ class Dish < ActiveRecord::Base
 
   validates_associated :restaurant
 
-  TYPE_COMBO = 'Combo'
-  TYPE_DISH = 'Dish'
-  
-  def is_dish?
-    self.type == TYPE_DISH
-  end
-
-  def is_combo?
-    self.type == TYPE_COMBO
-  end
-
-  private
 end

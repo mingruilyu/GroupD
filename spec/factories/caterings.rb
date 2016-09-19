@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :catering do
-    shipping_id   1
-    combo_id      1
+    combo
+    shipping
+    available_until 1.hour.from_now
+    restaurant_id { self.combo.restaurant_id }
   end
 end
