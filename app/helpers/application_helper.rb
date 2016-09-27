@@ -1,5 +1,4 @@
 module ApplicationHelper
-  include ControllerHelper
   def time_array
     array = Array.new
     (0..23).each do |hour|
@@ -27,9 +26,5 @@ module ApplicationHelper
 
   def devise_mapping
     @devise_mapping ||= Devise.mappings[:account]
-  end
-
-  def request_fail?
-    flash.now[:error].any? || flash[:error].any?
   end
 end

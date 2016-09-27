@@ -8,20 +8,24 @@ Rails.application.routes.draw do
   }
 
   resources :merchants do
-    resources :dropoffs
+    resources :dropoffs, only: [:index, :create]
   end
+  resource :dropoff, only: :destroy
 
   resources :customers do
-    resources :orders
+    resources :orders, only: [:index]
     resources :payments
     resource  :address, only: [:edit, :update]
   end
+  resources :orders, only: [:show, :update, :destroy]
+  put 'orders/:id/cancel' => 'orders#cancel'
 
   resources :cellphones
 
-  resources :carts do
-    resources :cart_items
-  end
+  get 'orders/:order_id/order_items' => 'order_items#index'
+  post 'orders/:order_id/order_items' => 'order_items#create'
+  get 'orders/:order_id/order_items/new' => 'order_items#new'
+  resources :order_items, only: [:destroy]
     
   resources :shippings
 

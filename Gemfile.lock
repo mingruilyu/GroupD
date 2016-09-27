@@ -36,6 +36,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    activesupport-json_encoder (1.1.0)
+      activesupport (>= 4.1.0, < 5.0)
     arel (6.0.3)
     autoprefixer-rails (6.1.0.1)
       execjs
@@ -213,6 +215,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport-json_encoder
   bootstrap-sass
   byebug
   coffee-rails (~> 4.1.0)
@@ -239,4 +242,4 @@ RUBY VERSION
    ruby 2.2.3p173
 
 BUNDLED WITH
-   1.12.1
+   1.13.1

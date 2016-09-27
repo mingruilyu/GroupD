@@ -1,0 +1,24 @@
+module Message
+  module Error
+    ORDER_CREATION_FAILED = 1
+    ITEM_DELETION_FAILED = 2
+    ITEM_CREATION_FAILED = 3
+    ORDER_CANCELLATION_FAILED = 4
+    ORDER_CLEAR_FAILED = 5
+    QUANTITY_OVER_LIMIT = 6
+    CATERING_EXPIRED = 7
+  end
+
+  module Warning
+    SET_ADDRESS = 1
+    ORDER_EMPTY = 2
+    ORDER_EXPIRED = 3
+    CLEAR_ORDER = 4
+  end
+
+  module Notice
+    ORDER_CREATED = 1
+    ITEM_DELETED = 2
+    ITEM_CREATED = 3
+  end
+end

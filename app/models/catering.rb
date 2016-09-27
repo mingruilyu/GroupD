@@ -53,12 +53,22 @@ class Catering < ActiveRecord::Base
   end
 
 
-  def self.T_update_order_count update_dict
+  def self.T_increase_order_count update_dict
     unless update_dict.empty?
       update_dict.each do |id, quantity|
-        catering = Catering.find(id)
-        catering.lock! 'LOCK IN SHARE MODE'
+        catering = Catering.find id
+        catering.lock!
         catering.increment! :order_count, quantity
+      end
+    end
+  end
+
+  def self.T_decrease_order_count update_dict
+    unless update_dict.empty?
+      update_dict.each do |id, quantity|
+        catering = Catering.find id
+        catering.lock!
+        catering.decrement! :order_count, quantity
       end
     end
   end

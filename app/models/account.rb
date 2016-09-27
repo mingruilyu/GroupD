@@ -52,4 +52,7 @@ class Account < ActiveRecord::Base
       .where("cellphones.number = :number", { number: login }).first
   	end
   end
+
+  class NotAuthorized < StandardError
+  end
 end

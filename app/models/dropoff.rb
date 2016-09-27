@@ -5,6 +5,6 @@ class Dropoff < ActiveRecord::Base
   scope :by_building, ->(building) { where(building_id: building) }
 
   def as_json(options={})
-    super(only: :building_id)
+    super only: :building_id
   end
 end

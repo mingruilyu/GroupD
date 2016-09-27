@@ -1,10 +1,10 @@
 class DropoffsController < ApplicationController
   before_action :authenticate_account!
-  before_action :verify_authorization
+  before_action :merchant_authorization_filter
 
   def index
     @dropoffs = Dropoff.by_merchant current_account.id 
-    render json: JsonResponse.new(@dropoffs), status: :ok
+    render json: Response::JsonResponse.new(@dropoffs), status: :ok
   end
 
   def create 
@@ -17,11 +17,5 @@ class DropoffsController < ApplicationController
 
     def dropoff_params
       params.require(:dropoff).permit(:building_id)
-    end
-    
-    def verify_authorization
-      if params[:merchant_id].to_i != current_account.id
-        render nothing: true, status: :unauthorized
-      end
     end
 end

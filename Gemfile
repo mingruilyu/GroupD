@@ -35,7 +35,7 @@ gem 'whenever', :require => false
 
 gem 'resque'
 
-
+gem 'activesupport-json_encoder'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

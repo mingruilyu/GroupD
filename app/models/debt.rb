@@ -15,9 +15,16 @@ class Debt < ActiveRecord::Base
     begin
       debt = Debt.find_by_loaner_id_and_debtor_id! loaner, debtor
     rescue ActiveRecord::RecordNotFound
-      debt = Debt.create(loaner_id: loaner, debtor_id: debtor, 
-          amount: amount)
+      debt = Debt.create loaner_id: loaner, debtor_id: debtor, 
+          amount: amount
     end
-    debt.update_attribute(:amount, debt.amount + amount)
+    debt.lock! 
+    debt.update_attribute :amount, debt.amount + amount
+  end
+
+  def self.T_pay_debt(loaner, debtor, amount)
+    debt = Debt.find_by_loaner_id_and_debtor_id! loaner, debtor
+    debt.lock!
+    debt.update_attribute :amount, debt.amount - amount
   end
 end

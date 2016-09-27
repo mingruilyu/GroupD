@@ -1,0 +1,193 @@
+require 'rails_helper'
+
+RSpec.describe OrdersController, type: :controller do
+  
+  context 'not logged in' do
+    describe 'signin filter' do
+      it 'fails because not signed in' do
+        get :index, customer_id: 1, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        put :update, id: 1, format: :json 
+        expect(response).to have_http_status(:unauthorized)
+        get :show, id: 1, payment_id: 0, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        put :cancel, id: 1, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        delete :destroy, id: 1, format: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  context 'logged in' do
+
+    before :each do
+      login_customer
+      @restaurant = create :restaurant
+      @catering = create :catering, restaurant_id: @restaurant.id
+    end
+
+    let(:account) { subject.current_account } 
+    let(:order) { subject.send :current_order }
+
+    describe 'format sanitization' do
+      it 'fails because not using json format' do
+        get :index, customer_id: 10
+        expect(response).to have_http_status(:not_found)
+        put :update, id: 10
+        expect(response).to have_http_status(:not_found)
+        get :show, id: 10
+        expect(response).to have_http_status(:not_found)
+        put :cancel, id: 10
+        expect(response).to have_http_status(:not_found)
+        delete :destroy, id: 10
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    describe 'parameter validation' do
+      it 'fails because order does not exist' do
+        put :update, id: 100, format: :json 
+        expect(response).to have_http_status(:not_found)
+        get :show, id: 100, format: :json
+        expect(response).to have_http_status(:not_found)
+        delete :destroy, id: 100, format: :json
+        expect(response).to have_http_status(:not_found)
+        put :cancel, id: 100, format: :json
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'fails because customer not authorized' do
+        customer = create(:customer)
+        order = create(:order, customer_id: customer.id)
+        get :index, customer_id: 100, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        put :update, id: order.id, format: :json 
+        expect(response).to have_http_status(:unauthorized)
+        get :show, id: order.id, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        get :index, customer_id: customer.id, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        delete :destroy, id: order.id, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        put :cancel, id: order.id, format: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
+
+      it 'fails because payment not authorized' do
+        put :update, id: order.id, order:{ payment_id: 100 }, 
+          format: :json 
+        expect(response).to have_http_status(:not_found)
+      end
+      
+      it 'fails because missing payment param' do
+        put :update, id: order.id, format: :json 
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
+    describe 'GET index' do
+      it 'gets customer history orders' do
+        orders = create_list(:order, 5, customer_id: account.id)
+        get :index, customer_id: account.id, format: :json
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['message']).to be_nil
+        expect(json['object']).to eq(generate_json_list orders)
+      end
+    end
+
+    describe 'PUT cancel' do
+      it 'fails because current order not checked out' do
+        put :cancel, id: order.id, format: :json
+        expect(response).to have_http_status(:found)
+        json = JSON.parse(response.body)
+        expect(json['message']).to eq(generate_json_msg(:error, 
+          Message::Error::ORDER_CANCELLATION_FAILED))
+      end
+
+      it 'cancels order' do
+        order.update_attribute :status, Order::STATUS_CHECKOUT
+        order.update_attribute :restaurant_id, @restaurant.id
+        create(:order_item, order_id: order.id,
+          catering_id: @catering.id, quantity: 2)
+        @catering.update_attribute :order_count, 2
+        Debt.create loaner_id: @restaurant.merchant_id, 
+          debtor_id: account.id, amount: 100 
+        expect{
+          put :cancel, id: order.id, format: :json
+        }.to change(Transaction, :count) 
+        expect(response).to have_http_status(:ok)
+        expect(order.reload.status).to eq(Order::STATUS_CANCEL)
+        expect(@catering.reload.order_count).to eq(0)
+      end
+    end
+
+    describe 'GET show' do
+      it 'gets current order' do
+        create_list(:order_item, 5, order_id: order.id,
+          catering_id: @catering.id, quantity: 2)
+        get :show, id: order.id, format: :json
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['message']).to be_nil
+        expect(json['object']).to eq(order.as_json.stringify_keys)
+      end
+    end
+
+    describe 'PUT update' do
+      it 'fails because items in order is empty' do
+        put :update, id: order.id, order: {
+          payment_id: Payment::RECORD_CASH_ID }, format: :json
+        expect(response).to have_http_status(:found)
+        json = JSON.parse(response.body)
+        expect(json['message']).to eq(generate_json_msg(:warning, 
+          Message::Warning::ORDER_EMPTY))
+        expect(json['object']).to be_nil
+      end
+
+      it 'fails because items in order has expired' do
+        caterings = create_list :catering, 5
+        caterings.each do |catering|
+          create(:order_item, order_id: order.id, 
+            catering_id: catering.id, quantity: 1)
+        end
+        caterings.first.update_attribute(:available_until, DateTime.now)
+        put :update, id: order.id, order: {
+          payment_id: Payment::RECORD_CASH_ID }, format: :json
+        expect(response).to have_http_status(:found)
+        json = JSON.parse(response.body)
+        expect(json['message']).to eq(generate_json_msg(:warning, 
+          Message::Warning::ORDER_EXPIRED))
+        expect(json['object']).to be_nil
+      end
+
+      it 'checkouts order when order has only one item' do
+        create(:order_item, order_id: order.id,
+          catering_id: @catering.id, quantity: 2)
+        order.update_attribute :restaurant_id, @restaurant.id
+        expect {
+          put :update, id: order.id, order: {
+            payment_id: Payment::RECORD_CASH_ID }, format: :json
+        }.to change(Transaction, :count).and change(Debt, :count)
+        order.reload.status = Order::STATUS_CHECKOUT
+        expect(response).to have_http_status(:created)
+        expect(@catering.reload.order_count).to equal(2)
+        expect(session[:order]).to be_nil
+      end
+
+      it 'checkouts order when order has duplicate items' do
+        create_list(:order_item, 5, order_id: order.id,
+          catering_id: @catering.id, quantity: 2)
+        order.update_attribute :restaurant_id, @restaurant.id
+        expect {
+          put :update, id: order.id, order: {
+            payment_id: Payment::RECORD_CASH_ID }, format: :json
+        }.to change(Transaction, :count).and change(Debt, :count)
+        expect(response).to have_http_status(:created)
+        expect(@catering.reload.order_count).to equal(10)
+        expect(session[:order]).to be_nil
+      end
+    end
+  end
+end

@@ -7,4 +7,7 @@ class Customer < Account
   def orders
     Order.by_customer(self.id).includes(:cart)
   end
+
+  class AddressNotConfigured < StandardError
+  end
 end

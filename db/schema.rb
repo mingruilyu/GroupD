@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160918200834) do
+ActiveRecord::Schema.define(version: 20160925222224) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -51,23 +51,6 @@ ActiveRecord::Schema.define(version: 20160918200834) do
     t.datetime "updated_at",                              null: false
     t.integer  "customer_count", limit: 4,   default: 0,  null: false
     t.integer  "city_id",        limit: 4,   default: 1,  null: false
-  end
-
-  create_table "cart_items", force: :cascade do |t|
-    t.integer  "quantity",            limit: 4,     default: 1, null: false
-    t.integer  "cart_id",             limit: 4
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
-    t.text     "special_instruction", limit: 65535
-    t.integer  "catering_id",         limit: 4
-  end
-
-  create_table "carts", force: :cascade do |t|
-    t.integer  "restaurant_id", limit: 4
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.integer  "customer_id",   limit: 4,                 null: false
-    t.boolean  "status",                  default: false, null: false
   end
 
   create_table "categories", force: :cascade do |t|
@@ -159,13 +142,23 @@ ActiveRecord::Schema.define(version: 20160918200834) do
     t.datetime "updated_at",                            null: false
   end
 
+  create_table "order_items", force: :cascade do |t|
+    t.integer  "quantity",            limit: 4,     default: 1, null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.text     "special_instruction", limit: 65535
+    t.integer  "catering_id",         limit: 4
+    t.integer  "order_id",            limit: 4,                 null: false
+  end
+
   create_table "orders", force: :cascade do |t|
-    t.integer  "cart_id",        limit: 4,                null: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.integer  "restaurant_id",  limit: 4
+    t.datetime "created_at",                                                      null: false
+    t.datetime "updated_at",                                                      null: false
     t.integer  "transaction_id", limit: 4
-    t.decimal  "total_price",              precision: 10, null: false
-    t.integer  "customer_id",    limit: 4,                null: false
+    t.decimal  "total_price",              precision: 10, scale: 2, default: 0.0
+    t.integer  "customer_id",    limit: 4,                                        null: false
+    t.integer  "status",         limit: 1,                          default: 0,   null: false
   end
 
   create_table "payments", force: :cascade do |t|
@@ -192,13 +185,11 @@ ActiveRecord::Schema.define(version: 20160918200834) do
   end
 
   create_table "shippings", force: :cascade do |t|
-    t.integer  "status",               limit: 1, default: 0, null: false
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
-    t.datetime "estimated_arrival_at"
-    t.integer  "coordinate_id",        limit: 4
-    t.datetime "available_until",                            null: false
-    t.integer  "catering_id",          limit: 4
+    t.integer  "status",        limit: 1, default: 0, null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.integer  "coordinate_id", limit: 4
+    t.integer  "catering_id",   limit: 4
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -207,6 +198,7 @@ ActiveRecord::Schema.define(version: 20160918200834) do
     t.decimal  "amount",                precision: 10, default: 0, null: false
     t.datetime "created_at",                                       null: false
     t.datetime "updated_at",                                       null: false
+    t.integer  "purpose",     limit: 1,                default: 0, null: false
   end
 
 end

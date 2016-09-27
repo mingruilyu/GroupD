@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe DropoffsController, type: :controller do
     
-  let(:bad_request_path) { "#{Rails.root}/public/400.html" } 
+  let(:bad_request_path) { "#{Rails.root}/public/404.html" } 
   
   context 'not logged in' do
     it 'fails authentication' do
       get :index, merchant_id: 10, format: :json
-      expect(response).to have_http_status(:found)
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 
@@ -18,15 +18,14 @@ RSpec.describe DropoffsController, type: :controller do
     end
 
     let(:account) { subject.current_account }
-  let(:bad_request_path) { "#{Rails.root}/public/400.html" } 
 
     describe 'format sanitization' do
       it 'fails because not using json format' do
         get :index, merchant_id: 10
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:not_found)
         expect(response).to render_template(file: bad_request_path)
         post :create, merchant_id: 10
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:not_found)
         expect(response).to render_template(file: bad_request_path)
       end
     end

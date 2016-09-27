@@ -30,4 +30,7 @@ class Payment < ActiveRecord::Base
   def belongs_to_customer? customer_id 
     self.customer_id == customer_id
   end
+
+  class UnauthorizedReference < StandardError
+  end
 end
