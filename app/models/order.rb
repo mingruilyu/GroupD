@@ -3,8 +3,6 @@ class Order < ActiveRecord::Base
   belongs_to :customer
   has_many :order_items, dependent: :delete_all
 
-  validates_associated :restaurant, :customer
-
   TAX_RATE = 0.1
   STATUS_UNCHECKOUT = 0
   STATUS_CHECKOUT = 1
@@ -12,7 +10,8 @@ class Order < ActiveRecord::Base
   attr_accessor :payment_id
 
   scope :by_customer, ->(customer) { 
-    includes(:order_items).where(customer_id: customer) }
+    includes(:order_items).where(customer_id: customer).where('status != ?', STATUS_UNCHECKOUT) }
+  scope :by_status, ->(status) { where(status: status) }
 
   def taxes
     @taxes ||= self.subtotal * TAX_RATE
@@ -22,52 +21,89 @@ class Order < ActiveRecord::Base
     self.total_price = self.subtotal + self.taxes
   end
 
-  def T_checkout(params, customer_id)
-    self.lock!
-    self.L_check_empty
-    self.calculate_bill
-    transaction = Transaction.create sender_id: customer_id, 
-          receiver_id: self.restaurant.merchant_id,
-          amount: self.total_price, purpose: Transaction::TYPE_PAYMENT
-    self.transaction_id = transaction.id
-    self.payment_id = params[:payment_id]
-    self.save!
+  def checkout!(payment_id, customer_id)
+    # Check whether any item in the order has expired. 
+    if self.has_expired?
+      self.order_items.clear
+      raise Exceptions::StaleRecord.new(
+        Message::Warning::ORDER_EXPIRED, :warning, :gone) 
+    end
+
+    Order.transaction do
+      self.lock!
+      self.L_check_empty
+      self.calculate_bill
+      merchant_id = self.restaurant.merchant_id
+      # record transaction
+      transaction = Transaction.create sender_id: customer_id,
+        receiver_id: self.restaurant.merchant_id,
+        amount: self.total_price, purpose: Transaction::TYPE_PAYMENT
+      self.transaction_id = transaction.id
+      self.payment_id = payment_id
+      self.save!
+      # process payment
+      if self.payment_id == Payment::RECORD_CASH_ID
+        Debt.T_add_debt merchant_id, customer_id, self.total_price
+      else
+        # Todo embed other online payment platform APIs
+        # initiate transaction
+        yield
+      end
+      
+      count_update = self.summarize_catering_count_update 
+      Catering.T_increase_order_count count_update
+    end
   end
 
-  def T_cancel
-    self.lock!
-    self.L_check_checkout
-    self.update_attribute :status, STATUS_CANCEL
-    transaction = Transaction.create receiver_id: customer_id,
-      sender_id: self.restaurant.merchant_id, 
-      amount: self.total_price, purpose: Transaction::TYPE_REFUND
+  def cancel customer_id
+    Order.transaction do
+      count_update = self.summarize_catering_count_update 
+      Catering.T_decrease_order_count count_update
+      self.lock!
+      self.L_check_checkout
+      self.update_attribute :status, STATUS_CANCEL
+      merchant_id = self.restaurant.merchant_id
+      Debt.T_pay_debt merchant_id, customer_id, self.total_price
+      Transaction.create receiver_id: customer_id, 
+        sender_id: merchant_id, amount: self.total_price, 
+        purpose: Transaction::TYPE_REFUND
+    end
   end
 
-  def T_clear
-    self.lock!
-    self.L_check_modifiable
-    self.order_items.clear
-    self.restaurant_id = nil
-    self.save!
+  def clear_items
+    Order.transaction do
+      self.lock!
+      self.L_check_modifiable
+      self.order_items.clear
+      self.restaurant_id = nil
+      self.save!
+    end
   end
 
-  def T_add_item(params, catering)
-    self.lock!
-    self.L_check_modifiable
-    self.L_update_order_restaurant catering
-    order_item = OrderItem.new(
-      quantity:             params[:quantity].to_i,
-      order_id:             self.id,
-      catering_id:          catering.id,
-      special_instruction:  params[:special_instruction]
-    )
-    order_item.save!
+  def add_item(params, catering)
+    Order.transaction do
+      self.lock!
+      self.L_check_modifiable
+      # we should obtain a shared lock here in case that catering is 
+      # being destroyed. 
+      catering.lock! 'LOCK IN SHARE MODE'
+      order_item = OrderItem.new(
+        quantity:             params[:quantity].to_i,
+        order_id:             self.id,
+        catering_id:          catering.id,
+        special_instruction:  params[:special_instruction]
+      )
+      order_item.save!
+      self.L_update_order_restaurant catering
+    end
   end
 
-  def T_remove_item(item)
-    self.lock!
-    self.L_check_modifiable
-    item.destroy!
+  def remove_item(item)
+    Order.transaction do
+      self.lock!
+      self.L_check_modifiable
+      item.destroy!
+    end
   end
 
   def subtotal 
@@ -82,7 +118,7 @@ class Order < ActiveRecord::Base
 
   def has_expired?
     self.order_items.each do |item|
-      return true unless item.catering.can_order?
+      return true unless (item.catering.present? && item.catering.can_order?)
     end
     return false
   end
@@ -123,15 +159,17 @@ class Order < ActiveRecord::Base
 
   protected
     def L_check_modifiable
-      raise Exceptions::OrderStatusError unless self.unchecked_out?
+      raise Exceptions::BadRequest unless self.unchecked_out?
     end
 
     def L_check_empty
-      raise Exceptions::OrderEmpty if self.order_items.empty?
+      raise Exceptions::NotEffective.new(
+        Message::Warning::ORDER_EMPTY, :warning, :found) \
+        if self.order_items.empty?
     end
 
     def L_check_checkout
-      raise Exceptions::OrderStatusError unless self.checked_out?
+      raise Exceptions::BadRequest unless self.checked_out?
     end
 
     def checked_out?

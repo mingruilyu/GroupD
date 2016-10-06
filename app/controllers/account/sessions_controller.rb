@@ -1,4 +1,4 @@
-class SessionsController < Devise::SessionsController
+class Account::SessionsController < Devise::SessionsController
   def create
     super do
       if session[:cart].present?

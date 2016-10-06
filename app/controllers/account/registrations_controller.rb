@@ -1,4 +1,4 @@
-class RegistrationsController < Devise::RegistrationsController
+class Account::RegistrationsController < Devise::RegistrationsController
   def create
     super do
       type = session[:type]

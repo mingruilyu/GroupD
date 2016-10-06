@@ -1,9 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe DropoffsController, type: :controller do
+RSpec.describe Merchant::DropoffsController, type: :controller do
     
-  let(:bad_request_path) { "#{Rails.root}/public/404.html" } 
-  
   context 'not logged in' do
     it 'fails authentication' do
       get :index, merchant_id: 10, format: :json
@@ -12,21 +10,17 @@ RSpec.describe DropoffsController, type: :controller do
   end
 
   context 'logged in' do
-
     before :each do
       login_merchant
+      @account = subject.current_account
     end
-
-    let(:account) { subject.current_account }
 
     describe 'format sanitization' do
       it 'fails because not using json format' do
         get :index, merchant_id: 10
         expect(response).to have_http_status(:not_found)
-        expect(response).to render_template(file: bad_request_path)
         post :create, merchant_id: 10
         expect(response).to have_http_status(:not_found)
-        expect(response).to render_template(file: bad_request_path)
       end
     end
 
@@ -34,14 +28,14 @@ RSpec.describe DropoffsController, type: :controller do
 
       it 'fails because no authorization' do
         get :index, merchant_id: 100, format: :json 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:not_found)
         post :create, merchant_id: 100, format: :json
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:not_found)
       end
 
       it 'lists dropoffs of current account' do
-        dropoffs = create_list(:dropoff, 2, merchant_id: account.id)
-        get :index, merchant_id: account.id, format: :json
+        dropoffs = create_list(:dropoff, 2, merchant_id: @account.id)
+        get :index, merchant_id: @account.id, format: :json
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
         expect(json['message']).to be_nil
@@ -54,9 +48,10 @@ RSpec.describe DropoffsController, type: :controller do
       end
 
       it 'creates dropoff' do
+        building = create :building
         expect {
-          post :create, merchant_id: account.id, 
-            dropoff: { building_id: 1 }, format: :json 
+          post :create, merchant_id: @account.id, 
+            building_id: building.id, format: :json 
         }.to change(Dropoff, :count)
         expect(response).to have_http_status(:created)
       end

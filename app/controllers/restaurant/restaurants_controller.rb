@@ -1,6 +1,21 @@
-class RestaurantsController < ApplicationController
+class Restaurant::RestaurantsController < ApplicationController
   before_action :set_restaurant, only: [:show, :list_dishes, :edit, :update, 
                                         :destroy]
+  def index_catering
+    caterings = Catering.by_restaurant @restaurant.id 
+    render json: Response::JsonResponse.new(caterings)
+  end
+
+  def recent_catering
+    caterings = Catering.active_by_restaurant @restaurant.id
+    render json: Response::JsonResponse.new(caterings)
+  end
+
+  def create_catering
+    Catering.create_caterings @combo, @buildings, @restaurant, 
+            @date_int, @deadline_int, @delivery_time_int
+    render nothing: true, status: :created 
+  end
 
   # GET /restaurants
   # GET /restaurants.json

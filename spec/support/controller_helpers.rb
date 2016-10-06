@@ -6,7 +6,7 @@ module ControllerHelpers
 
   def login_merchant
     @request.env["devise.mapping"] = Devise.mappings[:account]
-    sign_in FactoryGirl.create(:merchant)
+    sign_in (Merchant.first || FactoryGirl.create(:merchant))
   end
 
   def generate_json_list(objects)

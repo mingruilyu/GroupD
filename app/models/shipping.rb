@@ -1,7 +1,7 @@
 class Shipping < ActiveRecord::Base
   belongs_to :coordinate
 
-  scope :active, -> { where(status: STATUS_WAITING) }
+  scope :not_done, -> { where('status != ?', STATUS_DONE) }
 
   STATUS_WAITING    = 0
   STATUS_DEPART     = 1

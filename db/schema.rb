@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160925222224) do
+ActiveRecord::Schema.define(version: 20161005223936) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -35,13 +35,6 @@ ActiveRecord::Schema.define(version: 20160925222224) do
 
   add_index "accounts", ["email"], name: "index_accounts_on_email", unique: true, using: :btree
   add_index "accounts", ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true, using: :btree
-
-  create_table "address_books", force: :cascade do |t|
-    t.integer  "merchant_id", limit: 4, null: false
-    t.integer  "building_id", limit: 4, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
 
   create_table "buildings", force: :cascade do |t|
     t.string   "name",           limit: 255, default: "", null: false
@@ -98,6 +91,11 @@ ActiveRecord::Schema.define(version: 20160925222224) do
     t.datetime "created_at",                                          null: false
     t.datetime "updated_at",                                          null: false
     t.integer  "restaurant_id", limit: 4,                             null: false
+    t.integer  "dish_1",        limit: 4
+    t.integer  "dish_2",        limit: 4
+    t.integer  "dish_3",        limit: 4
+    t.integer  "dish_4",        limit: 4
+    t.integer  "dish_5",        limit: 4
   end
 
   create_table "companies", force: :cascade do |t|
@@ -125,6 +123,7 @@ ActiveRecord::Schema.define(version: 20160925222224) do
     t.integer  "restaurant_id", limit: 4,                             default: 0
     t.datetime "created_at",                                                        null: false
     t.datetime "updated_at",                                                        null: false
+    t.integer  "status",        limit: 1,                             default: 0,   null: false
   end
 
   create_table "dropoffs", force: :cascade do |t|

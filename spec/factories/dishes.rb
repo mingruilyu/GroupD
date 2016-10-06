@@ -1,6 +1,13 @@
 FactoryGirl.define do
   factory :dish do
-    restaurant_id 1
+    restaurant_id {
+      restaurant = Restaurant.first
+      if restaurant
+        restaurant.id
+      else
+        1
+      end
+    }
     sequence(:name) { |n| "tariyaki chicken#{n}" }
     price         10.0
     image_url     'http://dish/image.jpg'       

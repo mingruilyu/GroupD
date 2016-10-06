@@ -1,43 +1,67 @@
 Rails.application.routes.draw do
 
-  root      'welcome#index'
-
   devise_for :accounts, controllers: { 
-    registrations:  'registrations',
-    sessions:       'sessions'
+    registrations:  'devise/registrations',
+    sessions:       'devise/sessions'
   }
 
-  resources :merchants do
+  resources :merchants, only: [:show, :update], module: :merchant do
     resources :dropoffs, only: [:index, :create]
+
+    resources :restaurants, only: [:index, :create]
   end
-  resource :dropoff, only: :destroy
 
-  resources :customers do
-    resources :orders, only: [:index]
-    resources :payments
-    resource  :address, only: [:edit, :update]
+  namespace :merchant do
+    resources :dropoffs, only: :destroy
   end
-  resources :orders, only: [:show, :update, :destroy]
-  put 'orders/:id/cancel' => 'orders#cancel'
+  
+  resources :customers, module: :customer do
+    resources :orders, only: :index
+    put 'orders/recent' => 'orders#recent'
 
-  resources :cellphones
+    resources :payments, only: [:create, :destroy, :show, :index]
+  end
 
-  get 'orders/:order_id/order_items' => 'order_items#index'
-  post 'orders/:order_id/order_items' => 'order_items#create'
-  get 'orders/:order_id/order_items/new' => 'order_items#new'
-  resources :order_items, only: [:destroy]
-    
-  resources :shippings
-
-  resources :restaurants do
-    resources :dishes
-    resources :caterings
-    member do
-      get 'list_dishes' => 'restaurants#list_dishes', as: :list_dishes
+  namespace :customer do
+    resources :orders, only: [:show, :update, :destroy] do
+      resources :order_items, only: [:index, :create, :new]
     end
+    put 'orders/:id/cancel' => 'orders#cancel' 
+    resources :order_items, only: [:destroy]
+
+    get 'caterings/recent' => 'caterings#recent'
+    resources :buildings, only: [:show]
+  end
+      
+  resources :restaurants, module: :restaurant, only: [:show, :update,
+    :destroy] do
+    get 'shippings/recent' => 'shippings#recent'
+
+    resources :dishes, only: [:index, :create]
+
+    resources :combos, only: [:index, :create]
+
+    resources :caterings, only: [:index, :create]
+    get 'caterings/recent' => 'caterings#recent'
+  end
+
+  namespace :restaurant do
+    resources :caterings, only: [:show, :update, :destroy]
+
+    resources :shippings, only: [:show, :update]
+    get 'shippings/:id/location' => 'shippings#location'
+    put 'shippings/:id/location' => 'shippings#location'
+
+    resources :combos, only: [:destroy, :update, :show]
+
+    resources :dishes, only: [:destroy, :update, :show]
   end
  
   resources :locations
+  
+  resources :buildings
+
+  resources :cellphones
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

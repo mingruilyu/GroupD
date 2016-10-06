@@ -9,11 +9,7 @@ class Building < ActiveRecord::Base
     "#{city.name}-#{company.name}-#{name}"
   end
 
-  def self.test_print
-    puts 'BUILDING TEST'
-  end
-
   def as_json(options={})
-    super(except: [:created_at, :updated_at])
+    super except: [:created_at, :updated_at]
   end
 end

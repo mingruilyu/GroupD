@@ -2,14 +2,21 @@ class ApplicationController < ActionController::Base
   include Filter
   include ExceptionHandler
 
+  #rescue_from StandardError, with: :internal_server_error
+  rescue_from Exceptions::StaleRecord, with: :gone
+  rescue_from Exceptions::NotEffective, with: :found
+  rescue_from Exceptions::BadRequest, with: :bad_request
+  rescue_from Exceptions::BadParameter, with: :bad_request
   rescue_from Exceptions::NotAuthorized, with: :unauthorized
+  rescue_from Exceptions::InvalidSetting, with: :bad_request
   rescue_from ActionController::UnknownFormat, with: :not_found
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ParameterMissing, with: :bad_request
+  rescue_from ActiveRecord::RecordInvalid, with: :bad_request
 
   protect_from_forgery with: :null_session
 
-  before_action :request_format_filter 
+  before_action :format_sanitization 
 	before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
@@ -33,18 +40,18 @@ class ApplicationController < ActionController::Base
       if account_signed_in? && session[:order].present?
         # there is an order in the current session and has not been
         # checked out
-        @order ||= Order.includes(:order_items).find(session[:order])
+        @current_order ||= Order.includes(:order_items).find(session[:order])
       elsif account_signed_in?
         # account just logged in.
-        @order = Order.includes(:order_items).find_by_customer_id_and_status(
+        @current_order = Order.includes(:order_items).find_by_customer_id_and_status(
           current_account.id, Order::STATUS_UNCHECKOUT)
-        if @order.nil?
+        if @current_order.nil?
           # the account does not have any order that has not been checked out. 
           # out.
-          @order = Order.create(customer_id: current_account.id)
+          @current_order = Order.create(customer_id: current_account.id)
         end
-        session[:order] = @order.id
-        @order
+        session[:order] = @current_order.id
+        @current_order
       end
     end  
 

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe OrderItemsController, type: :controller do
+RSpec.describe Customer::OrderItemsController, type: :controller do
 
   context 'not logged in' do
     describe 'signin filter' do
@@ -37,7 +37,7 @@ RSpec.describe OrderItemsController, type: :controller do
 
       it 'fails because order does not exist' do
         post :create, order_id: 100, catering_id: 100, format: :json
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:not_found)
       end
 
       it 'fails because customer not authorized' do
@@ -45,7 +45,7 @@ RSpec.describe OrderItemsController, type: :controller do
         order_item = create :order_item, order_id: 100
         post :create, order_id: order.id, catering_id: 100, 
           format: :json
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:not_found)
         delete :destroy, id: order_item.id, format: :json
         expect(response).to have_http_status(:unauthorized)
       end
@@ -63,8 +63,8 @@ RSpec.describe OrderItemsController, type: :controller do
 
       it 'creates order item' do
         expect {
-          post :create, order_id: order.id, order_item: { 
-            catering_id: catering.id, quantity: 1 }, format: :json
+          post :create, order_id: order.id, catering_id: catering.id, 
+          quantity: 1, format: :json
         }.to change(OrderItem, :count).and change(
           order.reload.order_items, :count) 
         expect(response).to have_http_status(:created)
@@ -72,18 +72,17 @@ RSpec.describe OrderItemsController, type: :controller do
 
       it 'fails because catering expired' do
         catering.update_attribute :available_until, Time.now 
-        post :create, order_id: order.id, order_item: { 
-          catering_id: catering.id }, format: :json
+        post :create, order_id: order.id, catering_id: catering.id, 
+          format: :json
         expect(response).to have_http_status(:found)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(
           :error, Message::Error::CATERING_EXPIRED))
-
       end
 
       it 'fails because quantity is over limit' do
-        post :create, order_id: order.id, order_item: { 
-          catering_id: catering.id, quantity: 11 }, format: :json
+        post :create, order_id: order.id, catering_id: catering.id, 
+          quantity: 11, format: :json
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
@@ -91,8 +90,8 @@ RSpec.describe OrderItemsController, type: :controller do
       end
 
       it 'fails because quantity is under limit' do
-        post :create, order_id: order.id, order_item: { 
-          catering_id: catering.id, quantity: 0 }, format: :json
+        post :create, order_id: order.id, catering_id: catering.id, 
+          quantity: 0, format: :json
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
@@ -101,8 +100,8 @@ RSpec.describe OrderItemsController, type: :controller do
 
       it 'fails because catering has expired' do
         catering.update_attribute :available_until, Time.now
-        post :create, order_id: order.id, order_item: { 
-          catering_id: catering.id, quantity: 1 }, format: :json
+        post :create, order_id: order.id, catering_id: catering.id, 
+          quantity: 1, format: :json
         expect(response).to have_http_status(:found)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
