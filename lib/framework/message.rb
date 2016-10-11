@@ -14,6 +14,8 @@ module Message
     ORDER_EMPTY = 2
     ORDER_EXPIRED = 3
     CLEAR_ORDER = 4
+    CATERING_CREATED = 5
+    DUPLICATE_RESTAURANT_NAME = 6
   end
 
   module Notice

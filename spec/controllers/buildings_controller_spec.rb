@@ -1,5 +1,4 @@
 require 'rails_helper'
 
-RSpec.describe BuildingsController, type: :controller do
-
+RSpec.describe Customer::BuildingsController, type: :controller do
 end

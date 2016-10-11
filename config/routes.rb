@@ -8,11 +8,24 @@ Rails.application.routes.draw do
   resources :merchants, only: [:show, :update], module: :merchant do
     resources :dropoffs, only: [:index, :create]
 
-    resources :restaurants, only: [:index, :create]
+    resources :restaurants, only: [:index, :create] do
+      resources :caterings, only: :create
+
+      resources :dishes, only: :create
+
+      resources :combos, only: :create
+    end
+
+    resources :caterings, only: [:update, :destroy]
+
+    resources :dishes, only: [:destroy, :update]
+
+    resources :combos, only: [:destroy, :update]
   end
 
   namespace :merchant do
     resources :dropoffs, only: :destroy
+    resources :restaurants, only: [:update, :destroy]
   end
   
   resources :customers, module: :customer do
@@ -33,28 +46,29 @@ Rails.application.routes.draw do
     resources :buildings, only: [:show]
   end
       
-  resources :restaurants, module: :restaurant, only: [:show, :update,
-    :destroy] do
+  resources :restaurants, module: :restaurant, only: :show do
     get 'shippings/recent' => 'shippings#recent'
 
-    resources :dishes, only: [:index, :create]
+    resources :dishes, only: :index
 
-    resources :combos, only: [:index, :create]
+    resources :combos, only: :index
 
-    resources :caterings, only: [:index, :create]
+    resources :caterings, only: :index
     get 'caterings/recent' => 'caterings#recent'
   end
 
   namespace :restaurant do
-    resources :caterings, only: [:show, :update, :destroy]
+    resources :caterings, only: :show
+
+    resources :combos, only: :show
+
+    resources :dishes, only: :show
 
     resources :shippings, only: [:show, :update]
     get 'shippings/:id/location' => 'shippings#location'
     put 'shippings/:id/location' => 'shippings#location'
 
-    resources :combos, only: [:destroy, :update, :show]
-
-    resources :dishes, only: [:destroy, :update, :show]
+    get 'new' => 'restaurants#new'
   end
  
   resources :locations

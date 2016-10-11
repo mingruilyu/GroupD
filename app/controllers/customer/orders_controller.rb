@@ -1,9 +1,5 @@
 class Customer::OrdersController < ApplicationController
 
-  before_action :authenticate_account!
-  before_action :param_sanitization
-  before_action :authorization
-
   def index
     orders = Order.by_customer(current_account.id)
     render json: Response::JsonResponse.new(orders)

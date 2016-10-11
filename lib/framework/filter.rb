@@ -20,18 +20,7 @@ module Filter
     targets.each do |name, type| 
       param = params.require name
       handler = Sanitization::DISPATCHER[type]
-      unless handler.nil?
-        if param.is_a? Array 
-          var = []
-          param.each do |item|
-            var.append(handler.call item)
-          end
-        else
-          var = handler.call param
-        end
-      else
-        var = param
-      end
+      var = handler.nil? ? param : (handler.call param)
       var_name = (name.to_s.end_with? 'id') ? type.to_s : name.to_s
       self.instance_variable_set("@#{var_name}", var)
     end
@@ -67,11 +56,29 @@ module Sanitization
     merchant:   Proc.new { |id| Merchant.find id },
     combo:      Proc.new { |id| Combo.find id },
     building:   Proc.new { |id| Building.find id },
+    buildings:  Proc.new { |ids| 
+      buildings = [] 
+      ids.each do |id|
+        buildings.append(Building.find id)
+      end
+      buildings
+    },
     catering:   Proc.new { |id| Catering.find id },
+    category:   Proc.new { |id| Category.find id },
+    city:       Proc.new { |id| City.find id },
     restaurant: Proc.new { |id| Restaurant.find id },
     order:      Proc.new { |id| Order.find id },
     order_item: Proc.new { |id| OrderItem.find id },
     dish:       Proc.new { |id| Dish.find id },
+    dishes:     Proc.new { |ids| 
+      dishes = []
+      raise Exceptions::BadParameter \
+        if ids.length > Combo::MAX_DISH_COUNT
+      ids.each do |id|
+        dishes.append(Dish.find id)
+      end
+      dishes
+    },
     payment:    Proc.new { |id| id.to_i == Payment::RECORD_CASH_ID ? \
       Payment.record_cash : (Payment.find id) },
     date_int:   Proc.new { |date| 

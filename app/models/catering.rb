@@ -4,12 +4,16 @@ class Catering < ActiveRecord::Base
   belongs_to :restaurant
   belongs_to :building
 
+  STATUS_ACTIVE = 0
+  STATUS_DONE = 1
+  STATUS_CANCELLED = 2
+
   validate :order_deadline_should_be_valid, 
     :arrival_time_should_be_valid, :combo_sould_belongs_to_restaurnt
   validates :estimated_arrival_at, :available_until, :combo_id, 
     :restaurant_id, :shipping_id, :building_id, presence: true
 
-  scope :active, -> { joins(:shipping).merge(Shipping.not_done) }
+  scope :active, -> { where(status: STATUS_ACTIVE) }
   scope :by_restaurant, ->(restaurant) { 
     where restaurant_id: restaurant }
   scope :by_building, ->(building) { where building_id: building }
@@ -17,6 +21,8 @@ class Catering < ActiveRecord::Base
     self.active.merge self.by_restaurant(restaurant) }
   scope :active_by_building, ->(building) {
     self.active.merge self.by_building(building) }
+  scope :active_by_combo, ->(combo) {
+    self.active.merge where(combo_id: combo) }
   # There could be moment the merchant switched the catering status
   # while customers are still ordering. To avoid race condition, we
   # simply forbid user's order SHUTTING_TIME_BEFORE_ORDER_DEADLINE
@@ -28,6 +34,10 @@ class Catering < ActiveRecord::Base
   def can_order?
     SHUTTING_TIME_BEFORE_ORDER_DEADLINE.second.from_now < \
       self.available_until
+  end
+
+  def done?
+    self.status == STATUS_DONE
   end
 
   def update_time(delivery_date, deadline, delivery_time)
@@ -42,6 +52,7 @@ class Catering < ActiveRecord::Base
   def self.create_caterings(combo, buildings, restaurant,
     delivery_date, deadline, delivery_time)
     Catering.transaction do
+      restaurant.lock! 'LOCK IN SHARE MODE'
       buildings.each do |building|
         shipping = Shipping.create
         catering = Catering.new combo_id: combo.id, 
@@ -54,23 +65,16 @@ class Catering < ActiveRecord::Base
     end
   end
 
-  def self.cancel_catering(catering, merchant_id)
+  def cancel
+    if self.done?
+      raise Exceptions::NotEffective
+    end
     Catering.transaction do
-      catering.lock!
-      catering.shipping.destroy!
-      price = catering.combo.price
-      # generate refund transaction for all order items that have
-      # been checked out
-      order_items = OrderItem.checked_by_catering(catering.id)
-      order_items.each do |item|
-        customer_id = item.order.customer_id
-        refund = price * item.quantity
-        Transaction.create sender_id: merchant_id, 
-          receiver_id: customer_id, amount: refund,
-          purpose: Transaction::TYPE_REFUND
-        Debt.T_pay_debt(merchant_id, customer_id, refund)
-      end
-      catering.destroy!
+      self.lock!
+      self.shipping.destroy!
+      self.status = STATUS_CANCELLED 
+      self.shipping_id = 0
+      self.save!
     end
   end
 

@@ -11,7 +11,7 @@ module ExceptionHandler
     render file: '/public/404.html', status: :not_found
   end
 
-  def bad_request
+  def bad_request(exception)
     render file: '/public/404.html', status: :bad_request
   end
 

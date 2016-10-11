@@ -1,9 +1,5 @@
 class Customer::OrderItemsController < ApplicationController
 
-  before_action :authenticate_account!
-  before_action :param_sanitization
-  before_action :authorization
-
   def create
     begin 
       @order.add_item params, @catering

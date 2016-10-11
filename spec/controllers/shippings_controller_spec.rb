@@ -1,8 +1,4 @@
 require 'rails_helper'
 
-RSpec.describe ShippingsController, type: :controller do
-  
-  before :each do
-    login_merchant
-  end
+RSpec.describe Restaurant::ShippingsController, type: :controller do
 end

@@ -13,4 +13,8 @@ class Shipping < ActiveRecord::Base
     self.status == STATUS_WAITING
   end
 
+  def done?
+    self.status == STATUS_DONE
+  end
+
 end

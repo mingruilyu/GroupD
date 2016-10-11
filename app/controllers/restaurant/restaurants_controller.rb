@@ -1,94 +1,23 @@
 class Restaurant::RestaurantsController < ApplicationController
-  before_action :set_restaurant, only: [:show, :list_dishes, :edit, :update, 
-                                        :destroy]
-  def index_catering
-    caterings = Catering.by_restaurant @restaurant.id 
-    render json: Response::JsonResponse.new(caterings)
-  end
 
-  def recent_catering
-    caterings = Catering.active_by_restaurant @restaurant.id
-    render json: Response::JsonResponse.new(caterings)
-  end
-
-  def create_catering
-    Catering.create_caterings @combo, @buildings, @restaurant, 
-            @date_int, @deadline_int, @delivery_time_int
-    render nothing: true, status: :created 
-  end
-
-  # GET /restaurants
-  # GET /restaurants.json
-  def index
-    @restaurants = Restaurant.all
-  end
-
-  # GET /restaurants/1
-  # GET /restaurants/1.json
   def show
+    render json: Response::JsonResponse.new(@restaurant)
   end
 
-  # GET /restaurants/new
   def new
-    @location = Location.new
-    @restaurant = Restaurant.new
-    @restaurant.location_id = @location.id
-  end
-
-  # GET /restaurants/1/edit
-  def edit
-  end
-
-  # POST /restaurants
-  # POST /restaurants.json
-  def create
-    @restaurant = Restaurant.new(restaurant_params)
-    @restaurant.account_id = current_account.id
-    respond_to do |format|
-      if @restaurant.save
-        format.html { redirect_to merchant_path(current_account), notice: 'Restaurant was successfully created.' }
-        format.json { render :show, status: :created, location: @restaurant }
-      else
-        format.html { render :new }
-        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /restaurants/1
-  # PATCH/PUT /restaurants/1.json
-  def update
-    respond_to do |format|
-      if @restaurant.update(restaurant_params)
-        format.html { redirect_to @restaurant, notice: 'Restaurant was successfully updated.' }
-        format.json { render :show, status: :ok, location: @restaurant }
-      else
-        format.html { render :edit }
-        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /restaurants/1
-  # DELETE /restaurants/1.json
-  def destroy
-    @restaurant.destroy
-    respond_to do |format|
-      format.html { redirect_to restaurants_url, notice: 'Restaurant was successfully destroyed.' }
-      format.json { head :no_content }
+    if Restaurant.name_valid? @name
+      render nothing: true
+    else
+      render json: Response::JsonResponse.new(nil, warning: 
+        Message::Warning::DUPLICATE_RESTAURANT_NAME), 
+        status: :conflict
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_restaurant
-      @restaurant = Restaurant.find(params[:id])
-    end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def restaurant_params
-      params.require(:restaurant)
-        .permit(:name, :location_id, :category_id, :open_at, :close_at,
-                :image_url, :certificate_url, :merchant_id)
+    
+    def params_sanitization
+      sanitize :show, id: :restaurant
+      sanitize :new, name: :name
     end
 end

@@ -40,4 +40,10 @@ class Dish < ActiveRecord::Base
     hash['price'] = self.price.as_json
     hash
   end
+
+  def belongs_to?(merchant_id)
+    return false if Restaurant.where(id: self.restaurant_id, 
+      merchant_id: merchant_id).empty?
+    true
+  end
 end

@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   include ExceptionHandler
 
   #rescue_from StandardError, with: :internal_server_error
+#=begin
   rescue_from Exceptions::StaleRecord, with: :gone
   rescue_from Exceptions::NotEffective, with: :found
   rescue_from Exceptions::BadRequest, with: :bad_request
@@ -13,10 +14,13 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ParameterMissing, with: :bad_request
   rescue_from ActiveRecord::RecordInvalid, with: :bad_request
-
+#=end
   protect_from_forgery with: :null_session
 
   before_action :format_sanitization 
+  before_action :authenticate_account!, if: :account_based?
+  before_action :params_sanitization
+  before_action :authorization, if: :account_based?
 	before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
@@ -63,6 +67,10 @@ class ApplicationController < ActionController::Base
       else
         merchant_path(current_account)
       end
+    end
+
+    def account_based?
+      !request.path.start_with? '/restaurant'
     end
 end
 

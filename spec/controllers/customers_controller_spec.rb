@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe CustomersController, type: :controller do
+RSpec.describe Customer::CustomersController, type: :controller do
 
 end

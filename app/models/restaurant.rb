@@ -2,59 +2,44 @@ class Restaurant < ActiveRecord::Base
 
   belongs_to :merchant
   belongs_to :category
-  belongs_to :location
+  belongs_to :location 
   belongs_to :city
-  has_many   :dishes
-  has_many   :combos
-  has_many   :dropoffs
+  has_many :dishes
+  has_many :combos
 
-  validates :name, presence: true, uniqueness: true
-  validates :certificate_url, presence: true
-  validates :image_url, presence: true
+  STATUS_OPEN = 0
+  STATUS_CLOSED = 1
 
-  validate :open_close_time_should_be_valid
+  validates :name, uniqueness: true
+  validates :image_url, :name, presence: true
 
-  validates_associated :category, :city, :merchant
+  scope :open_by_merchant, ->(merchant) { 
+    where(merchant_id: merchant, status: STATUS_OPEN) }
 
-  def closed_now?
-    time = Time.now
-    time.hour > close_at / 100 || time.hour < open_at / 100 \
-      || (time.min > close_at % 100 || time.min < open_at % 100)
+  def self.name_valid?(name)
+    Restaurant.find_by_name(name).nil?
   end
 
-  def active_combos
-    Combo.active_by_restaurant(self.id).distinct.includes(:shippings) 
+  def self.create_restaurant(merchant_id, name, location, image_url, category, 
+    city)
+    Restaurant.create! merchant_id: merchant_id, name: name, 
+      location_id: location, image_url: image_url, 
+      category_id: category.id, city_id: city.id
   end
 
-  def dishes
-    Dish.where(restaurant_id: self.id, type: 'Dish')
-  end
-  
-  def transactions
-    @transactions
+  def update name, location_id, image_url
+    self.update_attributes name: name, location_id: location_id, 
+      image_url: image_url
   end
 
-  def revenue
-    sum = 0
-  end
-
-  def loans
-    # user's debts is merchant's loan
-    self.debt
-  end
-  
-  private
-
-    def open_close_time_should_be_valid
-      if self.open_at > self.close_at
-        errors.add(:base, 
-          I18n.t('restaurant.error.OPEN_LATER_THAN_CLOSE'))
-      end
+  def close
+    Restaurant.transaction do
+      self.lock!
+      self.update_attribute :status, STATUS_CLOSED
     end
+  end
 
-    def category_should_be_valid 
-      unless Category.find(self.category_id)
-        errors.add(:base, I18n.t('category.error.INVALID_CATEGORY'))
-      end
-    end
+  def as_json(options={})
+    super only: [:name, :image_url, :category_id, :location_id]
+  end
 end

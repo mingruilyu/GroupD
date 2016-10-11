@@ -1,4 +1,4 @@
-class ShippingsController < ApplicationController
+class Restaurant::ShippingsController < ApplicationController
   before_action :set_shipping, only: [:show, :edit, :update, :destroy]
 
   # GET /shippings

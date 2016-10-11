@@ -1,7 +1,4 @@
 class Merchant::DropoffsController < ApplicationController
-  before_action :authenticate_account!
-  before_action :param_sanitization
-  before_action :authorization
 
   def index
     @dropoffs = Dropoff.by_merchant current_account.id 
@@ -23,7 +20,7 @@ class Merchant::DropoffsController < ApplicationController
     end
 
     def authorization
-      authorize :create do
+      authorize [:create, :index] do
         @merchant.id == current_account.id
       end
     end
