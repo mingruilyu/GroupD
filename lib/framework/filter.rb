@@ -50,11 +50,13 @@ module Sanitization
   NAME_REGEX = /[[:alpha:]][\s[[:alnum:]]_]*/
   HTTP_REGEX = /http:\/\/.*/
   INT_REGEX = /[[:digit:]]*/
+  QUERY_REGEX = /([[:alnum:]])+([[:blank:]]|[[:alnum:]])*/
 
   DISPATCHER = {
     customer:   Proc.new { |id| Customer.find id },
     merchant:   Proc.new { |id| Merchant.find id },
     combo:      Proc.new { |id| Combo.find id },
+    company:    Proc.new { |id| Company.find id },
     building:   Proc.new { |id| Building.find id },
     buildings:  Proc.new { |ids| 
       buildings = [] 
@@ -91,6 +93,10 @@ module Sanitization
       Sanitization.sanitize_text(text.strip) },
     url:        Proc.new { |url|
       Sanitization.sanitize_url(url.strip) },
+    coord:      Proc.new { |coordinate| 
+      Sanitization.sanitize_coordinate coordinate },
+    query:      Proc.new { |query| 
+      Sanitization.sanitize_query query },
   }
 
   def self.sanitize_time_int(time_int)
@@ -137,4 +143,13 @@ module Sanitization
     text
   end
 
+  def self.sanitize_coordinate(coord)
+    raise Exceptions::BadParameter unless Float(coord) rescue false
+    coord.to_f
+  end
+
+  def self.sanitize_query(query)
+    raise Exceptions::BadParameter unless query =~ QUERY_REGEX
+    ".*(#{query.split.join('|')}).*"
+  end
 end

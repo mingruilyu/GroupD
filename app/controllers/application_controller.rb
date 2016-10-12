@@ -70,7 +70,8 @@ class ApplicationController < ActionController::Base
     end
 
     def account_based?
-      !request.path.start_with? '/restaurant'
+      path = request.path
+      (path.start_with? '/customer') || (path.start_with? '/merchant')
     end
 end
 

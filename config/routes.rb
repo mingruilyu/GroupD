@@ -42,8 +42,6 @@ Rails.application.routes.draw do
     put 'orders/:id/cancel' => 'orders#cancel' 
     resources :order_items, only: [:destroy]
 
-    get 'caterings/recent' => 'caterings#recent'
-    resources :buildings, only: [:show]
   end
       
   resources :restaurants, module: :restaurant, only: :show do
@@ -71,10 +69,19 @@ Rails.application.routes.draw do
     get 'new' => 'restaurants#new'
   end
  
-  resources :locations
+  resources :locations do
+    collection do
+      get 'query'
+    end
+  end
   
-  resources :buildings
+  get 'buildings/coord' => 'buildings#query_by_coord'
+  get 'buildings/city_company' => 'buildings#query_by_city_company'
+  get 'buildings/address_name' => 'buildings#fuzzy_query_by_address_name'
 
+  resources :companies, only: :index
+  get 'companies/:name' => 'companies#query'
+  
   resources :cellphones
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :company do
-    name            'Oracle'
+    sequence(:name)     { |n| "oracle#{n}" }
   end
 end

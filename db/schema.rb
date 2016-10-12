@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161010052455) do
+ActiveRecord::Schema.define(version: 20161012053142) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",  null: false
@@ -136,11 +136,11 @@ ActiveRecord::Schema.define(version: 20161010052455) do
   end
 
   create_table "locations", force: :cascade do |t|
-    t.decimal  "coord_x",                precision: 10, null: false
-    t.decimal  "coord_y",                precision: 10, null: false
-    t.string   "address",    limit: 255,                null: false
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.decimal  "lat",                    precision: 10, scale: 7, null: false
+    t.decimal  "lng",                    precision: 10, scale: 7, null: false
+    t.string   "address",    limit: 255,                          null: false
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
   end
 
   create_table "order_items", force: :cascade do |t|

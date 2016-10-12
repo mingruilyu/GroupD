@@ -3,6 +3,6 @@ FactoryGirl.define do
     company
     location
     city
-    name           'Building 18'  
+    sequence(:name)          { |n| "Building#{n}" }
   end
 end

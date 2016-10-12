@@ -5,9 +5,19 @@ class Building < ActiveRecord::Base
 
   validates_associated :location, :company, :city
   
-  def city_company_name
-    "#{city.name}-#{company.name}-#{name}"
-  end
+  scope :by_city_company, ->(city, company) { 
+    where(company_id: company, city_id: city) } 
+
+  scope :by_coordinate, ->(lat, lng, precision) {
+    joins(:location).merge(Location.where(
+      '(lat BETWEEN ? AND ?) AND (lng BETWEEN ? AND ?)', 
+      lat - precision, lat + precision, lng - precision, 
+      lng + precision)) }
+
+  scope :by_address_name, ->(query) {
+    query = ".*(#{query.split.join('|')}).*"
+    joins(:location).where('address REGEXP ? OR name REGEXP ?', 
+      query, query) }
 
   def as_json(options={})
     super except: [:created_at, :updated_at]
