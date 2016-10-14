@@ -1,12 +1,12 @@
 class Merchant::CombosController < ApplicationController
 
   def create
-    Combo.create_combo @dishes, @restaurant, @price
+    Combo.create_combo @dishes, @restaurant, @price, @image_url
     render nothing: true, status: :created
   end
 
   def update
-    @combo.update @dishes, @price 
+    @combo.update @dishes, @price, @image_url
     render nothing: true
   end
 
@@ -25,8 +25,8 @@ class Merchant::CombosController < ApplicationController
     def params_sanitization
       sanitize :destroy, merchant_id: :merchant, id: :combo
       sanitize :update, merchant_id: :merchant, id: :combo, 
-        dishes: :dishes, price: :price
-      sanitize :create, merchant_id: :merchant, 
+        dishes: :dishes, price: :price, image_url: :url
+      sanitize :create, merchant_id: :merchant, image_url: :url,
         restaurant_id: :restaurant, dishes: :dishes, price: :price
     end
 

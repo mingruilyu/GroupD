@@ -7,6 +7,8 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
       it 'fails because not signed in' do
         delete :destroy, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         post :create, order_id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
       end

@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   rescue_from Exceptions::BadParameter, with: :bad_request
   rescue_from Exceptions::NotAuthorized, with: :unauthorized
   rescue_from Exceptions::InvalidSetting, with: :bad_request
+  rescue_from Exceptions::FileOversize, with: :bad_request
   rescue_from ActionController::UnknownFormat, with: :not_found
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ParameterMissing, with: :bad_request

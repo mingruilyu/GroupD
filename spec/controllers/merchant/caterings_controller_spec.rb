@@ -15,8 +15,12 @@ RSpec.describe Merchant::CateringsController, type: :controller do
       it 'fails because not signed in' do
         post :create, merchant_id: 1, restaurant_id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         put :update, merchant_id: 1, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         delete :destroy, merchant_id: 1, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
       end

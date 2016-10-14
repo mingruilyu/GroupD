@@ -27,7 +27,7 @@ class Customer::OrdersController < ApplicationController
 
 private
   
-  def param_sanitization
+  def params_sanitization
     sanitize :update, id: :order, payment_id: :payment
     sanitize [:show, :cancel, :destroy], id: :order
     sanitize :index, customer_id: :customer

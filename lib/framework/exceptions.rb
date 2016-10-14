@@ -32,4 +32,7 @@ module Exceptions
 
   class InvalidSetting < ApplicationException
   end
+
+  class FileOversize < ApplicationException
+  end
 end

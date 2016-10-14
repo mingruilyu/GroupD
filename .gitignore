@@ -18,3 +18,11 @@
 
 # Ignore all backup files.
 /backup/*
+
+# Ignore all credentials.
+/config/credentials.yaml
+/config/secrets.yaml
+
+# Ignore test files.
+/test/fixtures/upload_file
+/test/fixtures/oversized_file

@@ -1,16 +1,10 @@
 class LocationsController < ApplicationController
 
   def query
-    if ENV['RAILS_ENV'] == 'test'
-      puts 'RUNNING SIMULATED REQUEST...'
-      simulation = Request::Simulation.new 'test/map_response'
-      map_response = simulation.run 
-    else
-      puts 'REQUESTING FROM GOOGLE MAP SERVICE....'
-      map_request = Request::JsonRequest.new ENV['GOOGLE_MAP_URL'], 
-        query: @query, key: ENV['GOOGLE_MAP_KEY']
-      map_response = map_request.get
-    end
+    map_request = Request::JsonRequest.new ENV['GOOGLE_MAP_URL'], 
+        'test/fixtures/map_response', query: @query, 
+        key: ENV['GOOGLE_MAP_KEY']
+    map_response = map_request.get
     json = JSON.parse(map_response)
     locations = []
     json['results'].each do |place|

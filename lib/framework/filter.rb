@@ -97,6 +97,8 @@ module Sanitization
       Sanitization.sanitize_coordinate coordinate },
     query:      Proc.new { |query| 
       Sanitization.sanitize_query query },
+    file:       Proc.new { |file|
+      Sanitization.sanitize_file file },
   }
 
   def self.sanitize_time_int(time_int)
@@ -151,5 +153,11 @@ module Sanitization
   def self.sanitize_query(query)
     raise Exceptions::BadParameter unless query =~ QUERY_REGEX
     ".*(#{query.split.join('|')}).*"
+  end
+
+  def self.sanitize_file(file)
+    raise Exceptions::FileOversize \
+      if file.size > UploadFile::MAX_FILE_SIZE 
+    file
   end
 end

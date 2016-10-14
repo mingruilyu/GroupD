@@ -11,10 +11,10 @@ class Combo < ActiveRecord::Base
   scope :by_restaurant, ->(restaurant) { 
     where(restaurant_id: restaurant) }
 
-  def self.create_combo(dishes, restaurant, price)
+  def self.create_combo(dishes, restaurant, price, url)
     Combo.transaction do
       restaurant.lock! 'LOCK IN SHARE MODE'
-      combo = Combo.new restaurant_id: restaurant.id, price: price
+      combo = Combo.new restaurant_id: restaurant.id, price: price, image_url: url
       count = 1
       dishes.each do |dish|
         dish.lock! 'LOCK IN SHARE MODE'
@@ -25,7 +25,7 @@ class Combo < ActiveRecord::Base
     end
   end
 
-  def update(dishes, price)
+  def update(dishes, price, url)
     raise Exceptions::NotEffective if self.cancelled?
     Combo.transaction do
       if price != self.price
@@ -42,6 +42,7 @@ class Combo < ActiveRecord::Base
         count += 1 
       end
       self.price = price
+      self.image_url = url
       self.save!
     end
   end

@@ -6,10 +6,17 @@ RSpec.describe Merchant::RestaurantsController, type: :controller do
     describe 'signin filter' do
       it 'fails because not signed in' do
         get :index, merchant_id: 1, format: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         post :create, merchant_id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         put :update, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         delete :destroy, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
       end

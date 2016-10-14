@@ -19,7 +19,7 @@ class Customer::OrderItemsController < ApplicationController
 
   private
 
-    def param_sanitization
+    def params_sanitization
       sanitize :destroy, id: :order_item
       sanitize :create, order_id: :order, catering_id: :catering
     end

@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     resources :dishes, only: [:destroy, :update]
 
     resources :combos, only: [:destroy, :update]
+
+    resources :uploads, only: :create
   end
 
   namespace :merchant do
@@ -83,6 +85,8 @@ Rails.application.routes.draw do
   get 'companies/:name' => 'companies#query'
   
   resources :cellphones
+
+  resources :uploads, only: :create
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

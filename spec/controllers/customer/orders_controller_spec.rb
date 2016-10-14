@@ -7,12 +7,20 @@ RSpec.describe Customer::OrdersController, type: :controller do
       it 'fails because not signed in' do
         get :index, customer_id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         put :update, id: 1, format: :json 
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         get :show, id: 1, payment_id: 0, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         put :cancel, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
+      end
+      it 'fails because not signed in' do
         delete :destroy, id: 1, format: :json
         expect(response).to have_http_status(:unauthorized)
       end
