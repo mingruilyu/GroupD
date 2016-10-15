@@ -14,13 +14,14 @@ Rails.application.routes.draw do
       resources :dishes, only: :create
 
       resources :combos, only: :create
+      get 'combos/recent' => 'combos#recent'
     end
 
     resources :caterings, only: [:update, :destroy]
 
     resources :dishes, only: [:destroy, :update]
 
-    resources :combos, only: [:destroy, :update]
+    resources :combos, only: [:destroy, :update, :show]
 
     resources :uploads, only: :create
   end

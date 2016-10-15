@@ -38,6 +38,8 @@ RSpec.describe Merchant::CombosController, type: :controller do
         expect(response).to have_http_status(:not_found)
         delete :destroy, merchant_id: 1, id: @combo.id
         expect(response).to have_http_status(:not_found)
+        get :show, merchant_id: 1, id: @combo.id
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -51,6 +53,9 @@ RSpec.describe Merchant::CombosController, type: :controller do
         put :update, merchant_id: @merchant.id, id: @combo.id, 
           dishes: [@dishes[0].id, @dishes[1].id], price: 10.0, 
           image_url: url, format: :json
+        expect(response).to have_http_status(:unauthorized)
+        get :show, merchant_id: @merchant.id, id: @combo.id, 
+          format: :json
         expect(response).to have_http_status(:unauthorized)
       end
 
@@ -74,13 +79,16 @@ RSpec.describe Merchant::CombosController, type: :controller do
         put :update, merchant_id: @merchant.id, id: 100, price: 10.10, 
           dishes: [@dishes[0].id], image_url: url, format: :json
         expect(response).to have_http_status(:not_found)
-        delete :destroy, merchant_id: @merchant.id, id: 100, format: :json
+        delete :destroy, merchant_id: @merchant.id, id: 100, 
+          format: :json
+        expect(response).to have_http_status(:not_found)
+        get :show, merchant_id: @merchant.id, id: 100, format: :json
         expect(response).to have_http_status(:not_found)
       end
 
       it 'fails because the dishes does not exist' do
-        put :update, merchant_id: @merchant.id, id: @combo.id, price: 10.10, 
-          dishes: [100], image_url: url, format: :json
+        put :update, merchant_id: @merchant.id, id: @combo.id, 
+          price: 10.10, dishes: [100], image_url: url, format: :json
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -130,7 +138,7 @@ RSpec.describe Merchant::CombosController, type: :controller do
 
       it 'changes status of the combo and returns a list of catering
         needed to be cancelled' do
-        @catering = create :catering, combo_id: @combo.id
+        catering = create :catering, combo_id: @combo.id
         delete :destroy, merchant_id: @merchant.id, id: @combo.id, 
           format: :json
         expect(response).to have_http_status(:ok)
@@ -139,7 +147,33 @@ RSpec.describe Merchant::CombosController, type: :controller do
         json = JSON.parse(response.body)
         expect(json['message']).to eq(generate_json_msg(:warning, 
           Message::Warning::CATERING_CREATED))
-        expect(json['object']).to eq([@catering.as_json])
+        expect(json['object']).to eq([catering.as_json])
+      end
+    end
+
+    describe 'GET show' do
+      it 'shows the ordering status of the combo and the related 
+        caterings' do
+        caterings = create_list :catering, 3, combo_id: @combo.id    
+        caterings[0].update_attribute :status, Catering::STATUS_DONE
+        caterings[1].update_attribute :order_count, 3
+        get :show, merchant_id: @merchant.id, id: @combo.id, 
+          format: :json
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['object']).to eq(generate_json_list(
+          caterings[1..2]))
+      end
+    end
+
+    describe 'GET recent' do
+      it 'shows the list of combos that have active caterings' do
+        catering = create :catering, combo_id: @combo.id
+        get :recent, merchant_id: @merchant.id, 
+          restaurant_id: @restaurant.id, format: :json
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['object']).to eq([@combo.as_json])
       end
     end
   end

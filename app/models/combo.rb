@@ -11,6 +11,10 @@ class Combo < ActiveRecord::Base
   scope :by_restaurant, ->(restaurant) { 
     where(restaurant_id: restaurant) }
 
+  scope :recent_by_restaurant, ->(restaurant) {
+    distinct.joins(:caterings).merge(
+      Catering.active_by_restaurant(restaurant)) }
+
   def self.create_combo(dishes, restaurant, price, url)
     Combo.transaction do
       restaurant.lock! 'LOCK IN SHARE MODE'

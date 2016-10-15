@@ -20,8 +20,8 @@
 /backup/*
 
 # Ignore all credentials.
-/config/credentials.yaml
-/config/secrets.yaml
+/config/credentials.yml
+/config/secrets.yml
 
 # Ignore test files.
 /test/fixtures/upload_file

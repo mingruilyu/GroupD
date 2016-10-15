@@ -20,23 +20,38 @@ class Merchant::CombosController < ApplicationController
     end
   end 
 
+  def show
+    caterings = Catering.active_by_combo @combo.id
+    render json: Response::JsonResponse.new(caterings)
+  end
+
+  def recent
+    combos = Combo.recent_by_restaurant @restaurant.id
+    render json: Response::JsonResponse.new(combos)
+  end
+
   private
     
     def params_sanitization
-      sanitize :destroy, merchant_id: :merchant, id: :combo
+      sanitize [:destroy, :show], merchant_id: :merchant, id: :combo
       sanitize :update, merchant_id: :merchant, id: :combo, 
         dishes: :dishes, price: :price, image_url: :url
       sanitize :create, merchant_id: :merchant, image_url: :url,
         restaurant_id: :restaurant, dishes: :dishes, price: :price
+      sanitize :recent, merchant_id: :merchant, restaurant_id: :restaurant
     end
 
     def authorization
-      authorize [:update, :destroy] do
+      authorize [:update, :destroy, :show] do
         @merchant.id == current_account.id && \
           @combo.restaurant.merchant_id == @merchant.id
       end
 
-      authorize :create do
+      authorize :recent do
+        @merchant.id == current_account.id
+      end
+
+      authorize [:create, :recent] do
         @merchant.id == current_account.id && \
           @restaurant.merchant_id == current_account.id
       end
