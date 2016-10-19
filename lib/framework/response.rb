@@ -15,9 +15,9 @@ module Response
   end
 
   class Message
-    def initialize level, msgno
+    def initialize level, message
       @level = level
-      @msgno = msgno
+      @message = message
     end
   end
 end

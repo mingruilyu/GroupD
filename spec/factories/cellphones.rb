@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :cellphone do
 
-    sequence(:number, 10)  { |n| "80589553#{n}" }
+    sequence(:number, 10)  { |n| "805895536#{n}" }
 
     trait :confirmation_sent do
       confirmation_token  '123456'

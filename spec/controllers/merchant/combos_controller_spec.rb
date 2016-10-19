@@ -145,8 +145,6 @@ RSpec.describe Merchant::CombosController, type: :controller do
         expect(@combo.reload.status).to eq(
           Combo::STATUS_CANCELLED)
         json = JSON.parse(response.body)
-        expect(json['message']).to eq(generate_json_msg(:warning, 
-          Message::Warning::CATERING_CREATED))
         expect(json['object']).to eq([catering.as_json])
       end
     end

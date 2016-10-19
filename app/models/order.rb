@@ -10,7 +10,8 @@ class Order < ActiveRecord::Base
   attr_accessor :payment_id
 
   scope :by_customer, ->(customer) { 
-    includes(:order_items).where(customer_id: customer).where('status != ?', STATUS_UNCHECKOUT) }
+    includes(:order_items).where(customer_id: customer)\
+      .where('status != ?', STATUS_UNCHECKOUT) }
   scope :by_status, ->(status) { where(status: status) }
 
   def taxes
@@ -25,8 +26,8 @@ class Order < ActiveRecord::Base
     # Check whether any item in the order has expired. 
     if self.has_expired?
       self.order_items.clear
-      raise Exceptions::StaleRecord.new(
-        Message::Warning::ORDER_EXPIRED, :warning, :gone) 
+      self.errors[:items] = I18n.t('error.CHECKOUT_EXPIRED_ITEM')
+      raise Exceptions::StaleRecord.new(self) 
     end
 
     Order.transaction do
@@ -159,17 +160,25 @@ class Order < ActiveRecord::Base
 
   protected
     def L_check_modifiable
-      raise Exceptions::BadRequest unless self.unchecked_out?
+      unless self.unchecked_out?
+        self.errors[:status] = I18n.t 'error.CLEAR_CHECKOUT_ORDER'
+        raise Exceptions::NotEffective.new(self)
+      end
     end
 
     def L_check_empty
-      raise Exceptions::NotEffective.new(
-        Message::Warning::ORDER_EMPTY, :warning, :found) \
-        if self.order_items.empty?
+      if self.order_items.empty?
+        self.errors[:status] = I18n.t 'error.CHECK_EMPTY_ORDER'
+        raise Exceptions::NotEffective.new(self)
+      end
     end
 
     def L_check_checkout
-      raise Exceptions::BadRequest unless self.checked_out?
+       unless self.checked_out?
+        self.errors.add :base, 
+          message: I18n.t('error.CANCEL_UNCHECKOUT_ORDER')
+        raise Exceptions::NotEffective.new(self)
+      end
     end
 
     def checked_out?

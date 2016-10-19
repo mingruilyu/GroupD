@@ -3,9 +3,9 @@ class OrderItem < ActiveRecord::Base
   belongs_to :catering
 
   validates :quantity, numericality: { greater_than: 0, less_than: 11, 
-    only_integer: true }
+    only_integer: true, 
+    message: I18n.t('error.ORDER_INVALID_QUANTITY')}
   validate :catering_should_not_expire
-  validates_associated :catering, :order
 
   scope :by_catering, ->(catering) { where catering_id: catering } 
   scope :checked_by_catering, ->(catering) { 
@@ -23,8 +23,8 @@ class OrderItem < ActiveRecord::Base
 
   private
     def catering_should_not_expire
-      raise Exceptions::StaleRecord.new(
-        Message::Error::CATERING_EXPIRED, :error, :found) unless \
-        (self.catering.present? && self.catering.can_order?)
+      unless (self.catering.present? && self.catering.can_order?)
+        self.errors.add :catering, I18n.t('error.ADD_EXPIRED_CATERING')
+      end
     end
 end

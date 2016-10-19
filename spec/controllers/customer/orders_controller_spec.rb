@@ -109,7 +109,7 @@ RSpec.describe Customer::OrdersController, type: :controller do
     describe 'PUT cancel' do
       it 'fails because current order not checked out' do
         put :cancel, id: @order.id, format: :json
-        expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:found)
       end
 
       it 'cancels order' do
@@ -151,8 +151,8 @@ RSpec.describe Customer::OrdersController, type: :controller do
           payment_id: Payment::RECORD_CASH_ID, format: :json
         expect(response).to have_http_status(:found)
         json = JSON.parse(response.body)
-        expect(json['message']).to eq(generate_json_msg(:warning, 
-          Message::Warning::ORDER_EMPTY))
+        expect(json['message']).to eq(generate_json_msg(:error,
+                                                        { 'status': [I18n.t('error.CHECK_EMPTY_ORDER')] }))
         expect(json['object']).to be_nil
       end
 
@@ -167,12 +167,12 @@ RSpec.describe Customer::OrdersController, type: :controller do
           payment_id: Payment::RECORD_CASH_ID, format: :json
         expect(response).to have_http_status(:gone)
         json = JSON.parse(response.body)
-        expect(json['message']).to eq(generate_json_msg(:warning, 
-          Message::Warning::ORDER_EXPIRED))
+        expect(json['message']).to eq(generate_json_msg(:error, 
+          { 'items': [I18n.t('error.CHECKOUT_EXPIRED_ITEM')] }))
         expect(json['object']).to be_nil
       end
 
-      it 'failse because catering of the item in order cancelled' do
+      it 'fails because catering of the item in order cancelled' do
         create(:order_item, order_id: @order.id,
           catering_id: @catering.id, quantity: 2)
         @catering.destroy
@@ -180,8 +180,8 @@ RSpec.describe Customer::OrdersController, type: :controller do
           payment_id: Payment::RECORD_CASH_ID, format: :json
         expect(response).to have_http_status(:gone)
         json = JSON.parse(response.body)
-        expect(json['message']).to eq(generate_json_msg(:warning, 
-          Message::Warning::ORDER_EXPIRED))
+        expect(json['message']).to eq(generate_json_msg(:error,
+          { 'items': [I18n.t('error.CHECKOUT_EXPIRED_ITEM')] }))
         expect(json['object']).to be_nil
       end
 

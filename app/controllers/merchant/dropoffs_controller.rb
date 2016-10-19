@@ -13,7 +13,7 @@ class Merchant::DropoffsController < ApplicationController
 
   private
     
-    def param_sanitization
+    def params_sanitization
       sanitize :index, merchant_id: :merchant
       sanitize :create, merchant_id: :merchant, 
         building_id: :building

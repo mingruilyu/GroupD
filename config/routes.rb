@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
-
-  devise_for :accounts, controllers: { 
-    registrations:  'devise/registrations',
-    sessions:       'devise/sessions'
+  mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
+    registrations: 'account/registrations'
   }
 
   resources :merchants, only: [:show, :update], module: :merchant do
@@ -28,7 +26,7 @@ Rails.application.routes.draw do
 
   namespace :merchant do
     resources :dropoffs, only: :destroy
-    resources :restaurants, only: [:update, :destroy]
+    resources :restaurants, only: [:update, :destroy, :new]
   end
   
   resources :customers, module: :customer do

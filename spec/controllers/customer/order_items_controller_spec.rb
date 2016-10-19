@@ -75,11 +75,11 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
       it 'fails because catering expired' do
         catering.update_attribute :available_until, Time.now 
         post :create, order_id: order.id, catering_id: catering.id, 
-          format: :json
-        expect(response).to have_http_status(:found)
+          quantity: 2, format: :json
+        expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
-        expect(json['message']).to eq(generate_json_msg(
-          :error, Message::Error::CATERING_EXPIRED))
+        expect(json['message']).to eq(generate_json_msg(:error, 
+          { 'catering': [I18n.t('error.ADD_EXPIRED_CATERING')] }))
       end
 
       it 'fails because quantity is over limit' do
@@ -88,7 +88,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
-          Message::Error::QUANTITY_OVER_LIMIT))
+          { 'quantity': [I18n.t('error.ORDER_INVALID_QUANTITY')] }))
       end
 
       it 'fails because quantity is under limit' do
@@ -97,17 +97,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
-          Message::Error::QUANTITY_OVER_LIMIT))
-      end
-
-      it 'fails because catering has expired' do
-        catering.update_attribute :available_until, Time.now
-        post :create, order_id: order.id, catering_id: catering.id, 
-          quantity: 1, format: :json
-        expect(response).to have_http_status(:found)
-        json = JSON.parse(response.body) 
-        expect(json['message']).to eq(generate_json_msg(:error, 
-          Message::Error::CATERING_EXPIRED))
+          { 'quantity': [I18n.t('error.ORDER_INVALID_QUANTITY')] }))
       end
     end
 

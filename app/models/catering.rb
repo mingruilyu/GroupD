@@ -9,7 +9,7 @@ class Catering < ActiveRecord::Base
   STATUS_CANCELLED = 2
 
   validate :order_deadline_should_be_valid, 
-    :arrival_time_should_be_valid, :combo_sould_belongs_to_restaurnt
+    :arrival_time_should_be_valid
   validates :estimated_arrival_at, :available_until, :combo_id, 
     :restaurant_id, :shipping_id, :building_id, presence: true
 
@@ -67,7 +67,9 @@ class Catering < ActiveRecord::Base
 
   def cancel
     if self.done?
-      raise Exceptions::NotEffective
+      self.errors.add :base, 
+        message: I18n.t('error.CANCEL_FINISHED_CATERING')
+      raise Exceptions::NotEffective.new(self)
     end
     Catering.transaction do
       self.lock!
@@ -122,22 +124,17 @@ class Catering < ActiveRecord::Base
   private
 
     def order_deadline_should_be_valid
-      raise Exceptions::InvalidSetting \
-        if Time.now > self.available_until
-      raise Exceptions::InvalidSetting \
-        if MIN_ORDER_TIME.minute.from_now > self.available_until  
+      self.errors[:available_until] = \
+        I18n.t 'error.ORDER_DEADLINE_INVALID' \
+        if (Time.now > self.available_until ||
+          MIN_ORDER_TIME.minute.from_now > self.available_until)
     end
 
     def arrival_time_should_be_valid
-      raise Exceptions::InvalidSetting \
-        if self.available_until > self.estimated_arrival_at
-      raise Exceptions::InvalidSetting \
-        if self.available_until + MIN_SHIPPING_TIME.minute > \
-          self.estimated_arrival_at 
-    end
-
-    def combo_sould_belongs_to_restaurnt
-      raise Exceptions::NotAuthorized \
-        if self.restaurant_id != self.combo.restaurant_id
+      self.errors[:estimated_arrival_at] = \
+        I18n.t 'error.ARRIVAL_TIME_INVALID' \
+        if (self.available_until > self.estimated_arrival_at ||
+          (self.available_until + MIN_SHIPPING_TIME.minute > 
+           self.estimated_arrival_at))
     end
 end

@@ -4,16 +4,6 @@ class Restaurant::RestaurantsController < ApplicationController
     render json: Response::JsonResponse.new(@restaurant)
   end
 
-  def new
-    if Restaurant.name_valid? @name
-      render nothing: true
-    else
-      render json: Response::JsonResponse.new(nil, warning: 
-        Message::Warning::DUPLICATE_RESTAURANT_NAME), 
-        status: :conflict
-    end
-  end
-
   private
     
     def params_sanitization

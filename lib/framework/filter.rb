@@ -19,8 +19,10 @@ module Filter
 
     targets.each do |name, type| 
       param = params.require name
-      handler = Sanitization::DISPATCHER[type]
-      var = handler.nil? ? param : (handler.call param)
+      preprocessor = Sanitization::SANITIZER[type]
+      param = preprocessor.nil? ? param : (preprocessor.call param)
+      resource = Sanitization::RESOURCE_MAPPER[type]
+      var = resource.nil? ? param : (resource.find param) 
       var_name = (name.to_s.end_with? 'id') ? type.to_s : name.to_s
       self.instance_variable_set("@#{var_name}", var)
     end
@@ -44,73 +46,54 @@ end
 
 module Sanitization
 
-  MAX_TEXT_LENGTH = 250
-  MAX_NAME_LENGTH = 100
-  MAX_URL_LENGTH = 255
-  NAME_REGEX = /[[:alpha:]][\s[[:alnum:]]_]*/
-  HTTP_REGEX = /http:\/\/.*/
-  INT_REGEX = /[[:digit:]]*/
+  TIME_INT_REGEX = /[[:digit:]]{4}*/
   QUERY_REGEX = /([[:alnum:]])+([[:blank:]]|[[:alnum:]])*/
+  MAX_LIST_SIZE = 20
 
-  DISPATCHER = {
-    customer:   Proc.new { |id| Customer.find id },
-    merchant:   Proc.new { |id| Merchant.find id },
-    combo:      Proc.new { |id| Combo.find id },
-    company:    Proc.new { |id| Company.find id },
-    building:   Proc.new { |id| Building.find id },
-    buildings:  Proc.new { |ids| 
-      buildings = [] 
-      ids.each do |id|
-        buildings.append(Building.find id)
-      end
-      buildings
-    },
-    catering:   Proc.new { |id| Catering.find id },
-    category:   Proc.new { |id| Category.find id },
-    city:       Proc.new { |id| City.find id },
-    restaurant: Proc.new { |id| Restaurant.find id },
-    order:      Proc.new { |id| Order.find id },
-    order_item: Proc.new { |id| OrderItem.find id },
-    dish:       Proc.new { |id| Dish.find id },
-    dishes:     Proc.new { |ids| 
-      dishes = []
-      raise Exceptions::BadParameter \
-        if ids.length > Combo::MAX_DISH_COUNT
-      ids.each do |id|
-        dishes.append(Dish.find id)
-      end
-      dishes
-    },
-    payment:    Proc.new { |id| id.to_i == Payment::RECORD_CASH_ID ? \
-      Payment.record_cash : (Payment.find id) },
+  SANITIZER = {
     date_int:   Proc.new { |date| 
       Sanitization.sanitize_date_int date },
     time_int:   Proc.new { |time| 
       Sanitization.sanitize_time_int time },
-    name:       Proc.new { |name| 
-      Sanitization.sanitize_name(name.strip) },
-    text:       Proc.new { |text| 
-      Sanitization.sanitize_text(text.strip) },
-    url:        Proc.new { |url|
-      Sanitization.sanitize_url(url.strip) },
-    coord:      Proc.new { |coordinate| 
-      Sanitization.sanitize_coordinate coordinate },
     query:      Proc.new { |query| 
       Sanitization.sanitize_query query },
     file:       Proc.new { |file|
       Sanitization.sanitize_file file },
+    dishes:      Proc.new { |list| 
+      Sanitization.sanitize_list list, Combo::MAX_DISH_COUNT },
+    buildings:  Proc.new { |list|
+      Sanitization.sanitize_list list },
+  }
+
+  RESOURCE_MAPPER = {
+    merchant:       Merchant,
+    customer:       Customer,
+    combo:          Combo,
+    company:        Company,
+    building:       Building,
+    buildings:      Building,
+    catering:       Catering,
+    cellphone:      Cellphone,
+    restaurant:     Restaurant,
+    category:       Category,
+    city:           City,
+    order:          Order,
+    order_item:     OrderItem,
+    dish:           Dish,
+    dishes:         Dish,
+    payment:        Payment,
   }
 
   def self.sanitize_time_int(time_int)
     raise Exceptions::BadParameter \
-      if (time_int.to_s =~ INT_REGEX).nil? || time_int >= 2400 \
+      if (time_int.to_s =~ TIME_INT_REGEX).nil? || time_int >= 2400 \
         || time_int <= 0 || ((time_int % 100) % 15 != 0)
     time_int
   end
 
   def self.sanitize_date_int(date_int)
     raise Exceptions::BadParameter \
-      if (date_int.to_s =~ INT_REGEX).nil?
+      if (date_int.to_s =~ TIME_INT_REGEX).nil?
     month = date_int / 100
     day = date_int % 100
     leap = Date.leap? Time.now.year
@@ -128,28 +111,6 @@ module Sanitization
     date_int
   end
 
-  def self.sanitize_name(name)
-    raise Exceptions::BadParameter if name.length > MAX_NAME_LENGTH \
-      || (name =~ NAME_REGEX).nil?
-    name
-  end
-
-  def self.sanitize_url(url)
-    raise Exceptions::BadParameter if url.length > MAX_URL_LENGTH \
-      || (url =~ HTTP_REGEX).nil?
-    url
-  end
-
-  def self.sanitize_text(text)
-    raise Exceptions::BadParameter if text.length > MAX_TEXT_LENGTH 
-    text
-  end
-
-  def self.sanitize_coordinate(coord)
-    raise Exceptions::BadParameter unless Float(coord) rescue false
-    coord.to_f
-  end
-
   def self.sanitize_query(query)
     raise Exceptions::BadParameter unless query =~ QUERY_REGEX
     ".*(#{query.split.join('|')}).*"
@@ -159,5 +120,10 @@ module Sanitization
     raise Exceptions::FileOversize \
       if file.size > UploadFile::MAX_FILE_SIZE 
     file
+  end
+
+  def self.sanitize_list(list, limit=MAX_LIST_SIZE)
+    raise Exceptions::BadParameter if list.length > limit
+    list
   end
 end

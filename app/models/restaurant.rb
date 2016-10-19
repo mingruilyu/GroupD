@@ -10,8 +10,8 @@ class Restaurant < ActiveRecord::Base
   STATUS_OPEN = 0
   STATUS_CLOSED = 1
 
-  validates :name, uniqueness: true
-  validates :image_url, :name, presence: true
+  validates :name, presence: true, uniqueness: true, name: true
+  validates :image_url, presence: true, url: true
 
   scope :open_by_merchant, ->(merchant) { 
     where(merchant_id: merchant, status: STATUS_OPEN) }
@@ -28,7 +28,7 @@ class Restaurant < ActiveRecord::Base
   end
 
   def update name, location_id, image_url
-    self.update_attributes name: name, location_id: location_id, 
+    self.update_attributes! name: name, location_id: location_id, 
       image_url: image_url
   end
 
@@ -42,4 +42,5 @@ class Restaurant < ActiveRecord::Base
   def as_json(options={})
     super only: [:name, :image_url, :category_id, :location_id]
   end
+
 end

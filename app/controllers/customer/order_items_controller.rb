@@ -1,13 +1,7 @@
 class Customer::OrderItemsController < ApplicationController
 
   def create
-    begin 
-      @order.add_item params, @catering
-    rescue ActiveRecord::RecordInvalid
-      render json: Response::JsonResponse.new(nil,
-        error: Message::Error::QUANTITY_OVER_LIMIT),
-        status: :bad_request and return
-    end
+    @order.add_item params, @catering
     render nothing: true, status: :created
   end
   

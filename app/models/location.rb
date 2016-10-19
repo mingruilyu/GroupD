@@ -1,5 +1,7 @@
 class Location < ActiveRecord::Base
 
+  validates :lng, :lat, coordinate: true
+
   BUILDING_COORDINATE_RESOLUTAION = 0.2
 
   def self.from_json(json)

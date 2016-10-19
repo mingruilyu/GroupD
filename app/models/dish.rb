@@ -5,21 +5,23 @@ class Dish < ActiveRecord::Base
   STATUS_SOLD_OUT = 1
   STATUS_REMOVED = 2
 
-  validates :name, presence: true, uniqueness: { scope: :restaurant }
+  validates :name, presence: true, uniqueness: { scope: :restaurant }, 
+    name: true
   validates :price, numericality: { greater_than_or_equal_to: 0.01 }
-  validates :image_url, presence: true
+  validates :image_url, presence: true, url: true
+  validates :desc, text: true 
   
   scope :active_by_restaurant, ->(restaurant) { 
     where(restaurant_id: restaurant).where('status != ?', 
       STATUS_REMOVED) }
 
-  def update(image_url, price, desc)
+  def update(image_url, price, name, desc)
     Dish.transaction do
       if price != self.price
         self.lock!
       end
-      self.update_attributes image_url: image_url, price: price,
-        desc: desc 
+      self.update_attributes! image_url: image_url, price: price, 
+        name: name, desc: desc
     end
   end
 

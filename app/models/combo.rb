@@ -18,7 +18,8 @@ class Combo < ActiveRecord::Base
   def self.create_combo(dishes, restaurant, price, url)
     Combo.transaction do
       restaurant.lock! 'LOCK IN SHARE MODE'
-      combo = Combo.new restaurant_id: restaurant.id, price: price, image_url: url
+      combo = Combo.new restaurant_id: restaurant.id, price: price,
+        image_url: url
       count = 1
       dishes.each do |dish|
         dish.lock! 'LOCK IN SHARE MODE'
@@ -30,7 +31,11 @@ class Combo < ActiveRecord::Base
   end
 
   def update(dishes, price, url)
-    raise Exceptions::NotEffective if self.cancelled?
+    if self.cancelled?
+      self.errors.add :base, 
+        message: I18n.t('error.UPDATE_CANCELLED_COMBO')
+      raise Exceptions::NotEffective.new(self)
+    end
     Combo.transaction do
       if price != self.price
         self.lock!
@@ -52,7 +57,11 @@ class Combo < ActiveRecord::Base
   end
 
   def cancel
-    raise Exceptions::NotEffective if self.cancelled?
+    if self.cancelled?
+      self.errors.add :base, 
+        message: I18n.t('error.CANCELLED_CANCELLED_COMBO')
+      raise Exceptions::NotEffective.new(self)
+    end
     caterings = Catering.active_by_combo self.id
     Combo.transaction do
       unless caterings.empty?

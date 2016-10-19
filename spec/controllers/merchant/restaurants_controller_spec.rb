@@ -82,25 +82,40 @@ RSpec.describe Merchant::RestaurantsController, type: :controller do
       end
 
       it 'fails because url is not valid' do
-        put :update, id: @restaurant.id, name: 'chicken', 
-          location_id: @restaurant.location_id,
+        put :update, merchant_id: @merchant.id, id: @restaurant.id, 
+          name: 'chicken', location_id: @restaurant.location_id,
           image_url: 'not_http', format: :json
         expect(response).to have_http_status(:bad_request)
-        put :update, id: @restaurant.id, name: 'chicken', 
-          location_id: @restaurant.location_id,
+        put :update, merchant_id: @merchant.id, id: @restaurant.id, 
+          name: 'chicken', location_id: @restaurant.location_id,
           image_url: 'http://chicken.com' + '/a' * 300, format: :json
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'fails because name is not valid' do
-        put :update, id: @restaurant.id, name: '^&%', 
-          location_id: @restaurant.location_id,
-          image_url: 'not_http', format: :json
+        put :update, merchant_id: @merchant.id, id: @restaurant.id, 
+          name: '^&%', location_id: @restaurant.location_id,
+          image_url: 'http://chicken.com', format: :json
         expect(response).to have_http_status(:bad_request)
-        put :update, id: @restaurant.id, name: 'chicken' * 20, 
-          location_id: @restaurant.location_id,
-          image_url: 'not_http', format: :json
+        put :update, merchant_id: @merchant.id, id: @restaurant.id, 
+          name: 'chicken' * 20, location_id: @restaurant.location_id,
+          image_url: 'http://chicken.com', format: :json
         expect(response).to have_http_status(:bad_request)
+      end
+    end
+    
+    describe 'GET new' do
+      it 'returns ok because name is unique' do
+        get :new, name: 'chicken', format: :json
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns warning message of duplicate restaurant name' do
+        get :new, name: @restaurant.name, format: :json
+        expect(response).to have_http_status(:conflict)
+        json = JSON.parse(response.body)
+        expect(json['message']).to eq(generate_json_msg(
+          :warning, I18n.t('warning.DUPLICATE_RESTAURANT_NAME')))
       end
     end
 

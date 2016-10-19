@@ -7,7 +7,7 @@ class Merchant::DishesController < ApplicationController
   end
 
   def update
-    @dish.update @image_url, @price, @desc
+    @dish.update @image_url, @price, @name, @desc 
     render nothing: true
   end
 

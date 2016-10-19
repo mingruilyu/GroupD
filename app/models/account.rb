@@ -1,4 +1,9 @@
 class Account < ActiveRecord::Base
+  # Include default devise modules.
+  devise :database_authenticatable, :registerable,
+          :recoverable, :rememberable, :trackable, :validatable,
+          :omniauthable#:confirmable
+  include DeviseTokenAuth::Concerns::User
 
   ACCOUNT_TYPE_CUSTOMER = 'Customer'
   ACCOUNT_TYPE_MERCHANT = 'Merchant'
@@ -15,7 +20,7 @@ class Account < ActiveRecord::Base
          :validatable, :authentication_keys => { login: true }
 
   validates :cellphone_id, uniqueness: true, presence: true
-  validates_associated :cellphone
+  #validates_associated :cellphone
 
   def login=(login)
     @login = login

@@ -1,38 +1,29 @@
 module Exceptions
-  class ApplicationException < StandardError
-    attr_accessor :message
-    attr_accessor :status
-    def initialize(message=nil, level=:error, status=nil)
-      @message = message
-      @status = status
-      @level = level
-    end
+  class ApplicationError < StandardError
+  end
 
-    def as_json
-      return Response::JsonResponse.new(nil, @level => self.message)
+  class NotAuthorized < ApplicationError
+    def message
+      I18n.t 'error.NOT_AUTHORIZED'
     end
   end
-  class NotAuthorized < ApplicationException
+
+  class FileOversize < ApplicationError
+    def message
+      I18n.t 'error.FILE_OVERSIZE'
+    end
   end
 
-  class AddressNotConfigured < ApplicationException
+  class BadParameter < ApplicationError
+    def message
+      I18n.t 'error.BAD_PARAMETER'
+    end
   end
 
-  class NotEffective < ApplicationException
+  class NotEffective < ActiveRecord::RecordInvalid
+  end
+ 
+  class StaleRecord < ActiveRecord::RecordInvalid
   end
 
-  class BadParameter < ApplicationException
-  end
-
-  class BadRequest < ApplicationException
-  end
-
-  class StaleRecord < ApplicationException
-  end
-
-  class InvalidSetting < ApplicationException
-  end
-
-  class FileOversize < ApplicationException
-  end
 end

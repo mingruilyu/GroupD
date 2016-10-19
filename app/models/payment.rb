@@ -31,6 +31,9 @@ class Payment < ActiveRecord::Base
     self.customer_id == customer_id
   end
 
-  class UnauthorizedReference < StandardError
+  def self.find(id)
+    id == Payment::RECORD_CASH_ID ? \
+      Payment.record_cash : (Payment.find_by_id! id)
   end
+
 end

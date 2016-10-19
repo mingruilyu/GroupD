@@ -1,7 +1,5 @@
 class CellphonesController < ApplicationController
   
-  # GET /cellphones/new
-  # used to creat a new cellphone number
   def new
     session[:type] = params[:type]
     @cellphone = Cellphone.new

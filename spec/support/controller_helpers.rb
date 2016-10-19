@@ -1,12 +1,18 @@
 module ControllerHelpers
   def login_customer
     @request.env["devise.mapping"] = Devise.mappings[:account]
-    sign_in FactoryGirl.create(:customer)
+    customer = FactoryGirl.create(:customer) 
+    auth_headers = customer.create_new_auth_token
+    request.headers.merge! auth_headers
+    #sign_in FactoryGirl.create(:customer)
   end
 
   def login_merchant
     @request.env["devise.mapping"] = Devise.mappings[:account]
-    sign_in (Merchant.first || FactoryGirl.create(:merchant))
+    merchant = Merchant.first || FactoryGirl.create(:merchant)
+    #sign_in ()
+    auth_headers = merchant.create_new_auth_token 
+    request.headers.merge! auth_headers
   end
 
   def generate_json_list(objects)
@@ -17,10 +23,10 @@ module ControllerHelpers
     json_list
   end
 
-  def generate_json_msg(level, msgno)
+  def generate_json_msg(level, message)
     msg = {}
     msg['level'] = level.to_s
-    msg['msgno'] = msgno 
+    msg['message'] = message.as_json
     msg
   end
 end

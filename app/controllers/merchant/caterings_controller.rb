@@ -36,7 +36,8 @@ class Merchant::CateringsController < ApplicationController
       end
       authorize :create do
         @merchant.id == current_account.id && \
-          @restaurant.merchant_id == @merchant.id 
+          @combo.restaurant_id == @restaurant.id && \
+          @restaurant.merchant_id == @merchant.id
       end
     end
 end

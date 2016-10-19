@@ -15,8 +15,7 @@ class Merchant::CombosController < ApplicationController
     if caterings.empty?
       render nothing: true
     else
-      render json: Response::JsonResponse.new(caterings, 
-        warning: Message::Warning::CATERING_CREATED)
+      render json: Response::JsonResponse.new(caterings)
     end
   end 
 

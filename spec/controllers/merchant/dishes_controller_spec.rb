@@ -86,8 +86,8 @@ RSpec.describe Merchant::DishesController, type: :controller do
 
       it 'fails because name is not valid' do
         put :update, merchant_id: @merchant.id, id: @dishes[0].id, 
-          price: 10.1, desc: 'chicken', name: '*&^', 
-          image_url: url, format: :json
+          price: 10.1, desc: 'chicken', name: '*&^', image_url: url, 
+          format: :json
         expect(response).to have_http_status(:bad_request)
         put :update, merchant_id: @merchant.id, id: @dishes[0].id, 
           price: 10.1, desc: 'chicken', name: 'chicken' * 20, 

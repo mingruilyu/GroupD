@@ -40,82 +40,40 @@ en:
         'Please input the correct token!'
       INVALID_NUMBER:       
         'Please provide a valid number!'
-  
-  dish:
-    notice:
-      DISH_CREATED:
-        'Dish %{name} was successfully created.'
-    error:
-      TYPE_INVALID:
-        'The type of the dish is invalid.'
-  
-  cart:
-    notice:
-      MENU_CHANGED:
-        'You are adding dishes from another menu. Adding this dish will
-        empty you current cart. Do you want to do that?'
-      DISH_ADDED:
-        'The %{name} was successfully added to cart!'
-      DISH_DELETED:
-        'The %{name} was successfully removed from cart!'
-      COMBO_ADDED:
-        'The combo was successfully added to cart!'
-      COMBO_DELETED:
-        'The combo was successfully removed from cart!'
-      OBSOLETE_COMBO_DELETED:
-        'The obsolete combo items was removed from cart!'
-      CART_DESTROY:
-        'The cart is clear now!'
-    error:
-      DISH_DELETE_FAIL:
-        'Fail to remove %{name}!'
-      DISH_ADD_FAIL:
-        'Fail to add the %{name}!'
-      COMBO_DELETE_FAIL:
-        'Fail to remove the combo!'
-      COMBO_ADD_FAIL:
-        'Fail to add the combo!'
 
-  restaurant:
-    error:
-      OPEN_LATER_THAN_CLOSE:
-        'Open time is later than close time!'
+  warning:
+    DUPLICATE_RESTAURANT_NAME:
+      'Duplicate Restaurant name used!'
 
-  shipping:
-    error:
-      NOT_ENOUGH_PREPARE_TIME:
-        'Not enough time left before delivery!'
-      DEADLINE_IN_PAST:
-        'Deadline has to be in the future!'
-
-  payment:
-    notice:
-      PAYMENT_CREATED:
-        'New payment was successfully created!'
-
-  order:
-    error:
-      SHIPPING_OBSOLETE:
-        'The shipping is obsolete. Please select new combo!'
-      NO_SHIPPING:
-        'You have not selected any shipping!'
-    notice:
-      ORDER_CREATED:
-        'Order created successfully!'
-      CART_EMPTY:
-        'Cart is empty!'
-
-  city:
-    error:
-      INVALID_CITY:
-        'The city id provided is invalid!'
-
-  category:
-    error:
-      INVALID_CATEGORY:
-        'The category id provided is invalid!'
-
-  dropoff:
-    notice:
-      DROPOFF_CREATED:
-        'The dropoff has been created!'
+  error:
+    NOT_AUTHORIZED:
+      'You are not authorized to do the operation!'
+    CANCEL_FINISHED_CATERING:
+      'Cancelling a finished catering is not allowed!'
+    ORDER_DEADLINE_INVALID:
+      'Order deadline is invalid!'
+    ARRIVAL_TIME_INVALID:
+      'Arrival time is invalid!'
+    UPDATE_CANCELLED_COMBO:
+      'Updating a cancelled combo is not allowed!'
+    CHECKOUT_EXPIRED_ITEM:
+      'This is expired item in the order and we have deleted it for
+      you!'
+    CLEAR_CHECKOUT_ORDER:
+      'Clearing a checked out order is not allowed!'
+    CHECK_EMPTY_ORDER:
+      'You do not have any item in the cart!'
+    ADD_EXPIRED_CATERING:
+      'The catering you are trying to add to cart has expired!'
+    TOO_MANY_DISHES:
+      'Too many dishes in a combo!'
+    BAD_PARAMETER:
+      'The request contains a bad parameter!'
+    ORDER_INVALID_QUANTITY:
+      'Order quantity is invalid!'
+    INVALID_NUMBER:
+      'Cellphone number is invalid!'
+    INVALID_NAME:
+      'Name is invalid!'
+    INVALID_URL:
+      'URL is invalid!'

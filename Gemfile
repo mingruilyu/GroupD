@@ -39,6 +39,11 @@ gem 'activesupport-json_encoder'
 
 gem 'aws-sdk-v1'
 gem 'aws-sdk', '~> 2'
+
+gem 'devise_token_auth'
+
+gem 'omniauth'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
