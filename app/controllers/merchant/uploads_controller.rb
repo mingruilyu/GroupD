@@ -1,9 +1,8 @@
 class Merchant::UploadsController < ApplicationController
 
   def create
-    upload_request = Request::UploadRequest.new(@file)
-    uploaded_file = upload_request.post
-    render json: Response::JsonResponse.new(uploaded_file)
+    uploaded = Services::AwsS3.upload_file(@file)
+    render json: Response::JsonResponse.new(uploaded)
   end
 
   private

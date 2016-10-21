@@ -43,7 +43,7 @@ module Services
       yield self
     end
 
-    def self.update_file(file)
+    def self.upload_file(file)
       if @@use_simulation
         puts 'RUNNING S3 SIMULATED REQUEST...'
         path = Rails.root.join @@simulation_uri
