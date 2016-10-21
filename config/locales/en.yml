@@ -77,3 +77,11 @@ en:
       'Name is invalid!'
     INVALID_URL:
       'URL is invalid!'
+    RESEND_TOO_FREQUENTLY:
+      'Resend too frequently!'
+    NUMBER_USED:
+      'The cellphone number is already used!'
+    DUPLICATE_CONFIRMATION:
+      'You cannot resend messages to a confirmed cellphone!'
+    CONFIRMATION_EXPIRED:
+      'The token has expired. Please resend confirmation token!'

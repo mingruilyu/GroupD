@@ -66,6 +66,7 @@ module Sanitization
   }
 
   RESOURCE_MAPPER = {
+    account:        Account,
     merchant:       Merchant,
     customer:       Customer,
     combo:          Combo,

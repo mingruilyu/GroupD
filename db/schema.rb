@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161016234756) do
+ActiveRecord::Schema.define(version: 20161020005501) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255,   default: "",            null: false
     t.string   "username",               limit: 255,                           null: false
-    t.integer  "cellphone_id",           limit: 4,                             null: false
+    t.integer  "cellphone_id",           limit: 4
     t.string   "encrypted_password",     limit: 255,   default: "",            null: false
     t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20161016234756) do
     t.string   "confirmation_token",   limit: 10, default: "", null: false
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
+    t.integer  "account_id",           limit: 4
   end
 
   create_table "cities", force: :cascade do |t|

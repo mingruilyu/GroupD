@@ -3,6 +3,12 @@ Rails.application.routes.draw do
     registrations: 'account/registrations'
   }
 
+  namespace :account do
+    post ':account_id/cellphone' => 'cellphones#create'
+    post ':account_id/cellphone/:id' => 'cellphones#resend'
+    put ':account_id/cellphone/:id' => 'cellphones#update' 
+  end
+
   resources :merchants, only: [:show, :update], module: :merchant do
     resources :dropoffs, only: [:index, :create]
 
@@ -42,7 +48,6 @@ Rails.application.routes.draw do
     end
     put 'orders/:id/cancel' => 'orders#cancel' 
     resources :order_items, only: [:destroy]
-
   end
       
   resources :restaurants, module: :restaurant, only: :show do
@@ -69,7 +74,7 @@ Rails.application.routes.draw do
 
     get 'new' => 'restaurants#new'
   end
- 
+
   resources :locations do
     collection do
       get 'query'
@@ -83,8 +88,6 @@ Rails.application.routes.draw do
   resources :companies, only: :index
   get 'companies/:name' => 'companies#query'
   
-  resources :cellphones
-
   resources :uploads, only: :create
 
   # The priority is based upon order of creation: first created -> highest priority.

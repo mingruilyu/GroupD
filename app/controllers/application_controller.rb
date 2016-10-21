@@ -63,7 +63,9 @@ class ApplicationController < ActionController::Base
 
     def account_based?
       path = request.path
-      (path.start_with? '/customer') || (path.start_with? '/merchant')
+      (path.start_with? '/customer') || \
+        (path.start_with? '/merchant') || \
+        (path.start_with? '/account')
     end
 end
 
