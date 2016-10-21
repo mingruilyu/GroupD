@@ -18,9 +18,12 @@ RSpec.describe CompaniesController, type: :controller do
     end
 
     it 'gets list of companies by city' do
-      building_1 = create :building, company_id: @companies[0].id, city_id: @city.id
-      building_2 = create :building, company_id: @companies[1].id, city_id: @city.id
-      building_3 = create :building, company_id: @companies[2].id, city_id: 100
+      building_1 = create :building, company_id: @companies[0].id, 
+        city_id: @city.id
+      building_2 = create :building, company_id: @companies[1].id, 
+        city_id: @city.id
+      building_3 = create :building, company_id: @companies[2].id, 
+        city_id: 100
 
       get :index, city_id: @city.id, format: :json
       expect(response).to have_http_status(:ok)

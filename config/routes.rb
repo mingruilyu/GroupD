@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
-  mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
-    registrations: 'account/registrations'
-  }
+  mount_devise_token_auth_for 'Account', at: 'auth'
 
   namespace :account do
     post ':account_id/cellphone' => 'cellphones#create'

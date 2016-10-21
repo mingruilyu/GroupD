@@ -49,12 +49,12 @@ module Services
         path = Rails.root.join @@simulation_uri
         des = File.new path, 'w'
         des.write file.read
-        UploadFile.new uri: path.to_s, name: file.original_filename
+        UploadFile.new path.to_s, file.original_filename
       else
         puts 'REQUESTING S3 SERVICE...'
         s3_object = @@bucket.objects[file.original_filename]
         s3_object.write file: file.payload, acl: :public_read
-        UploadFile.new uri: s3_object.public_url, name: s3_object.key     
+        UploadFile.new s3_object.public_url, s3_object.key     
       end
     end
   end

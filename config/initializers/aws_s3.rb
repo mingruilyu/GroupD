@@ -9,4 +9,6 @@ Services::AwsS3.setup do |config|
   )
 
   config.bucket =  AWS::S3.new.buckets['dpool']
+
+  config.simulation_uri = 'test/upload/uploaded'
 end

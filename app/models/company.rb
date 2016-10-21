@@ -5,7 +5,7 @@ class Company < ActiveRecord::Base
   scope :by_city, ->(city) { joins(:buildings).merge(
     Building.where(city_id: city)).distinct }
 
-  scope :fuzzy_by_name, ->(name) { where('name like ?', "%#{name}%") }
+  scope :fuzzy_by_name, ->(name) { where('name REGEXP ?', name) }
 
   def as_json(options={})
     super only: :name

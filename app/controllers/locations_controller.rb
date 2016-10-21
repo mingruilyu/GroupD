@@ -1,7 +1,7 @@
 class LocationsController < ApplicationController
 
   def query
-    map_response = Serives::GoogleMap.location_query @query
+    map_response = Services::GoogleMap.location_query @query
     json = JSON.parse(map_response)
     locations = []
     json['results'].each do |place|
