@@ -1,10 +1,7 @@
 class LocationsController < ApplicationController
 
   def query
-    map_request = Request::JsonRequest.new ENV['GOOGLE_MAP_URL'], 
-        'test/fixtures/map_response', query: @query, 
-        key: ENV['GOOGLE_MAP_KEY']
-    map_response = map_request.get
+    map_response = Serives::GoogleMap.location_query @query
     json = JSON.parse(map_response)
     locations = []
     json['results'].each do |place|
