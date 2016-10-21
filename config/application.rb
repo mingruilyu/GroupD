@@ -27,24 +27,17 @@ module Delivery
 
     config.active_job.queue_adapter = :resque
 
-    def load_api_urls_and_credentials(environment = nil)
+    def load_environment_variables(environment = nil)
       credentials_path = Rails.root.join('config', 
         "credentials#{environment.nil? ? '' : '.' + environment}.yml")
       return unless File.exist? credentials_path
-      urls_path = Rails.root.join('config', 
-        "api_urls#{environment.nil? ? '' : '.' + environment}.yml")
-      credentials = YAML.load(ERB.new(File.new(
-        credentials_path).read).result)
-      urls = YAML.load(ERB.new(File.new(urls_path).read).result)
+      credentials = YAML.load(File.open(credentials_path))
       credentials.each do |key, val|
-        ENV[key.to_s] = val.to_s
-      end
-      urls.each do |key, val|
         ENV[key.to_s] = val.to_s
       end
     end
 
     # Load api credentials.
-    load_api_urls_and_credentials
+    load_environment_variables
   end
 end
