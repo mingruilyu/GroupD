@@ -30,19 +30,6 @@ RSpec.describe Merchant::CombosController, type: :controller do
 
     let(:url) { 'http://shanghai.combo.com' }
 
-    describe 'format sanitization' do
-      it 'fails because not using json format' do
-        post :create, merchant_id: 1, restaurant_id: @restaurant.id
-        expect(response).to have_http_status(:not_found)
-        put :update, merchant_id: 1, id: @combo.id
-        expect(response).to have_http_status(:not_found)
-        delete :destroy, merchant_id: 1, id: @combo.id
-        expect(response).to have_http_status(:not_found)
-        get :show, merchant_id: 1, id: @combo.id
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     describe 'parameter validation' do
       it 'fails because merchant not authorized' do
         @restaurant.update_attribute :merchant_id, 100

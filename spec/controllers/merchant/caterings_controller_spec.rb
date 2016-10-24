@@ -39,17 +39,6 @@ RSpec.describe Merchant::CateringsController, type: :controller do
     let(:yesterday) { time = Time.now - 1.day
       time.month * 100 + time.day }
 
-    describe 'format sanitization' do
-      it 'fails because not using json format' do
-        post :create, merchant_id: 1, restaurant_id: @restaurant.id
-        expect(response).to have_http_status(:not_found)
-        put :update, merchant_id: 1, id: 100
-        expect(response).to have_http_status(:not_found)
-        delete :destroy, merchant_id: 1, id: 100
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     describe 'parameter validation' do
       it 'fails because merchant not authorized' do
         @restaurant.update_attribute :merchant_id, 100

@@ -19,17 +19,6 @@ RSpec.describe Merchant::DishesController, type: :controller do
     end
   end
 
-  describe 'format sanitization' do
-    it 'fails because not using json format' do
-      post :create, merchant_id: 1, restaurant_id: 1
-      expect(response).to have_http_status(:not_found)
-      put :update, merchant_id: 1, id: 100
-      expect(response).to have_http_status(:not_found)
-      delete :destroy, merchant_id: 1, id: 100
-      expect(response).to have_http_status(:not_found)
-    end
-  end
-
   context 'logged in' do
     before :each do
       login_merchant

@@ -23,13 +23,6 @@ RSpec.describe Merchant::RestaurantsController, type: :controller do
     end
   end
 
-  describe 'format sanitization' do
-    it 'fails because not using json format' do
-      get :index, merchant_id: 1
-      expect(response).to have_http_status(:not_found)
-    end
-  end
-
   context 'logged in' do
     before :each do
       login_merchant

@@ -85,3 +85,5 @@ en:
       'You cannot resend messages to a confirmed cellphone!'
     CONFIRMATION_EXPIRED:
       'The token has expired. Please resend confirmation token!'
+    RECORD_NOT_FOUND:
+      'The records you are requesting are not found!'

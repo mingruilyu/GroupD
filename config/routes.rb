@@ -1,14 +1,15 @@
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'Account', at: 'auth'
 
-  namespace :account do
-    post ':account_id/cellphone' => 'cellphones#create'
+  namespace :account, format: true, constraints: { format: :json } do
+    post ':account_id/cellphone' => 'cellphones#create' 
     post ':account_id/cellphone/:id' => 'cellphones#resend'
     put ':account_id/cellphone/:id' => 'cellphones#update' 
   end
 
-  resources :merchants, only: [:show, :update], module: :merchant do
-    resources :dropoffs, only: [:index, :create]
+  resources :merchants, only: [:show, :update], module: :merchant, 
+    format: true, constraints: { format: :json } do
+    resources :dropoffs, format: true, only: [:index, :create]
 
     resources :restaurants, only: [:index, :create] do
       resources :caterings, only: :create
@@ -28,27 +29,31 @@ Rails.application.routes.draw do
     resources :uploads, only: :create
   end
 
-  namespace :merchant do
+  namespace :merchant, format: true, constraints: { format: :json } do
     resources :dropoffs, only: :destroy
     resources :restaurants, only: [:update, :destroy, :new]
   end
   
-  resources :customers, module: :customer do
+  resources :customers, module: :customer, format: true, 
+    constraints: { format: :json } do
     resources :orders, only: :index
     put 'orders/recent' => 'orders#recent'
 
     resources :payments, only: [:create, :destroy, :show, :index]
   end
 
-  namespace :customer do
+  namespace :customer, format: true, constraints: { format: :json } do
     resources :orders, only: [:show, :update, :destroy] do
       resources :order_items, only: [:index, :create, :new]
     end
     put 'orders/:id/cancel' => 'orders#cancel' 
     resources :order_items, only: [:destroy]
+    
+    post 'chat' => 'chats#receive', constraints: { format: :xml }
   end
       
-  resources :restaurants, module: :restaurant, only: :show do
+  resources :restaurants, module: :restaurant, only: :show, 
+    format: true, constraints: { format: :json }do
     get 'shippings/recent' => 'shippings#recent'
 
     resources :dishes, only: :index
@@ -59,7 +64,8 @@ Rails.application.routes.draw do
     get 'caterings/recent' => 'caterings#recent'
   end
 
-  namespace :restaurant do
+  namespace :restaurant, format: true, 
+    constraints: { format: :json } do
     resources :caterings, only: :show
 
     resources :combos, only: :show
@@ -73,20 +79,27 @@ Rails.application.routes.draw do
     get 'new' => 'restaurants#new'
   end
 
-  resources :locations do
+  resources :locations, format: true, 
+    constraints: { format: :json } do
     collection do
       get 'query'
     end
   end
   
-  get 'buildings/coord' => 'buildings#query_by_coord'
-  get 'buildings/city_company' => 'buildings#query_by_city_company'
-  get 'buildings/address_name' => 'buildings#fuzzy_query_by_address_name'
+  get 'buildings/coord' => 'buildings#query_by_coord', format: true, 
+    constraints: { format: :json }
+  get 'buildings/city_company' => 'buildings#query_by_city_company', 
+    format: true, constraints: { format: :json }
+  get 'buildings/address_name' => 'buildings#fuzzy_query_by_address_name', 
+    format: true, constraints: { format: :json }
 
-  resources :companies, only: :index
-  get 'companies/:name' => 'companies#query'
+  resources :companies, only: :index, format: true, 
+    constraints: { format: :json }
+  get 'companies/:name' => 'companies#query', format: true, 
+    constraints: { format: :json }
   
-  resources :uploads, only: :create
+  resources :uploads, only: :create, format: true, 
+    constraints: { format: :json }
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

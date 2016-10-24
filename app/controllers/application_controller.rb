@@ -17,7 +17,6 @@ class ApplicationController < ActionController::Base
 #=end
   protect_from_forgery with: :null_session
 
-  before_action :format_sanitization 
   before_action :authenticate_account!, if: :account_based?
   before_action :params_sanitization
   before_action :authorization, if: :account_based?

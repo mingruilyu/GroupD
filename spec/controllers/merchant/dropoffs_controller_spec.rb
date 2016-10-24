@@ -15,15 +15,6 @@ RSpec.describe Merchant::DropoffsController, type: :controller do
       @account = subject.current_account
     end
 
-    describe 'format sanitization' do
-      it 'fails because not using json format' do
-        get :index, merchant_id: 10
-        expect(response).to have_http_status(:not_found)
-        post :create, merchant_id: 10
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     describe 'parameter validation' do
 
       it 'fails because no authorization' do
