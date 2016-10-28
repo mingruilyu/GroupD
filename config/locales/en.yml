@@ -87,3 +87,7 @@ en:
       'The token has expired. Please resend confirmation token!'
     RECORD_NOT_FOUND:
       'The records you are requesting are not found!'
+
+  chatreply:
+    WELCOME:
+      'Thank you for registering for Katering service!'

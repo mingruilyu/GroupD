@@ -1,4 +1,7 @@
 class Merchant::DropoffsController < ApplicationController
+  before_action :authenticate_account!                   
+  before_action :params_sanitization
+  before_action :authorization
 
   def index
     @dropoffs = Dropoff.by_merchant current_account.id 

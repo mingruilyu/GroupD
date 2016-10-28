@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  mount_devise_token_auth_for 'Account', at: 'auth'
+  mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
+    omniauth_callbacks: 'account/omniauth_callbacks'
+  }
 
   namespace :account, format: true, constraints: { format: :json } do
     post ':account_id/cellphone' => 'cellphones#create' 
@@ -49,7 +51,7 @@ Rails.application.routes.draw do
     put 'orders/:id/cancel' => 'orders#cancel' 
     resources :order_items, only: [:destroy]
     
-    post 'chat' => 'chats#receive', constraints: { format: :xml }
+    post 'chat' => 'chats#chat', constraints: { format: :xml }
   end
       
   resources :restaurants, module: :restaurant, only: :show, 

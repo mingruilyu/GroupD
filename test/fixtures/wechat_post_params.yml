@@ -1,0 +1,7 @@
+signature:      "186717052e107452ff620842676d50b21bc04280"
+timestamp:      "1477457276"
+nonce:          "1604983438"
+encrypt_type:   "aes"
+msg_signature:  "17384796972a82bf706d269fe06bca13e0a4b90c"
+token:          "test"
+

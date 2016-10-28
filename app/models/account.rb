@@ -1,8 +1,4 @@
 class Account < ActiveRecord::Base
-  # Include default devise modules.
-  devise :database_authenticatable, :registerable,
-          :recoverable, :rememberable, :trackable, :validatable,
-          :omniauthable#:confirmable
   include DeviseTokenAuth::Concerns::User
 
   ACCOUNT_TYPE_CUSTOMER = 'Customer'
@@ -18,9 +14,6 @@ class Account < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, 
          :validatable, :authentication_keys => { login: true }
-
-  validates :cellphone_id, uniqueness: true, presence: true
-  #validates_associated :cellphone
 
   def login=(login)
     @login = login
@@ -38,8 +31,22 @@ class Account < ActiveRecord::Base
       type == Account::ACCOUNT_TYPE_MERCHANT
   end
 
-  def self.guest_email
-    "guest_#{Time.now.to_i}#{rand(100)}@dpool.com"
+  def self.omniauth_register(auth_hash={})
+    account = Account.where(uid: auth_hash[:uid], 
+      provider: auth_hash[:provider]).first_or_initialize
+    if account.new_record?
+      account.set_account_default auth_hash
+    end
+
+    # sync user info with provider
+    if auth_hash[:info].present?
+      account.assign_provider_attrs auth_hash
+    end
+
+    # update/generate auth token
+    account.update_auth_token
+
+    account.save!
   end
 
   # methods override database_authenticable
@@ -50,7 +57,6 @@ class Account < ActiveRecord::Base
   	# if login is in form of an email address, we always use it as email login
     # regardless if user want to use it as username
     if login =~ /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-      puts "FIND_FOR_DATABASE_AUTHENTICATION"
       where(conditions).where(["email = :value", { :value => login }]).first
     else
       joins(:cellphone).where(conditions)
@@ -58,6 +64,41 @@ class Account < ActiveRecord::Base
   	end
   end
 
-  class NotAuthorized < StandardError
+  def assign_provider_attrs(auth_hash)
+    self.assign_attributes({
+      username: auth_hash[:info][:username],
+      name:     auth_hash[:info][:name],
+      image:    auth_hash[:info][:image],
+      email:    auth_hash[:info][:email]
+    })
   end
+
+  def set_account_default(auth_hash)
+    password = SecureRandom.urlsafe_base64 nil, false
+    self.password = password
+    self.password_confirmation = password
+    self.email = "#{auth_hash[:uid]}@#{auth_hash[:provider]}.com"
+    self.type = auth_hash[:type]
+    self.username ||= "#{auth_hash[:provider]}_#{auth_hash[:uid]}"
+  end
+
+  def update_auth_token
+    client_id = SecureRandom.urlsafe_base64 nil, false
+    token     = SecureRandom.urlsafe_base64 nil, false
+    expiry    = (Time.now + DeviseTokenAuth.token_lifespan).to_i
+    
+    self.tokens[client_id] = {
+      token: (BCrypt::Password.create token), 
+      expiry: expiry
+    }
+  end
+
+  protected
+    def active_for_authentication?
+      self.cellphone_id.present?
+    end
+
+    def confirmation_required?
+      false
+    end
 end

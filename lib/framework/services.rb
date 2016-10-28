@@ -58,4 +58,52 @@ module Services
       end
     end
   end
+
+  class WechatBot
+
+    mattr_accessor :api_token
+    @@api_token = nil
+
+    mattr_accessor :bot_id
+    @@api_token = '404844425'
+
+    def self.setup
+      yield self
+    end
+
+    def self.authenticate(token, timestamp, nonce, 
+      expected_signature)
+      key =  [token, timestamp, nonce].sort.join ''
+      signature = Digest::SHA1.hexdigest key
+      return signature == expected_signature
+    end
+
+    def self.decrypt(text)
+    end
+
+    def self.dispatch(message)
+      case message.type
+      when 'event'
+        case message.event 
+        when 'subscribe'
+          Operations::OmniauthRegisterAccount.new(
+            message.from_user_name, 'wechat', 
+            Account::ACCOUNT_TYPE_CUSTOMER)
+        else
+        end
+      else
+      end
+    end
+
+    def self.construct_message(xml)
+      WechatMessage::Message.create Hash.from_xml(xml)['xml']
+    end
+
+    def self.assembly_reply(json, receiver)
+      json['FromUserName'] = Services::WechatBot.bot_id
+      json['ToUserName'] = receiver
+      json['CreateTime'] = Time.now.to_i
+      WechatMessage::Message.assembly json
+    end
+  end
 end

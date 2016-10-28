@@ -1,4 +1,7 @@
 class Merchant::CateringsController < ApplicationController
+  before_action :authenticate_account!
+  before_action :params_sanitization
+  before_action :authorization
 
   def create
     Catering.create_caterings @combo, @buildings, @restaurant, @date, 

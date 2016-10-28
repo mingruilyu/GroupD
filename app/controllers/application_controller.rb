@@ -17,9 +17,6 @@ class ApplicationController < ActionController::Base
 #=end
   protect_from_forgery with: :null_session
 
-  before_action :authenticate_account!, if: :account_based?
-  before_action :params_sanitization
-  before_action :authorization, if: :account_based?
 	before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
@@ -57,15 +54,6 @@ class ApplicationController < ActionController::Base
         @current_order
       end
     end  
-
-  private
-
-    def account_based?
-      path = request.path
-      (path.start_with? '/customer') || \
-        (path.start_with? '/merchant') || \
-        (path.start_with? '/account')
-    end
 end
 
 

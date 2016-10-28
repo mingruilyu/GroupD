@@ -1,4 +1,7 @@
 class Merchant::CombosController < ApplicationController
+  before_action :authenticate_account!                   
+  before_action :params_sanitization
+  before_action :authorization
 
   def create
     Combo.create_combo @dishes, @restaurant, @price, @image_url

@@ -27,7 +27,7 @@ module Delivery
 
     config.active_job.queue_adapter = :resque
 
-    def load_environment_variables(environment = nil)
+    def load_credentials(environment = nil)
       credentials_path = Rails.root.join('config', 
         "credentials#{environment.nil? ? '' : '.' + environment}.yml")
       return unless File.exist? credentials_path
@@ -38,6 +38,6 @@ module Delivery
     end
 
     # Load api credentials.
-    load_environment_variables
+    load_credentials
   end
 end
