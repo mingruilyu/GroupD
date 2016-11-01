@@ -9,12 +9,6 @@ class Account < ActiveRecord::Base
   belongs_to :cellphone
   has_many :orders
   
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, 
-         :validatable, :authentication_keys => { login: true }
-
   def login=(login)
     @login = login
   end
@@ -93,12 +87,17 @@ class Account < ActiveRecord::Base
     }
   end
 
+  def as_json(options={})
+    super except: [:created_at, :updated_at, :uid, :provider, 
+      :coordinate_id]
+  end
+
   protected
     def active_for_authentication?
       self.cellphone_id.present?
     end
 
     def confirmation_required?
-      false
+      self.provider == 'email' && !confirmed?
     end
 end

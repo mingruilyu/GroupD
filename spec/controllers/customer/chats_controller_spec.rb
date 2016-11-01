@@ -18,7 +18,9 @@ RSpec.describe Customer::ChatsController, type: :controller do
     it 'registers the new user' do
       subscribe = (File.open Rails.root.join( 
         'test/fixtures/wechat_post_subscribe')).read
-      post :chat, subscribe, @parameters
+      expect {
+        post :chat, subscribe, @parameters
+      }.to change(Customer, :count)
       expect(response).to have_http_status(:ok)
       xml = Hash.from_xml(response.body).deep_symbolize_keys
       expect(xml).to eq({
