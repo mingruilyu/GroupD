@@ -1,7 +1,4 @@
-class Merchant::RestaurantsController < ApplicationController
-  before_action :authenticate_account!                   
-  before_action :params_sanitization
-  before_action :authorization
+class Merchant::RestaurantsController < Merchant::MerchantController
 
   def index
     restaurants = Restaurant.open_by_merchant(@merchant.id)

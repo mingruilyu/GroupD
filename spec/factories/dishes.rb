@@ -5,7 +5,7 @@ FactoryGirl.define do
       if restaurant
         restaurant.id
       else
-        1
+        (create :restaurant).id
       end
     }
     sequence(:name) { |n| "tariyaki chicken#{n}" }

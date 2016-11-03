@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161101053746) do
+ActiveRecord::Schema.define(version: 20161102035209) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255,   default: "",            null: false
@@ -97,17 +97,13 @@ ActiveRecord::Schema.define(version: 20161101053746) do
   end
 
   create_table "combos", force: :cascade do |t|
-    t.decimal  "price",                     precision: 8, scale: 2, default: 10.0, null: false
-    t.datetime "created_at",                                                       null: false
-    t.datetime "updated_at",                                                       null: false
-    t.integer  "restaurant_id", limit: 4,                                          null: false
-    t.integer  "dish_1",        limit: 4
-    t.integer  "dish_2",        limit: 4
-    t.integer  "dish_3",        limit: 4
-    t.integer  "dish_4",        limit: 4
-    t.integer  "dish_5",        limit: 4
-    t.integer  "status",        limit: 1,                           default: 0,    null: false
+    t.decimal  "price",                       precision: 8, scale: 2, default: 10.0, null: false
+    t.datetime "created_at",                                                         null: false
+    t.datetime "updated_at",                                                         null: false
+    t.integer  "restaurant_id", limit: 4,                                            null: false
+    t.integer  "status",        limit: 1,                             default: 0,    null: false
     t.string   "image_url",     limit: 255
+    t.text     "dishes",        limit: 65535
   end
 
   create_table "companies", force: :cascade do |t|

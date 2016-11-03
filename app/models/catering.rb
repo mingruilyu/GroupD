@@ -40,6 +40,10 @@ class Catering < ActiveRecord::Base
     self.status == STATUS_DONE
   end
 
+  def self.get_recent_menu_by_building(building_id)
+    self.active_by_building(building_id)
+  end
+
   def update_time(delivery_date, deadline, delivery_time)
     Catering.transaction do
       self.lock!

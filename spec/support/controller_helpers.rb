@@ -4,15 +4,17 @@ module ControllerHelpers
     customer = FactoryGirl.create(:customer) 
     auth_headers = customer.create_new_auth_token
     request.headers.merge! auth_headers
-    #sign_in FactoryGirl.create(:customer)
   end
 
   def login_merchant
     @request.env["devise.mapping"] = Devise.mappings[:account]
     merchant = Merchant.first || FactoryGirl.create(:merchant)
-    #sign_in ()
     auth_headers = merchant.create_new_auth_token 
     request.headers.merge! auth_headers
+  end
+
+  def omniauth_register_account
+    FactoryGirl.create :customer, uid: '123', provider: 'wechat'
   end
 
   def generate_json_list(objects)

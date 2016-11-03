@@ -1,4 +1,4 @@
-class Customer::ChatsController < ApplicationController
+class ChatsController < ApplicationController
   before_action :params_sanitization
   before_action :authenticate_account!
 

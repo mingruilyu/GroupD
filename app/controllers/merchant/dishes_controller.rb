@@ -1,7 +1,4 @@
-class Merchant::DishesController < ApplicationController
-  before_action :authenticate_account!                   
-  before_action :params_sanitization
-  before_action :authorization
+class Merchant::DishesController < Merchant::MerchantController
 
   def create
     Dish.create! restaurant_id: @restaurant.id, image_url: @image_url, 

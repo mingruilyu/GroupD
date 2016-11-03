@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :catering do
-    combo 
+    combo
     shipping
     building
     available_until 2.hour.from_now

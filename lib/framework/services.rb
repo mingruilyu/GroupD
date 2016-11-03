@@ -87,11 +87,29 @@ module Services
         case message.event 
         when 'subscribe'
           Operations::OmniauthRegisterAccount.new(
-            message.from_user_name, 'wechat', 
+            message.from_user_name, 'wechat',  
             Account::ACCOUNT_TYPE_CUSTOMER)
         else
         end
+      when 'text'
+        account = self.current_account(message)
+        case interpret(message.content)
+        when :request_menu
+          Operations::RequestMenu.new(account)
+        end
       else
+      end
+    end
+
+    def self.current_account(message)
+      Customer.find_by_provider_and_uid!('wechat', 
+        message.from_user_name)
+    end
+
+    def self.interpret(content) 
+      case content
+      when 'menu'
+        :request_menu
       end
     end
 

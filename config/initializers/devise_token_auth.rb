@@ -11,7 +11,7 @@ DeviseTokenAuth.setup do |config|
 
   # By default, users will be redirected to loggin url once they finish email 
   # confirmation if they are using web application.
-  config.default_confirm_success_url = '/auth/sign_in'
+  config.default_confirm_success_url = 'http://katering.com/auth/confirmation/success'
 
   # Sets the max number of concurrent devices per user, which is 10 by default.
   # After this limit is reached, the oldest tokens will be removed.

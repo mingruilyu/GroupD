@@ -1,7 +1,4 @@
-class Merchant::UploadsController < ApplicationController
-  before_action :authenticate_account!                   
-  before_action :params_sanitization
-  before_action :authorization
+class Merchant::UploadsController < Merchant::MerchantController
 
   def create
     uploaded = Services::AwsS3.upload_file(@file)

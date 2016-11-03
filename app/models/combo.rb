@@ -1,6 +1,7 @@
 class Combo < ActiveRecord::Base 
   has_many :caterings, dependent: :delete_all
   belongs_to :restaurant
+  serialize :dishes
 
   MAX_DISH_COUNT = 5
   STATUS_AVAILABLE = 0
@@ -20,11 +21,10 @@ class Combo < ActiveRecord::Base
       restaurant.lock! 'LOCK IN SHARE MODE'
       combo = Combo.new restaurant_id: restaurant.id, price: price,
         image_url: url
-      count = 1
-      dishes.each do |dish|
+      combo.dishes = []
+      dishes.sort.each do |dish|
         dish.lock! 'LOCK IN SHARE MODE'
-        combo.associate_dish "dish_#{count}".to_sym, dish.id
-        count += 1
+        combo.dishes.append dish.id
       end
       combo.save!
     end
@@ -40,15 +40,10 @@ class Combo < ActiveRecord::Base
       if price != self.price
         self.lock!
       end
-      count = 1
-      dishes.each do |dish|
+      self.dishes = []
+      dishes.sort.each do |dish|
         dish.lock!('LOCK IN SHARE MODE')
-        write_attribute "dish_#{count}".to_sym, dish.id
-        count += 1
-      end
-      while count < 6
-        write_attribute "dish_#{count}".to_sym, nil
-        count += 1 
+        self.dishes.append dish.id
       end
       self.price = price
       self.image_url = url
@@ -74,14 +69,19 @@ class Combo < ActiveRecord::Base
   end
 
   def as_json(options={})
-    hash = super only: [:restaurant_id, :dish_1, :dish_2, :dish_3, 
-      :dish_4, :dish_5]
+    hash = super only: [:restaurant_id, :dishes]
     hash['price'] = self.price.as_json
     hash
   end
 
-  def associate_dish attr_name, dish_id
-    write_attribute attr_name, dish_id
+  def describe
+    describe = []
+    self.dishes.each do |id|
+      dish = Dish.find id
+      describe.append dish.name
+    end
+
+    describe.join ','
   end
 
   protected

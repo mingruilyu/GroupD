@@ -1,14 +1,5 @@
-class MerchantsController < ApplicationController
-  before_action :set_merchant, only: [:show, :edit, :update, :destroy]
+class MerchantInfoController < MerchantController
 
-  # GET /merchants
-  # GET /merchants.json
-  def index
-    @merchants = Merchant.all
-  end
-
-  # GET /merchants/1
-  # GET /merchants/1.json
   def show
     @restaurants = Restaurant.where(account_id: current_account.id)
     restaurant_list = []

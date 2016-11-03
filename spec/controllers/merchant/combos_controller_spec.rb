@@ -24,7 +24,8 @@ RSpec.describe Merchant::CombosController, type: :controller do
       login_merchant
       @merchant = subject.current_account
       @restaurant = create :restaurant, merchant_id: @merchant.id
-      @combo = create :combo, restaurant_id: @restaurant.id
+      @combo = create :combo, restaurant_id: @restaurant.id, 
+        dishes: []
       @dishes = create_list :dish, 2, restaurant_id: @restaurant.id
     end
 
@@ -106,10 +107,7 @@ RSpec.describe Merchant::CombosController, type: :controller do
           price: 10.10, dishes: [@dishes[0].id], image_url: url,
           format: :json
         expect(response).to have_http_status(:ok)
-        expect(@combo.reload.dish_2).to eq(nil)
-        expect(@combo.dish_3).to eq(nil)
-        expect(@combo.dish_4).to eq(nil)
-        expect(@combo.dish_5).to eq(nil)
+        expect(@combo.reload.dishes).to eq([@dishes[0].id])
         expect(@combo.price).to eq(10.10)
       end
     end

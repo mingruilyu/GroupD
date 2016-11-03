@@ -92,10 +92,11 @@ class Account < ActiveRecord::Base
       :coordinate_id]
   end
 
+  def active_for_authentication?
+    confirmed?
+  end
+
   protected
-    def active_for_authentication?
-      self.cellphone_id.present?
-    end
 
     def confirmation_required?
       self.provider == 'email' && !confirmed?

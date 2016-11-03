@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Customer::ChatsController, type: :controller do
+RSpec.describe ChatsController, type: :controller do
   before :each do
     @parameters = YAML.load File.open(
       Rails.root.join 'test/fixtures/wechat_post_params.yml') 

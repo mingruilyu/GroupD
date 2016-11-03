@@ -20,6 +20,18 @@ module Exceptions
     end
   end
 
+  class AddressNotConfigured < ApplicationError
+    def message
+      I18n.t 'error.ADDRESS_NOT_CONFIGURED'
+    end
+  end
+
+  class CellphoneNotConfigured < ApplicationError
+    def message
+      I18n.t 'error.CELLPHONE_NOT_CONFIGURED'
+    end
+  end
+
   class NotEffective < ActiveRecord::RecordInvalid
   end
  

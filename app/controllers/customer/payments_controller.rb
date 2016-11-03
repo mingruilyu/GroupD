@@ -1,4 +1,4 @@
-class PaymentsController < ApplicationController
+class PaymentsController < Customer::CustomerController
   def new
     @payment = Payment.new
     respond_to do |format|

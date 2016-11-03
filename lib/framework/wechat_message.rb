@@ -1,5 +1,7 @@
 module WechatMessage
   REPLY_WELCOME = I18n.t 'chatreply.WELCOME'
+  NO_CATERING_TODAY = I18n.t 'chatreply.NO_CATERING_TODAY'
+  REQUIRE_SET_ADDRESS = I18n.t 'chatreply.REQUIRE_SET_ADDRESS'
   class Message
     attr_reader :from_user_name, :type, :create_time, :to_user_name
     def self.create(hash)
@@ -22,6 +24,20 @@ module WechatMessage
         hash['MsgType'] = 'text'
         hash['Content'] = REPLY_WELCOME
         Text.new hash
+      when :request_menu
+        if hash[:error]
+          hash['MsgType'] = 'text'
+          case hash[:error]
+          when :no_catering
+            hash['Content'] = NO_CATERING_TODAY
+          when :address_not_set
+            hash['Content'] = REQUIRE_SET_ADDRESS
+          end
+          Text.new hash
+        else
+          hash['MsgType'] = 'news'
+          NewsGroup.new hash
+        end
       else
       end
     end
@@ -89,16 +105,15 @@ module WechatMessage
       @event = hash['EventKey']
     end
 
-    def dispatch
-    end
   end
 
   class News
+    attr_reader :title, :description, :pic_url, :url
     def initialize(hash)
-      @title = hash['title']
-      @description = hash['description']
-      @pic_url = hash['pic_url']
-      @url = hash['url']
+      @title = hash[:title]
+      @description = hash[:description]
+      @pic_url = hash[:pic_url]
+      @url = hash[:url]
     end
   end
 
@@ -106,8 +121,11 @@ module WechatMessage
     def initialize(hash)
       super hash
       @type = 'news'
-      @article_count = news.size
-      @articles = news
+      @article_count = hash[:objects].size
+      @articles = []
+      hash[:objects].each do |news|
+        @articles.append News.new(news)
+      end
     end
 
     def to_xml(options={})

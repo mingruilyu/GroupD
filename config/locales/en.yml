@@ -91,3 +91,7 @@ en:
   chatreply:
     WELCOME:
       'Thank you for registering for Katering service!'
+    REQUIRE_SET_ADDRESS:
+      'Please setup your address before any other operations!'
+    NO_CATERING_TODAY:
+      'There is no catering today for your building!'

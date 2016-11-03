@@ -1,7 +1,4 @@
-class Customer::OrdersController < ApplicationController
-  before_action :authenticate_account!                   
-  before_action :params_sanitization
-  before_action :authorization
+class Customer::OrdersController < Customer::CustomerController
 
   def index
     orders = Order.by_customer(current_account.id)

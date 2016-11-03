@@ -1,14 +1,14 @@
 module Filter  
 
-  def format_sanitization
-    raise ActionController::UnknownFormat \
-      unless request.format == :json
-  end
-
   def address_configuration
     raise Exceptions::AddressNotConfigured \
       if current_account.is_customer? &&\
         current_account.building_id.nil?
+  end
+
+  def cellphone_configuration
+    raise Exceptions::CellphoneNotConfigured \
+      if current_account.cellphone_id.nil?
   end
 
   def sanitize(action, targets={})
