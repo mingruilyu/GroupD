@@ -83,6 +83,7 @@ module Sanitization
     dish:           Dish,
     dishes:         Dish,
     payment:        Payment,
+    transaction:    Transaction,
   }
 
   def self.sanitize_time_int(time_int)

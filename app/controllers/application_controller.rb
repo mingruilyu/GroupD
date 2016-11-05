@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ActionControllerError, with: :bad_request
   rescue_from ActionController::UnknownFormat, with: :not_found
+  rescue_from ActionController::ParameterMissing, with: :not_found
   rescue_from Exceptions::StaleRecord, with: :gone
   rescue_from Exceptions::NotEffective, with: :found
   rescue_from Exceptions::BadParameter, with: :bad_request

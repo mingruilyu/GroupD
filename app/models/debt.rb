@@ -27,4 +27,8 @@ class Debt < ActiveRecord::Base
     debt.lock!
     debt.update_attribute :amount, debt.amount - amount
   end
+
+  def as_json(options={})
+    super only: [:loaner_id, :debtor_id, :amount]
+  end
 end

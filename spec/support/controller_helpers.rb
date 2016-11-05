@@ -1,9 +1,10 @@
 module ControllerHelpers
   def login_customer
     @request.env["devise.mapping"] = Devise.mappings[:account]
-    customer = FactoryGirl.create(:customer) 
+    customer = Customer.first || FactoryGirl.create(:customer) 
     auth_headers = customer.create_new_auth_token
     request.headers.merge! auth_headers
+    customer
   end
 
   def login_merchant
@@ -11,6 +12,7 @@ module ControllerHelpers
     merchant = Merchant.first || FactoryGirl.create(:merchant)
     auth_headers = merchant.create_new_auth_token 
     request.headers.merge! auth_headers
+    merchant
   end
 
   def omniauth_register_account

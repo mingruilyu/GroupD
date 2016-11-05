@@ -87,6 +87,8 @@ en:
       'The token has expired. Please resend confirmation token!'
     RECORD_NOT_FOUND:
       'The records you are requesting are not found!'
+    TRANSACTION_NOT_CANCELLABLE:
+      'The transaction cannot be cancelled!'
 
   chatreply:
     WELCOME:

@@ -32,6 +32,11 @@ Rails.application.routes.draw do
     resources :combos, only: [:destroy, :update, :show]
 
     resources :uploads, only: :create
+
+    resources :debts, only: :index
+
+    resources :transactions, only: [:index, :update, :destroy]
+    get 'transactions/pending' => 'transactions#pending'
   end
 
   namespace :merchant, format: true, constraints: { format: :json } do
