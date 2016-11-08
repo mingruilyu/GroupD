@@ -22,15 +22,6 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
 
     let(:order) { subject.send(:current_order) }
 
-    describe 'format sanitization' do
-      it 'fails because not using json format' do
-        delete :destroy, id: 1
-        expect(response).to have_http_status(:not_found)
-        post :create, order_id: 1
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     describe 'parameter validation' do
       it 'fails because order item does not exist' do
         delete :destroy, id: 100, format: :json 
@@ -53,8 +44,8 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
       end
 
       it 'fails because catering does not exist' do
-        post :create, order_id: order.id, order_item: { 
-          catering_id: 1000 }
+        post :create, order_id: order.id, catering_id: 1000,
+          quantity: 1, instruction: '', format: :json
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -66,7 +57,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
       it 'creates order item' do
         expect {
           post :create, order_id: order.id, catering_id: catering.id, 
-          quantity: 1, format: :json
+            quantity: 1, instruction: "", format: :json
         }.to change(OrderItem, :count).and change(
           order.reload.order_items, :count) 
         expect(response).to have_http_status(:created)
@@ -75,7 +66,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
       it 'fails because catering expired' do
         catering.update_attribute :available_until, Time.now 
         post :create, order_id: order.id, catering_id: catering.id, 
-          quantity: 2, format: :json
+          quantity: 2, instruction: '', format: :json
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
@@ -84,7 +75,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
 
       it 'fails because quantity is over limit' do
         post :create, order_id: order.id, catering_id: catering.id, 
-          quantity: 11, format: :json
+          quantity: 11, instruction: '', format: :json
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 
@@ -93,7 +84,7 @@ RSpec.describe Customer::OrderItemsController, type: :controller do
 
       it 'fails because quantity is under limit' do
         post :create, order_id: order.id, catering_id: catering.id, 
-          quantity: 0, format: :json
+          quantity: 0, instruction: '', format: :json
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body) 
         expect(json['message']).to eq(generate_json_msg(:error, 

@@ -1,4 +1,4 @@
-class Restaurant::DishesController < ApplicationController
+class Restaurant::DishesController < WebApplicationController
 
   def index
     dishes = Dish.active_by_restaurant @restaurant.id

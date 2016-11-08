@@ -1,4 +1,4 @@
-class BuildingsController < ApplicationController
+class BuildingsController < WebApplicationController
 
   def query_by_city_company
     buildings = Building.by_city_company @city.id, @company.id

@@ -82,46 +82,22 @@ module Services
     end
 
     def self.dispatch(message)
-      case message.type
-      when 'event'
-        case message.event 
-        when 'subscribe'
-          Operations::OmniauthRegisterAccount.new(
-            message.from_user_name, 'wechat',  
-            Account::ACCOUNT_TYPE_CUSTOMER)
-        else
-        end
-      when 'text'
-        account = self.current_account(message)
-        case interpret(message.content)
-        when :request_menu
-          Operations::RequestMenu.new(account)
-        end
-      else
-      end
+      account = self.current_account(message)
+      WechatAnalyze.dispatch(message, account) 
     end
 
     def self.current_account(message)
-      Customer.find_by_provider_and_uid!('wechat', 
+      Customer.find_by_provider_and_uid('wechat', 
         message.from_user_name)
-    end
-
-    def self.interpret(content) 
-      case content
-      when 'menu'
-        :request_menu
-      end
     end
 
     def self.construct_message(xml)
       WechatMessage::Message.create Hash.from_xml(xml)['xml']
     end
 
-    def self.assembly_reply(json, receiver)
-      json['FromUserName'] = Services::WechatBot.bot_id
-      json['ToUserName'] = receiver
-      json['CreateTime'] = Time.now.to_i
-      WechatMessage::Message.assembly json
+    def self.assembly_reply(receiver, json)
+      WechatReplyAdaptor.adapt json, bot_id, receiver,
+        Time.now.to_i
     end
   end
 end

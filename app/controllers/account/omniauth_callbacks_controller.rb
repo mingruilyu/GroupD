@@ -1,4 +1,4 @@
-class Account::OmniauthCallbacksController < ApplicationController
+class Account::OmniauthCallbacksController < WebApplicationController
   skip_before_action :authenticate_account!
   skip_before_action :authorization
 

@@ -18,11 +18,12 @@ class Catering < ActiveRecord::Base
     where restaurant_id: restaurant }
   scope :by_building, ->(building) { where building_id: building }
   scope :active_by_restaurant, ->(restaurant) {
-    self.active.merge self.by_restaurant(restaurant) }
+    self.order(:created_at).active.merge(
+      self.by_restaurant(restaurant)) }
   scope :active_by_building, ->(building) {
-    self.active.merge self.by_building(building) }
+    self.order(:created_at).active.merge self.by_building(building) }
   scope :active_by_combo, ->(combo) {
-    self.active.merge where(combo_id: combo) }
+    self.order(:created_at).active.merge where(combo_id: combo) }
   # There could be moment the merchant switched the catering status
   # while customers are still ordering. To avoid race condition, we
   # simply forbid user's order SHUTTING_TIME_BEFORE_ORDER_DEADLINE
@@ -104,15 +105,6 @@ class Catering < ActiveRecord::Base
     end
   end
 
-  def as_json(options={})
-    json = super only: [:shipping_id, :combo_id, :building_id,
-      :order_count]
-    json['estimated_attrival_at'] = \
-      self.estimated_arrival_at.to_s(:db) 
-    json['available_until'] = self.available_until.to_s(:db)
-    json
-  end
-
   def set_deadline(date_int, time_int)
     self.available_until = Time.now.change(
       month: date_int / 100, day: date_int % 100, 
@@ -123,6 +115,21 @@ class Catering < ActiveRecord::Base
     self.estimated_arrival_at = Time.now.change(
       month: date_int / 100, day: date_int % 100, 
       hour: time_int / 100, min: time_int % 100)
+  end
+
+  def as_json(options={})
+    json = super only: [:shipping_id, :combo_id, :building_id,
+      :order_count]
+    json['estimated_attrival_at'] = \
+      self.estimated_arrival_at.to_s(:db) 
+    json['available_until'] = self.available_until.to_s(:db)
+    json
+  end
+
+  def as_wechat_msg(options={})
+    WechatMessage::News.new title: self.restaurant.name, 
+      description: self.combo.describe,
+      pic_url: self.combo.image_url
   end
 
   private

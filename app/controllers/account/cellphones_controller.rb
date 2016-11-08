@@ -1,4 +1,4 @@
-class Account::CellphonesController < ApplicationController
+class Account::CellphonesController < WebApplicationController
   
   def create
     token = Cellphone.create_cellphone @number, @account.id

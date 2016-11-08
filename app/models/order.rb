@@ -4,6 +4,8 @@ class Order < ActiveRecord::Base
   has_many :order_items, dependent: :delete_all
 
   TAX_RATE = 0.1
+  SINGLE_ORDER_QUANTITY_LIMIT = 10
+
   STATUS_UNCHECKOUT = 0
   STATUS_CHECKOUT = 1
   STATUS_CANCEL = 2
@@ -22,7 +24,21 @@ class Order < ActiveRecord::Base
     self.total_price = self.subtotal + self.taxes
   end
 
-  def checkout!(payment_id, customer_id)
+  def self.place_single_item_order(account, catering_id, quantity, 
+    payment_id)
+    Order.transaction do
+      order = Order.create customer_id: account.id
+      item = OrderItem.create(
+        quantity:             quantity,
+        order_id:             order.id,
+        catering_id:          catering_id
+      )
+      order.checkout! payment_id
+    end
+    item
+  end
+
+  def checkout!(payment_id)
     # Check whether any item in the order has expired. 
     if self.has_expired?
       self.order_items.clear
@@ -41,10 +57,11 @@ class Order < ActiveRecord::Base
         amount: self.total_price, purpose: Transaction::TYPE_PAYMENT
       self.transaction_id = transaction.id
       self.payment_id = payment_id
+      self.status = STATUS_CHECKOUT
       self.save!
       # process payment
       if self.payment_id == Payment::RECORD_CASH_ID
-        Debt.T_add_debt merchant_id, customer_id, self.total_price
+        Debt.T_add_debt merchant_id, self.customer_id, self.total_price
       else
         # Todo embed other online payment platform APIs
         # initiate transaction
@@ -81,22 +98,23 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def add_item(params, catering)
+  def add_item(quantity, special_instruction, catering)
+    order_item = OrderItem.new(
+      quantity:             quantity,
+      order_id:             self.id,
+      catering_id:          catering.id,
+      special_instruction:  special_instruction
+    )
     Order.transaction do
       self.lock!
       self.L_check_modifiable
       # we should obtain a shared lock here in case that catering is 
       # being destroyed. 
       catering.lock! 'LOCK IN SHARE MODE'
-      order_item = OrderItem.new(
-        quantity:             params[:quantity].to_i,
-        order_id:             self.id,
-        catering_id:          catering.id,
-        special_instruction:  params[:special_instruction]
-      )
       order_item.save!
       self.L_update_order_restaurant catering
     end
+    order_item
   end
 
   def remove_item(item)

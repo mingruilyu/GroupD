@@ -1,4 +1,4 @@
-class LocationsController < ApplicationController
+class LocationsController < WebApplicationController
 
   def query
     map_response = Services::GoogleMap.location_query @query

@@ -1,4 +1,4 @@
-class CompaniesController < ApplicationController
+class CompaniesController < WebApplicationController
   def index
     companies = Company.by_city @city.id
     render json: Response::JsonResponse.new(companies)
@@ -10,7 +10,6 @@ class CompaniesController < ApplicationController
   end
 
   private
-    
     def params_sanitization
       sanitize :index, city_id: :city
       sanitize :query, name: :query

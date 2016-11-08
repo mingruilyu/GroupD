@@ -1,7 +1,7 @@
 class Customer::OrderItemsController < Customer::CustomerController
 
   def create
-    @order.add_item params, @catering
+    @order.add_item @quantity, @instruction, @catering
     render nothing: true, status: :created
   end
   
@@ -15,7 +15,8 @@ class Customer::OrderItemsController < Customer::CustomerController
 
     def params_sanitization
       sanitize :destroy, id: :order_item
-      sanitize :create, order_id: :order, catering_id: :catering
+      sanitize :create, { instruction: :text }, order_id: :order, 
+        catering_id: :catering, quantity: :quantity
     end
 
     def authorization

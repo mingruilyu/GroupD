@@ -10,7 +10,7 @@ class Customer::OrdersController < Customer::CustomerController
   end
 
   def update
-    @order.checkout! @payment.id, current_account.id
+    @order.checkout! @payment.id
     session.delete :order
     render nothing: true
   end

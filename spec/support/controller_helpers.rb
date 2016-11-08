@@ -34,4 +34,8 @@ module ControllerHelpers
     msg
   end
 
+  def generate_wechat_text_message(content)
+    file = File.open Rails.root.join('test/fixtures/wechat_post_text')
+    file.read.sub 'STUB', content
+  end
 end

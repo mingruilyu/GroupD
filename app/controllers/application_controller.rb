@@ -1,52 +1,25 @@
 class ApplicationController < ActionController::Base
-  include DeviseTokenAuth::Concerns::SetUserByToken
-  include Filter
   include ExceptionHandler
-
-#  rescue_from StandardError, with: :internal_server_error
-#=begin
-  rescue_from ActiveRecord::RecordInvalid, with: :bad_request
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  rescue_from ActionController::ActionControllerError, with: :bad_request
-  rescue_from ActionController::UnknownFormat, with: :not_found
-  rescue_from ActionController::ParameterMissing, with: :not_found
-  rescue_from Exceptions::StaleRecord, with: :gone
-  rescue_from Exceptions::NotEffective, with: :found
-  rescue_from Exceptions::BadParameter, with: :bad_request
   rescue_from Exceptions::NotAuthorized, with: :unauthorized
-  rescue_from Exceptions::FileOversize, with: :bad_request
-#=end
-  protect_from_forgery with: :null_session
-
-	before_action :configure_permitted_parameters, if: :devise_controller?
-
   protected
-  	def configure_permitted_parameters
-  		devise_parameter_sanitizer.permit :sign_in, keys: [:login]
-  
-  		devise_parameter_sanitizer.permit :sign_up, keys: [:username, :type]
-  
-  		devise_parameter_sanitizer.permit :account_update, keys: [:username]
-  	end
-
-    def current_order
-      if account_signed_in? && session[:order].present?
-        # there is an order in the current session and has not been
-        # checked out
-        @current_order ||= Order.includes(:order_items).find(session[:order])
-      elsif account_signed_in?
-        # account just logged in.
-        @current_order = Order.includes(:order_items).find_by_customer_id_and_status(
-          current_account.id, Order::STATUS_UNCHECKOUT)
-        if @current_order.nil?
-          # the account does not have any order that has not been checked out. 
-          # out.
-          @current_order = Order.create(customer_id: current_account.id)
-        end
-        session[:order] = @current_order.id
-        @current_order
+    def sanitize(action, optional={}, mandatory)
+      unless action.is_a? Array
+        action = [action]
       end
-    end  
+      return unless action.include? params[:action].to_sym
+      vars = Sanitization.sanitize_params params, optional, mandatory
+      vars.each do |var_name, var|
+        self.instance_variable_set("@#{var_name}", var)
+      end
+    end
+
+    def authorize(action, &block)
+      unless action.is_a? Array
+        action = [action]
+      end
+      return unless action.include? params[:action].to_sym
+      Sanitization.validate_authorization &block
+    end
 end
 
 

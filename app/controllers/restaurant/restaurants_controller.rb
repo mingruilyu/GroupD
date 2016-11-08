@@ -1,4 +1,4 @@
-class Restaurant::RestaurantsController < ApplicationController
+class Restaurant::RestaurantsController < WebApplicationController
 
   def show
     render json: Response::JsonResponse.new(@restaurant)

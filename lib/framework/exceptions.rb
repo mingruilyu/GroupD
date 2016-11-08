@@ -32,6 +32,12 @@ module Exceptions
     end
   end
 
+  class InvalidCateringIndex < ApplicationError
+    def message
+      I18n.t 'error.INVALID_CATERING_INDEX'
+    end
+  end
+
   class NotEffective < ActiveRecord::RecordInvalid
   end
  

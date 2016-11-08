@@ -1,4 +1,4 @@
-class Restaurant::CateringsController < ApplicationController
+class Restaurant::CateringsController < WebApplicationController
 
   def index
     caterings = Catering.by_restaurant @restaurant.id 

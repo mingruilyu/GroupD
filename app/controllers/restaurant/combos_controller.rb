@@ -1,4 +1,4 @@
-class Restaurant::CombosController < ApplicationController
+class Restaurant::CombosController < WebApplicationController
 
   def index
     combos = Combo.by_restaurant @restaurant.id
