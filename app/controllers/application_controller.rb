@@ -1,7 +1,19 @@
 class ApplicationController < ActionController::Base
   include ExceptionHandler
   rescue_from Exceptions::NotAuthorized, with: :unauthorized
+	before_action :configure_permitted_parameters, 
+    if: :devise_controller?
+
   protected
+    def configure_permitted_parameters
+  		devise_parameter_sanitizer.permit :sign_in, keys: [:login]
+  
+  		devise_parameter_sanitizer.permit :sign_up, 
+        keys: [:username, :type]
+  
+  		devise_parameter_sanitizer.permit :account_update, 
+        keys: [:username]
+  	end
     def sanitize(action, optional={}, mandatory)
       unless action.is_a? Array
         action = [action]

@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'Account', at: 'auth', controllers: {
-    omniauth_callbacks: 'account/omniauth_callbacks',
+    omniauth_callbacks: 'account/auth_callbacks',
   }
 
-  get 'auth/confirmation/success' => 'account/confirmations#success'
+  get 'auth/confirmation/success' => 'account/auth_callbacks#confirmation_success'
+  get 'auth/password/reset' => 'account/auth_callbacks#reset_password'
   post 'chat' => 'chats#chat', constraints: { format: :xml }
 
   namespace :account, format: true, constraints: { format: :json } do

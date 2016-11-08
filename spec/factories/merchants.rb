@@ -7,5 +7,6 @@ FactoryGirl.define do
     password                '12345678'
     password_confirmation   '12345678'
     type                    'Merchant'
+    provider                'email'
   end
 end

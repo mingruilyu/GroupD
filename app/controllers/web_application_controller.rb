@@ -16,20 +16,7 @@ class WebApplicationController < ApplicationController
 #=end
   protect_from_forgery with: :null_session
 
-	before_action :configure_permitted_parameters, 
-    if: :devise_controller?
-
   protected
-  	def configure_permitted_parameters
-  		devise_parameter_sanitizer.permit :sign_in, keys: [:login]
-  
-  		devise_parameter_sanitizer.permit :sign_up, 
-        keys: [:username, :type]
-  
-  		devise_parameter_sanitizer.permit :account_update, 
-        keys: [:username]
-  	end
-
     def current_order
       if account_signed_in? && session[:order].present?
         # there is an order in the current session and has not been
