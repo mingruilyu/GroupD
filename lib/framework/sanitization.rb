@@ -40,6 +40,7 @@ module Sanitization
     dishes:         Dish,
     payment:        Payment,
     transaction:    Transaction,
+    shipping:       Shipping,
   }
 
   def self.sanitize_time_int(time_int)

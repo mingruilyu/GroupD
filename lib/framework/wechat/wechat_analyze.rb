@@ -17,6 +17,8 @@ module WechatAnalyze
         cmd = WechatAnalyze.parse_order_command account, 
           message.content
         WechatOperations::PlaceOrder.new(account, cmd[0], cmd[1])
+      when :check_status
+        WechatOperations::CheckStatus.new(account)
       when :not_recognized
         WechatOperations::Noop.new
       end
@@ -28,6 +30,8 @@ module WechatAnalyze
     case content
     when 'menu'
       :request_menu
+    when 'status'
+      :check_status
     when /\A\d+\s*\+\s*\d+$/
       :place_order
     else

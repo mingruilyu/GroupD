@@ -37,21 +37,6 @@ RSpec.describe Customer::OrdersController, type: :controller do
       @order = subject.send :current_order
     end
 
-    describe 'format sanitization' do
-      it 'fails because not using json format' do
-        get :index, customer_id: 10
-        expect(response).to have_http_status(:not_found)
-        put :update, id: 10
-        expect(response).to have_http_status(:not_found)
-        get :show, id: 10
-        expect(response).to have_http_status(:not_found)
-        put :cancel, id: 10
-        expect(response).to have_http_status(:not_found)
-        delete :destroy, id: 10
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     describe 'parameter validation' do
       it 'fails because order does not exist' do
         put :update, id: 100, format: :json 

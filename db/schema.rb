@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161103232453) do
+ActiveRecord::Schema.define(version: 20161111051133) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",                  limit: 255,   default: "",            null: false
@@ -156,6 +156,7 @@ ActiveRecord::Schema.define(version: 20161103232453) do
     t.text     "special_instruction", limit: 65535
     t.integer  "catering_id",         limit: 4
     t.integer  "order_id",            limit: 4,                 null: false
+    t.integer  "dish_id",             limit: 4
   end
 
   create_table "orders", force: :cascade do |t|
@@ -166,6 +167,7 @@ ActiveRecord::Schema.define(version: 20161103232453) do
     t.decimal  "total_price",              precision: 10, scale: 2, default: 0.0
     t.integer  "customer_id",    limit: 4,                                        null: false
     t.integer  "status",         limit: 1,                          default: 0,   null: false
+    t.integer  "shipping_id",    limit: 4
   end
 
   create_table "payments", force: :cascade do |t|
@@ -198,6 +200,7 @@ ActiveRecord::Schema.define(version: 20161103232453) do
     t.datetime "updated_at",                          null: false
     t.integer  "coordinate_id", limit: 4
     t.integer  "catering_id",   limit: 4
+    t.integer  "merchant_id",   limit: 4
   end
 
   create_table "transactions", force: :cascade do |t|

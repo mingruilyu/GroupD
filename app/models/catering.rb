@@ -33,12 +33,18 @@ class Catering < ActiveRecord::Base
   MIN_SHIPPING_TIME = 10 # in min
 
   def can_order?
-    SHUTTING_TIME_BEFORE_ORDER_DEADLINE.second.from_now < \
-      self.available_until
+    !self.done? && \
+      SHUTTING_TIME_BEFORE_ORDER_DEADLINE.second.from_now < \
+        self.available_until
   end
 
   def done?
     self.status == STATUS_DONE
+  end
+
+  def T_fulfill!
+    self.lock!
+    self.update_attribute :status, STATUS_DONE
   end
 
   def self.get_recent_menu_by_building(building_id)

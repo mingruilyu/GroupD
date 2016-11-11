@@ -1,5 +1,7 @@
 class Order < ActiveRecord::Base
-  belongs_to :restaurant, :customer
+  belongs_to :restaurant
+  belongs_to :customer
+  belongs_to :shipping
   has_many :order_items, dependent: :delete_all
 
   TAX_RATE = 0.1
@@ -8,13 +10,21 @@ class Order < ActiveRecord::Base
   STATUS_UNCHECKOUT = 0
   STATUS_CHECKOUT = 1
   STATUS_CANCEL = 2
-  STATUS_FULLFILLED = 3
+  STATUS_FULFILLED = 3
   attr_accessor :payment_id
 
   scope :by_customer, ->(customer) { 
     includes(:order_items).where(customer_id: customer)\
       .where('status != ?', STATUS_UNCHECKOUT) }
   scope :by_status, ->(status) { where(status: status) }
+  scope :checked_out, ->(customer) {
+    self.by_status(STATUS_CHECKOUT).by_customer(customer) }
+
+  def self.active_order!(customer_id)
+    Order.includes(:order_items).find_by_customer_id_and_status(
+      customer_id, Order::STATUS_UNCHECKOUT) || \
+      Order.create(customer_id: customer_id)
+  end
 
   def taxes
     @taxes ||= self.subtotal * TAX_RATE
@@ -22,12 +32,6 @@ class Order < ActiveRecord::Base
 
   def calculate_bill
     self.total_price = self.subtotal + self.taxes
-  end
-
-  def self.active_order!(customer_id)
-    Order.includes(:order_items).find_by_customer_id_and_status(
-      customer_id, Order::STATUS_UNCHECKOUT) || \
-      Order.create(customer_id: customer_id)
   end
 
   def checkout!(payment_id)
@@ -80,12 +84,18 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def T_fulfill!
+    self.lock!
+    self.update_attribute :status, STATUS_FULFILLED
+  end
+
   def clear_items
     Order.transaction do
       self.lock!
       self.L_check_modifiable
       self.order_items.clear
       self.restaurant_id = nil
+      self.shipping_id = nil
       self.save!
     end
   end
@@ -104,7 +114,8 @@ class Order < ActiveRecord::Base
       # being destroyed. 
       catering.lock! 'LOCK IN SHARE MODE'
       order_item.save!
-      self.L_update_order_restaurant catering
+      self.L_update_restaurant catering.restaurant_id
+      self.L_update_shipping catering.shipping_id
     end
     order_item
   end
@@ -129,7 +140,8 @@ class Order < ActiveRecord::Base
 
   def has_expired?
     self.order_items.each do |item|
-      return true unless (item.catering.present? && item.catering.can_order?)
+      catering = item.catering
+      return true unless (catering.present? && catering.can_order?)
     end
     return false
   end
@@ -159,12 +171,21 @@ class Order < ActiveRecord::Base
     count
   end
 
-  def L_update_order_restaurant(catering)
-    if self.restaurant_id != catering.restaurant_id  
+  def L_update_restaurant(restaurant_id)
+    if self.restaurant_id != restaurant_id  
       unless self.restaurant_id.nil?
         self.order_items.clear
       end
-      self.update_attribute :restaurant_id, catering.restaurant_id
+      self.update_attribute :restaurant_id, restaurant_id
+    end
+  end
+
+  def L_update_shipping(shipping_id)
+    if self.shipping_id != shipping_id
+      unless self.shipping_id.nil?
+        self.order_items.clear
+      end
+      self.update_attribute :shipping_id, shipping_id
     end
   end
 

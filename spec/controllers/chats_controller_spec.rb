@@ -164,8 +164,7 @@ RSpec.describe ChatsController, type: :controller do
       end
 
       it 'fails because quantity over limit' do
-        create_list :catering, 2, 
-          building_id: @customer.building_id
+        create_list :catering, 2, building_id: @customer.building_id
         order_request = generate_wechat_text_message '1+11'
         post :chat, order_request, @parameters
         expect(response).to have_http_status(:ok)
@@ -178,6 +177,56 @@ RSpec.describe ChatsController, type: :controller do
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('error.ORDER_INVALID_QUANTITY')
+          }})
+      end
+    end
+
+    describe 'CHECK STATUS' do
+      before :each do
+        @status_check = generate_wechat_text_message 'status'
+      end
+      it 'gets no active order status' do
+        post :chat, @status_check, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: '404844425', 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.NO_ACTIVE_ORDER')
+          }})
+      end
+
+      it 'gets order shipping status' do
+        catering = create :catering,building_id: @customer.building_id
+        orders = create_list :order, 2, customer_id: @customer.id
+        orders.each do |order|
+          order.add_item 1, nil, catering
+          order.update_attribute :status, Order::STATUS_CHECKOUT
+        end
+        post :chat, @status_check, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: '404844425', 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.ORDER_STATUS_TITLE', 
+              restaurant: catering.restaurant.name) + \
+              I18n.t('chatreply.SHIPPING_WAITING') + \
+              I18n.t('chatreply.ESTIMATE_ARRIVAL_TIME', 
+                time: catering.estimated_arrival_at) + "\n" + \
+              I18n.t('chatreply.ORDER_STATUS_TITLE', 
+                restaurant: catering.restaurant.name) + \
+              I18n.t('chatreply.SHIPPING_WAITING') + \
+              I18n.t('chatreply.ESTIMATE_ARRIVAL_TIME',
+                time: catering.estimated_arrival_at)
           }})
       end
     end

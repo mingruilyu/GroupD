@@ -101,3 +101,15 @@ en:
       You have successfully ordered %{quantity} X %{combo} 
       from %{restaurant}
       total price: %{price}
+    SHIPPING_WAITING:
+      'is being prepared!'
+    SHIPPING_DEPART:
+      'is on its way!'
+    SHIPPING_ARRIVE:
+      'is about to arrive, get ready!'
+    SHIPPING_PICKING_UP:
+      'can be picked up now!'
+    ESTIMATE_ARRIVAL_TIME:
+      'Estimated time of arrival: %{time}'
+    ORDER_STATUS_TITLE:
+      'Your food from %{restaurant}'

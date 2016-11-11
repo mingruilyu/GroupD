@@ -107,15 +107,20 @@ module WechatOperations
       @current_account = account
     end
 
-    def do
-      current_order = Order.active_order @current_account.id
-      if current_order.nil?
-        result = {
-          op_code: :check_status
-        }
-      else
-
+    def execute
+      orders = Order.checked_out @current_account.id
+      status = []
+      orders.each do |order|
+        status.append({
+          shipping_status: order.shipping.status,
+          eta: order.shipping.catering.estimated_arrival_at,
+          restaurant: order.shipping.catering.restaurant.name
+        })
       end
+      result = {
+        op_code: :check_status,
+        status: status
+      }
     end
   end
 end

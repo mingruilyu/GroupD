@@ -34,8 +34,34 @@ module WechatReplyAdaptor
           quantity: hash[:quantity], restaurant: hash[:restaurant], 
           combo: hash[:combo], price: hash[:total_price]
         WechatMessage::Text.new msg
-      when :status
+      when :check_status
         msg[:MsgType] = 'text'
+        if hash[:status].empty?
+          msg[:Content] = I18n.t 'chatreply.NO_ACTIVE_ORDER'
+        else
+          items = []
+          hash[:status].each do |status|
+            item = I18n.t 'chatreply.ORDER_STATUS_TITLE',
+              restaurant: status[:restaurant]
+            case status[:shipping_status]
+            when Shipping::STATUS_WAITING
+              item += (I18n.t('chatreply.SHIPPING_WAITING') + \
+                I18n.t('chatreply.ESTIMATE_ARRIVAL_TIME', 
+                  time: status[:eta]))
+            when Shipping::STATUS_DEPART
+              item += (I18n.t('chatreply.SHIPPING_DEPART') + \
+                I18n.t('chatreply.ESTIMATE_ARRIVAL_TIME', 
+                  time: status[:eta]))
+            when Shipping::STATUS_ARRIVE
+              item += I18n.t('chatreply.SHIPPING_ARRIVE')
+            when Shipping::PICKING_UP
+              item += I18n.t('chatreply.SHIPPING_PICKING_UP')
+            end
+            items.append item
+          end
+          msg[:Content] = items.join "\n"
+        end
+        WechatMessage::Text.new msg
       else
       end
     end

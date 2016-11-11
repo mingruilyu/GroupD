@@ -38,6 +38,8 @@ Rails.application.routes.draw do
 
     resources :transactions, only: [:index, :update, :destroy]
     get 'transactions/pending' => 'transactions#pending'
+
+    resources :shippings, only: :update
   end
 
   namespace :merchant, format: true, constraints: { format: :json } do
@@ -80,10 +82,6 @@ Rails.application.routes.draw do
     resources :combos, only: :show
 
     resources :dishes, only: :show
-
-    resources :shippings, only: [:show, :update]
-    get 'shippings/:id/location' => 'shippings#location'
-    put 'shippings/:id/location' => 'shippings#location'
 
     get 'new' => 'restaurants#new'
   end
