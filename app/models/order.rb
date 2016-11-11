@@ -1,6 +1,5 @@
 class Order < ActiveRecord::Base
-  belongs_to :restaurant
-  belongs_to :customer
+  belongs_to :restaurant, :customer
   has_many :order_items, dependent: :delete_all
 
   TAX_RATE = 0.1
@@ -9,6 +8,7 @@ class Order < ActiveRecord::Base
   STATUS_UNCHECKOUT = 0
   STATUS_CHECKOUT = 1
   STATUS_CANCEL = 2
+  STATUS_FULLFILLED = 3
   attr_accessor :payment_id
 
   scope :by_customer, ->(customer) { 
@@ -24,25 +24,17 @@ class Order < ActiveRecord::Base
     self.total_price = self.subtotal + self.taxes
   end
 
-  def self.place_single_item_order(account, catering_id, quantity, 
-    payment_id)
-    Order.transaction do
-      order = Order.create customer_id: account.id
-      item = OrderItem.create(
-        quantity:             quantity,
-        order_id:             order.id,
-        catering_id:          catering_id
-      )
-      order.checkout! payment_id
-    end
-    item
+  def self.active_order!(customer_id)
+    Order.includes(:order_items).find_by_customer_id_and_status(
+      customer_id, Order::STATUS_UNCHECKOUT) || \
+      Order.create(customer_id: customer_id)
   end
 
   def checkout!(payment_id)
     # Check whether any item in the order has expired. 
     if self.has_expired?
       self.order_items.clear
-      self.errors[:items] = I18n.t('error.CHECKOUT_EXPIRED_ITEM')
+      self.errors[:items] = I18n.t 'error.CHECKOUT_EXPIRED_ITEM'
       raise Exceptions::StaleRecord.new(self) 
     end
 

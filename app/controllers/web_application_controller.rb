@@ -26,12 +26,7 @@ class WebApplicationController < ApplicationController
       elsif account_signed_in?
         # account just logged in. First look for unchecked out order,
         # then create one if none. 
-        @current_order ||= Order.includes(:order_items)\
-          .find_by_customer_id_and_status(
-            current_account.id, Order::STATUS_UNCHECKOUT) || \
-            Order.create(
-              customer_id: current_account.id)
-          
+        @current_order ||= Order.active_order!(current_account.id) 
       end
       session[:order] ||= @current_order.id
       @current_order

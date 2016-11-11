@@ -159,7 +159,8 @@ RSpec.describe ChatsController, type: :controller do
             MsgType: 'text', 
             Content: I18n.t('chatreply.PLACE_ORDER', quantity: 10, 
               combo: caterings[0].combo.describe, 
-              restaurant: caterings[0].restaurant.name)}})
+              restaurant: caterings[0].restaurant.name,
+              price: caterings[0].combo.price * 10 * 1.1)}})
       end
 
       it 'fails because quantity over limit' do

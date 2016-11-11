@@ -87,18 +87,35 @@ module WechatOperations
       end
       catering = caterings[@index]
 
-      current_order = Order.includes(:order_items)\
-        .find_by_customer_id_and_status(
-          @current_account.id, Order::STATUS_UNCHECKOUT) || \
-          Order.create(customer_id: @current_account.id)
+      current_order = Order.active_order! @current_account.id
       item = current_order.add_item @quantity, nil, catering
+
+      current_order.checkout! Payment::RECORD_CASH_ID
 
       result = { 
         op_code: :place_order, 
         restaurant: catering.restaurant.name,
         quantity: item.quantity, 
-        combo: catering.combo.describe
+        combo: catering.combo.describe,
+        total_price: current_order.total_price
       }
+    end
+  end
+
+  class CheckStatus
+    def initialize(account)
+      @current_account = account
+    end
+
+    def do
+      current_order = Order.active_order @current_account.id
+      if current_order.nil?
+        result = {
+          op_code: :check_status
+        }
+      else
+
+      end
     end
   end
 end

@@ -32,8 +32,10 @@ module WechatReplyAdaptor
         msg[:MsgType] = 'text'
         msg[:Content] = I18n.t 'chatreply.PLACE_ORDER', 
           quantity: hash[:quantity], restaurant: hash[:restaurant], 
-          combo: hash[:combo]
+          combo: hash[:combo], price: hash[:total_price]
         WechatMessage::Text.new msg
+      when :status
+        msg[:MsgType] = 'text'
       else
       end
     end
