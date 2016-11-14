@@ -34,6 +34,22 @@ RSpec.describe ChatsController, type: :controller do
           Content: I18n.t('chatreply.REPLY_WELCOME')
         }})
     end
+
+    it 'fails because not registered' do
+      menu_request = generate_wechat_text_message 'menu'
+      post :chat, menu_request, @parameters
+      expect(response).to have_http_status(:ok)
+      xml = Hash.from_xml(response.body).deep_symbolize_keys
+      expect(xml).to eq({
+        xml:
+        {
+          ToUserName: "123", 
+          FromUserName: '404844425', 
+          CreateTime: Time.now.to_i.to_s, 
+          MsgType: 'text', 
+          Content: I18n.t('error.NOT_AUTHORIZED')
+        }})
+    end
   end
 
   context 'Registered' do

@@ -45,6 +45,7 @@ module WechatOperations
 
   class RequestMenu
     include Filterable
+    before_execute :registration
     before_execute :address_configuration
     before_execute :cellphone_configuration
 
@@ -64,6 +65,7 @@ module WechatOperations
 
   class PlaceOrder
     include Filterable
+    before_execute :registration
     before_execute :address_configuration
     before_execute :cellphone_configuration
 

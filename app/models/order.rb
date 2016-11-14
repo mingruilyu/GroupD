@@ -2,7 +2,7 @@ class Order < ActiveRecord::Base
   belongs_to :restaurant
   belongs_to :customer
   belongs_to :shipping
-  has_many :order_items#, dependent: :delete_all
+  has_many :order_items, dependent: :delete_all
 
   TAX_RATE = 0.1
   SINGLE_ORDER_QUANTITY_LIMIT = 10
