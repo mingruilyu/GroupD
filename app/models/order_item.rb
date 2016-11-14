@@ -11,14 +11,23 @@ class OrderItem < ActiveRecord::Base
   scope :checked_by_catering, ->(catering) { 
     self.by_catering(catering).joins(:order).merge(Order.by_status(
       Order::STATUS_CHECKOUT))}
+  scope :delivered_by_catering, ->(catering) { 
+    self.by_catering(catering).joins(:order).merge(Order.by_status(
+      Order::STATUS_DELIVERED))}
+
+  attr_accessor :status
+  STATUS_CHECKED = 0
+  STATUS_DELIVERED = 1
 
   def belongs_to?(order)
     self.order_id == order.id
   end
 
   def as_json(options={})
-    super only: [:quantity, :special_instruction, :catering_id,
+    hash = super only: [:quantity, :special_instruction, :catering_id,
       :order_id]
+    hash[:status] = self.status
+    hash
   end
 
   private

@@ -5,8 +5,8 @@ RSpec.describe Merchant::CateringsController, type: :controller do
   before :each do
     @merchant = create :merchant
     @restaurant = create :restaurant, merchant_id: @merchant.id
-    @caterings = create :catering
-    @combo = @caterings.combo
+    @catering = create :catering
+    @combo = @catering.combo
     @buildings = create_list :building, 2
   end
 
@@ -87,14 +87,14 @@ RSpec.describe Merchant::CateringsController, type: :controller do
 
     describe 'PUT update' do
       it 'fails because set time in past' do
-        put :update, merchant_id: @merchant.id, id: @caterings.id, 
+        put :update, merchant_id: @merchant.id, id: @catering.id, 
           delivery_time_int: 1215, deadline_int: 1130, 
           date: yesterday, format: :json
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'fails because not enough delivery time' do
-        put :update, merchant_id: @merchant.id, id: @caterings.id, 
+        put :update, merchant_id: @merchant.id, id: @catering.id, 
           delivery_time_int: 1215, deadline_int: 1215, 
           date: tomorrow, format: :json
         expect(response).to have_http_status(:bad_request)
@@ -105,18 +105,18 @@ RSpec.describe Merchant::CateringsController, type: :controller do
         deadline = time.hour * 100 + time.min / 15 * 15 
         time = Time.now + 1.hour
         delivery = time.hour * 100 + time.min / 15 * 15
-        put :update, merchant_id: @merchant.id, id: @caterings.id, 
+        put :update, merchant_id: @merchant.id, id: @catering.id, 
           delivery_time_int: delivery, deadline_int: deadline, 
           date: today, format: :json
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'updates the catering time' do
-        put :update, merchant_id: @merchant.id, id: @caterings.id, 
+        put :update, merchant_id: @merchant.id, id: @catering.id, 
           delivery_time_int: 1215, deadline_int: 1130, 
           date: tomorrow, format: :json
         expect(response).to have_http_status(:ok)
-        expect(@caterings.reload.available_until).to \
+        expect(@catering.reload.available_until).to \
           eq(Time.now.change(hour: 11, min: 30) + 1.day)
       end
     end
@@ -145,10 +145,40 @@ RSpec.describe Merchant::CateringsController, type: :controller do
     describe 'DELETE destroy' do
       it 'destroys the catering' do
         delete :destroy, merchant_id: @merchant.id, 
-          id: @caterings.id, format: :json
-        expect(@caterings.reload.status).to eq(
+          id: @catering.id, format: :json
+        expect(@catering.reload.status).to eq(
           Catering::STATUS_CANCELLED)
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    describe 'GET list_items' do
+      it 'lists the items' do
+        orders = create_list :order, 2, restaurant_id: @catering.restaurant_id
+        orders[0].add_item 1, nil, @catering
+        orders[1].add_item 2, nil, @catering
+        orders[0].update_attribute :status, Order::STATUS_CHECKOUT
+        orders[1].update_attribute :status, Order::STATUS_DELIVERED
+        get :list_items, merchant_id: @merchant.id, 
+          catering_id: @catering.id, format: :json
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse response.body
+        expect(json['object']).to eq(
+          generate_json_list([
+            {
+              quantity: 1,
+              special_instruction: nil,
+              catering_id: @catering.id, 
+              order_id: orders[0].id,
+              status: 0
+            }, 
+            {
+              quantity: 2, 
+              special_instruction: nil,
+              catering_id: @catering.id, 
+              order_id: orders[1].id, 
+              status: 1
+            }]))
       end
     end
   end

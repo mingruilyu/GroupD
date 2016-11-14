@@ -2,7 +2,7 @@ class Order < ActiveRecord::Base
   belongs_to :restaurant
   belongs_to :customer
   belongs_to :shipping
-  has_many :order_items, dependent: :delete_all
+  has_many :order_items#, dependent: :delete_all
 
   TAX_RATE = 0.1
   SINGLE_ORDER_QUANTITY_LIMIT = 10
@@ -11,6 +11,7 @@ class Order < ActiveRecord::Base
   STATUS_CHECKOUT = 1
   STATUS_CANCEL = 2
   STATUS_FULFILLED = 3
+  STATUS_DELIVERED = 4
   attr_accessor :payment_id
 
   scope :by_customer, ->(customer) { 
@@ -68,6 +69,13 @@ class Order < ActiveRecord::Base
       
       count_update = self.summarize_catering_count_update 
       Catering.T_increase_order_count count_update
+    end
+  end
+
+  def pickup!
+    Order.transaction do
+      self.lock!
+      self.update_attribute :status, STATUS_DELIVERED
     end
   end
 

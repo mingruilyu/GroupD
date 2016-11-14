@@ -26,7 +26,9 @@ Rails.application.routes.draw do
       get 'combos/recent' => 'combos#recent'
     end
 
-    resources :caterings, only: [:update, :destroy]
+    resources :caterings, only: [:update, :destroy] do
+      get 'list_items' => 'caterings#list_items'
+    end
 
     resources :dishes, only: [:destroy, :update]
 
@@ -45,6 +47,7 @@ Rails.application.routes.draw do
   namespace :merchant, format: true, constraints: { format: :json } do
     resources :dropoffs, only: :destroy
     resources :restaurants, only: [:update, :destroy, :new]
+    resources :orders, only: :update
   end
   
   resources :customers, module: :customer, format: true, 
