@@ -100,4 +100,21 @@ module Services
         Time.now.to_i
     end
   end
+
+  class QRCodeGenerator
+    mattr_accessor :size
+    @@size = 120
+
+    def self.setup
+      yield self
+    end
+
+    def self.generate(data)
+      RQRCode::QRCode.new(data).as_png(size: @@size).to_s
+    end
+
+    def self.base64_encode(string)
+      Base64.encode64 string
+    end
+  end
 end

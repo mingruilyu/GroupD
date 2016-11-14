@@ -63,7 +63,9 @@ Rails.application.routes.draw do
       resources :order_items, only: [:index, :create, :new]
     end
     put 'orders/:id/cancel' => 'orders#cancel' 
-    resources :order_items, only: [:destroy]
+    resources :order_items, only: :destroy
+
+    resources :qr_codes, only: :new
   end
       
   resources :restaurants, module: :restaurant, only: :show, 

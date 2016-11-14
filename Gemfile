@@ -44,6 +44,8 @@ gem 'devise_token_auth'
 
 gem 'omniauth'
 
+gem 'rqrcode'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
