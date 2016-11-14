@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get 'auth/confirmation/success' => 'account/auth_callbacks#confirmation_success'
   get 'auth/password/reset' => 'account/auth_callbacks#reset_password'
   post 'chat' => 'chats#chat', constraints: { format: :xml }
+  get 'chat' => 'chats#configuration'
 
   namespace :account, format: true, constraints: { format: :json } do
     post ':account_id/cellphone' => 'cellphones#create' 

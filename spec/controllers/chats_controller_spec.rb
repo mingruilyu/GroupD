@@ -16,6 +16,12 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   context 'Not Registered' do
+    it 'checks the configuration' do
+      @parameters['echostr'] = '123456789'
+      get :configuration, @parameters
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq('123456789')
+    end
     it 'registers the new user' do
       subscribe = (File.open Rails.root.join( 
         'test/fixtures/wechat_post_subscribe')).read

@@ -17,15 +17,21 @@ class ChatsController < ApplicationController
     render xml: reply
   end
 
+  def configuration
+    render plain: @echostr
+  end
+
   private
 
     def params_sanitization
       sanitize :chat, nonce: :text, timestamp: :text, 
         signature: :text, msg_signature: :text
+      sanitize :configuration, nonce: :text, timestamp: :text,
+        signature: :text, echostr: :text
     end
 
     def authenticate_account!
-      authorize :chat do
+      authorize [:chat, :configuration] do
         Services::WechatBot.authenticate(
           Services::WechatBot.api_token, @timestamp, @nonce, 
           @signature)
