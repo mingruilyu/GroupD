@@ -62,8 +62,26 @@ module WechatReplyAdaptor
           msg[:Content] = items.join "\n"
         end
         WechatMessage::Text.new msg
+      when :pick_up
+        msg[:MsgType] = 'text'
+        if hash[:uri].nil?
+          msg[:Content] = I18n.t 'chatreply.NO_ACTIVE_ORDER'
+        else
+          msg[:Content] = self.to_href hash[:uri], 
+            I18n.t('chatreply.PICK_UP')
+        end
+        WechatMessage::Text.new msg
+      when :delegate
+        msg[:MsgType] = 'text'
+        msg[:Content] = self.to_href hash[:uri], 
+          I18n.t('chatreply.DELEGATE')
+        WechatMessage::Text.new msg
       else
       end
     end
+  end
+
+  def self.to_href(uri, text)
+    return "<a href=\"#{uri}\">#{text}</a>"
   end
 end

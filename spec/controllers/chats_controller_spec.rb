@@ -185,6 +185,7 @@ RSpec.describe ChatsController, type: :controller do
       before :each do
         @status_check = generate_wechat_text_message 'status'
       end
+
       it 'gets no active order status' do
         post :chat, @status_check, @parameters
         expect(response).to have_http_status(:ok)
@@ -227,6 +228,47 @@ RSpec.describe ChatsController, type: :controller do
               I18n.t('chatreply.SHIPPING_WAITING') + \
               I18n.t('chatreply.ESTIMATE_ARRIVAL_TIME',
                 time: catering.estimated_arrival_at)
+          }})
+      end
+    end
+
+    describe 'PICK UP' do
+      before :each do
+        @pickup = generate_wechat_text_message 'pickup'
+      end
+
+      it 'replies no active order' do
+        post :chat, @pickup, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: '404844425', 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.NO_ACTIVE_ORDER')
+          }})
+      end
+
+      it 'sends a link' do
+        catering = create :catering,
+          building_id: @customer.building_id
+        order = create :order, customer_id: @customer.id
+        order.add_item 1, nil, catering
+        order.update_attribute :status, Order::STATUS_FULFILLED
+        post :chat, @pickup, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: '404844425', 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: "<a href=\"http://www.katering.com/customer/pick_up_code?client=#{@customer.tokens.keys.first}&uid=#{@customer.uid}&access-token\">#{I18n.t('chatreply.PICK_UP')}</a>" 
           }})
       end
     end

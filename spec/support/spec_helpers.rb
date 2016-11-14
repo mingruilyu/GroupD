@@ -16,7 +16,9 @@ module SpecHelpers
   end
 
   def omniauth_register_account
-    FactoryGirl.create :customer, uid: '123', provider: 'wechat'
+    account = FactoryGirl.create :customer, uid: '123', provider: 'wechat'
+    account.create_new_auth_token
+    account
   end
 
   def request_register_account

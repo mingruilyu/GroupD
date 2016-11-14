@@ -87,6 +87,15 @@ class Account < ActiveRecord::Base
     }
   end
 
+  def get_token_hash
+    client = self.tokens.keys.first
+    {
+      client: client,
+      uid: self.uid,
+      'access-token': self.tokens[client][:token]
+    }
+  end
+
   def as_json(options={})
     super except: [:created_at, :updated_at, :uid, :provider, 
       :coordinate_id]

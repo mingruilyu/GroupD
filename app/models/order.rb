@@ -19,6 +19,8 @@ class Order < ActiveRecord::Base
   scope :by_status, ->(status) { where(status: status) }
   scope :checked_out, ->(customer) {
     self.by_status(STATUS_CHECKOUT).by_customer(customer) }
+  scope :fulfilled, ->(customer) {
+    self.by_status(STATUS_FULFILLED).by_customer(customer) }
 
   def self.active_order!(customer_id)
     Order.includes(:order_items).find_by_customer_id_and_status(

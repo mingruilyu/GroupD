@@ -123,4 +123,45 @@ module WechatOperations
       }
     end
   end
+
+  class PickUp
+    def initialize(account)
+      @current_account = account
+    end
+
+    def execute
+      orders = Order.fulfilled @current_account.id
+      if orders.empty?
+        result = { op_code: :pick_up }
+      else
+        uri = URI 'http://www.katering.com/customer/pick_up_code'
+        params = @current_account.get_token_hash
+        uri.query = URI.encode_www_form params
+        result = {
+          op_code: :pick_up,
+          uri: uri.to_s
+        }
+      end
+    end
+  end
+
+  class Delegate
+    include Filterable
+    before_execute :address_configuration
+    before_execute :cellphone_configuration
+
+    def initialize(account)
+      @current_account = account
+    end
+
+    def execute
+      uri = URI 'http://www.katering.com/customer/delegate'
+      params = @current_account.get_token_hash
+      uri.query = URI.encode_www_form params
+      result = {
+        op_code: :delegate,
+        uri: uri.to_s
+      }
+    end
+  end
 end

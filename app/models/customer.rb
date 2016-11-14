@@ -8,6 +8,4 @@ class Customer < Account
     Order.by_customer(self.id).includes(:cart)
   end
 
-  class AddressNotConfigured < StandardError
-  end
 end

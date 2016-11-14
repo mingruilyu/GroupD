@@ -19,6 +19,10 @@ module WechatAnalyze
         WechatOperations::PlaceOrder.new(account, cmd[0], cmd[1])
       when :check_status
         WechatOperations::CheckStatus.new(account)
+      when :pick_up
+        WechatOperations::PickUp.new(account)
+      when :delegate
+        WechatOperations::Delegate.new(account)
       when :not_recognized
         WechatOperations::Noop.new
       end
@@ -32,6 +36,10 @@ module WechatAnalyze
       :request_menu
     when 'status'
       :check_status
+    when 'pickup'
+      :pick_up
+    when 'delegate'
+      :delegate
     when /\A\d+\s*\+\s*\d+$/
       :place_order
     else
