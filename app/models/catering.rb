@@ -135,7 +135,8 @@ class Catering < ActiveRecord::Base
   def as_wechat_msg(options={})
     WechatMessage::News.new title: self.restaurant.name, 
       description: self.combo.describe,
-      pic_url: self.combo.image_url
+      pic_url: self.combo.image_url,
+      url: self.combo.image_url
   end
 
   private

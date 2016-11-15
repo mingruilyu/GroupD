@@ -30,6 +30,10 @@ class OrderItem < ActiveRecord::Base
     hash
   end
 
+  def describe
+    self.quantity + ' X ' + self.catering.combo.describe
+  end
+
   private
     def catering_should_not_expire
       unless (self.catering.present? && self.catering.can_order?)
