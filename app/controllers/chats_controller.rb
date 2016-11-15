@@ -25,7 +25,7 @@ class ChatsController < ApplicationController
 
     def params_sanitization
       sanitize :chat, nonce: :text, timestamp: :text, 
-        signature: :text, msg_signature: :text
+        signature: :text
       sanitize :configuration, nonce: :text, timestamp: :text,
         signature: :text, echostr: :text
     end

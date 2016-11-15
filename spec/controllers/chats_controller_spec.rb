@@ -5,6 +5,7 @@ RSpec.describe ChatsController, type: :controller do
     @parameters = YAML.load File.open(
       Rails.root.join 'test/fixtures/wechat_post_params.yml') 
     @parameters['format'] = :xml
+    @bot_id = Services::WechatBot.bot_id
   end
 
   describe 'parameter validation' do
@@ -34,7 +35,7 @@ RSpec.describe ChatsController, type: :controller do
         xml:
         {
             ToUserName: "123", 
-          FromUserName: '404844425', 
+          FromUserName: @bot_id, 
           CreateTime: Time.now.to_i.to_s, 
           MsgType: 'text', 
           Content: I18n.t('chatreply.REPLY_WELCOME')
@@ -50,7 +51,7 @@ RSpec.describe ChatsController, type: :controller do
         xml:
         {
           ToUserName: "123", 
-          FromUserName: '404844425', 
+          FromUserName: @bot_id, 
           CreateTime: Time.now.to_i.to_s, 
           MsgType: 'text', 
           Content: I18n.t('error.NOT_AUTHORIZED')
@@ -61,6 +62,24 @@ RSpec.describe ChatsController, type: :controller do
   context 'Registered' do
     before :each do
       @customer = omniauth_register_account
+    end
+
+    describe 'NOT RECOGNIZED' do
+      it 'replies with not recognized' do
+        random = generate_wechat_text_message 'unknown'
+        post :chat, random, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: Services::WechatBot.bot_id, 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.INSTRUCTION_NOT_RECOGNIZED')
+          }})
+      end
     end
 
     describe 'GET MENU' do
@@ -74,7 +93,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('error.ADDRESS_NOT_CONFIGURED')
@@ -90,7 +109,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.NO_CATERING_TODAY')
@@ -108,7 +127,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: '123', 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'news', 
             ArticleCount: '2',
@@ -140,7 +159,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('error.ADDRESS_NOT_CONFIGURED')
@@ -156,7 +175,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('error.INVALID_CATERING_INDEX')
@@ -176,7 +195,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.PLACE_ORDER', quantity: 10, 
@@ -195,7 +214,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('error.ORDER_INVALID_QUANTITY')
@@ -216,7 +235,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.NO_ACTIVE_ORDER')
@@ -237,7 +256,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.ORDER_STATUS_TITLE', 
@@ -267,7 +286,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.NO_ACTIVE_ORDER')
@@ -287,7 +306,7 @@ RSpec.describe ChatsController, type: :controller do
           xml:
           {
             ToUserName: "123", 
-            FromUserName: '404844425', 
+            FromUserName: @bot_id, 
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: "<a href=\"http://www.katering.com/customer/pick_up_code?client=#{@customer.tokens.keys.first}&uid=#{@customer.uid}&access-token\">#{I18n.t('chatreply.PICK_UP')}</a>" 

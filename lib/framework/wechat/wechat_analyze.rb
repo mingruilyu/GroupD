@@ -31,7 +31,7 @@ module WechatAnalyze
   end
 
   def self.interpret(content)
-    case content
+    case content.downcase
     when 'menu'
       :request_menu
     when 'status'

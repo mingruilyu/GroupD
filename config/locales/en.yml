@@ -89,18 +89,20 @@ en:
       'The records you are requesting are not found!'
     TRANSACTION_NOT_CANCELLABLE:
       'The transaction cannot be cancelled!'
+    ADDRESS_NOT_CONFIGURED:
+      'Please setup your address before any other operations!'
 
   chatreply:
-    WELCOME:
+    REPLY_WELCOME:
       'Thank you for registering for Katering service!'
-    REQUIRE_SET_ADDRESS:
-      'Please setup your address before any other operations!'
     NO_CATERING_TODAY:
       'There is no catering today for your building!'
     PLACE_ORDER: |
       You have successfully ordered %{quantity} X %{combo} 
       from %{restaurant}
       total price: %{price}
+    NO_ACTIVE_ORDER:
+      'You currently do not have any active order!'
     SHIPPING_WAITING:
       'is being prepared!'
     SHIPPING_DEPART:
@@ -113,3 +115,5 @@ en:
       'Estimated time of arrival: %{time}'
     ORDER_STATUS_TITLE:
       'Your food from %{restaurant}'
+    INSTRUCTION_NOT_RECOGNIZED:
+      'Sorry, your instruction is not recognized!'

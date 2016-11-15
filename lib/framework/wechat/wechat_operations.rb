@@ -166,4 +166,12 @@ module WechatOperations
       }
     end
   end
+
+  class Noop
+    def execute
+      result = {
+        op_code: :noop
+      }
+    end
+  end
 end

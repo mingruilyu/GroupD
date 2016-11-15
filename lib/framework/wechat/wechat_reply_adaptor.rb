@@ -76,6 +76,10 @@ module WechatReplyAdaptor
         msg[:Content] = self.to_href hash[:uri], 
           I18n.t('chatreply.DELEGATE')
         WechatMessage::Text.new msg
+      when :noop
+        msg[:MsgType] = 'text'
+        msg[:Content] = I18n.t 'chatreply.INSTRUCTION_NOT_RECOGNIZED'
+        WechatMessage::Text.new msg
       else
       end
     end
