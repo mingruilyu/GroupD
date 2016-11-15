@@ -1,12 +1,17 @@
 module WechatMessage
-  REPLY_WELCOME = I18n.t 'chatreply.WELCOME'
   class Message
     attr_reader :from_user_name, :type, :create_time, :to_user_name
     def self.create(hash)
       hash.symbolize_keys!
       case hash[:MsgType]
       when 'event'
-        Event.new hash
+        case hash[:Event].downcase
+        when 'subscribe'
+          SubscribeEvent.new hash
+        when 'location'
+          LocationEvent.new hash
+        else
+        end
       when 'text'
         Text.new hash
       when 'image'
@@ -69,7 +74,13 @@ module WechatMessage
     attr_reader :event
     def initialize(hash)
       super hash
-      @event = hash[:Event]
+      @event = hash[:Event].downcase
+    end
+  end
+
+  class SubscribeEvent < Event
+    def initialize(hash)
+      super hash
     end
   end
 
@@ -80,6 +91,16 @@ module WechatMessage
       @event = hash[:EventKey]
     end
 
+  end
+
+  class LocationEvent < Event
+    attr_reader :latitude, :longitude, :precision
+    def initialize(hash)
+      super hash
+      @latitude = hash[:Latitude].to_f
+      @longitude = hash[:Longitude].to_f
+      @precision = hash[:Precision].to_f
+    end
   end
 
   class News

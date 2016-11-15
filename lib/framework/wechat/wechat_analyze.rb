@@ -7,6 +7,10 @@ module WechatAnalyze
         WechatOperations::OmniauthRegisterAccount.new(
           message.from_user_name, 'wechat',  
           Account::ACCOUNT_TYPE_CUSTOMER)
+      when 'location'
+        WechatOperations::ReportLocation.new(account, 
+          message.latitude, message.longitude, 
+          Services::WechatBot.localization_precision)
       else
       end
     when 'text'

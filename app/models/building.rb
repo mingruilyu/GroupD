@@ -19,6 +19,10 @@ class Building < ActiveRecord::Base
     joins(:location).where('address REGEXP ? OR name REGEXP ?', 
       query, query) }
 
+  def describe
+    self.city.name + ' ' + self.company.name + ' ' + self.name
+  end
+
   def as_json(options={})
     super except: [:created_at, :updated_at]
   end

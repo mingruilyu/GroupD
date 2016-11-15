@@ -23,6 +23,7 @@ RSpec.describe ChatsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(response.body).to eq('123456789')
     end
+
     it 'registers the new user' do
       subscribe = (File.open Rails.root.join( 
         'test/fixtures/wechat_post_subscribe')).read
@@ -78,6 +79,71 @@ RSpec.describe ChatsController, type: :controller do
             CreateTime: Time.now.to_i.to_s, 
             MsgType: 'text', 
             Content: I18n.t('chatreply.INSTRUCTION_NOT_RECOGNIZED')
+          }})
+      end
+    end
+
+    describe 'REPORT LOCATION' do
+      before :each do
+        @report_location = (File.open Rails.root.join( 
+          'test/fixtures/wechat_post_location')).read
+      end
+      it 'reports location not found' do
+        @customer.update_attribute :building_id, nil
+        post :chat, @report_location, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: Services::WechatBot.bot_id, 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.NO_LOCATION_FOUND')
+          }})
+      end
+
+      it 'auto set location because only one found' do
+        @customer.update_attribute :building_id, nil
+        location = create :location, lat: 37.4, lng: -121.94
+        building = create :building, location_id: location.id
+        post :chat, @report_location, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: Services::WechatBot.bot_id, 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.AUTO_SET_LOCATION', 
+              location: building.describe)
+          }})
+      end
+
+      it 'reports multiple locations' do
+        @customer.update_attribute :building_id, nil
+        location_1 = create :location, lat: 37.4, lng: -121.94
+        location_2 = create :location, lat: 37.5, lng: -121.84
+        building_1 = create :building, location_id: location_1.id
+        building_2 = create :building, location_id: location_2.id
+        post :chat, @report_location, @parameters
+        expect(response).to have_http_status(:ok)
+        xml = Hash.from_xml(response.body).deep_symbolize_keys
+        description = []
+        description.append building_1.describe
+        description.append building_2.describe
+        expect(xml).to eq({
+          xml:
+          {
+            ToUserName: "123", 
+            FromUserName: Services::WechatBot.bot_id, 
+            CreateTime: Time.now.to_i.to_s, 
+            MsgType: 'text', 
+            Content: I18n.t('chatreply.MULTIPLE_LOCATIONS', 
+              locations: description.join("\n"))
           }})
       end
     end

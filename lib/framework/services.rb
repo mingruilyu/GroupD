@@ -67,6 +67,9 @@ module Services
     mattr_accessor :bot_id
     @@api_token = '404844425'
 
+    mattr_accessor :localization_precision
+    @@localization_precision = 2
+
     def self.setup
       yield self
     end

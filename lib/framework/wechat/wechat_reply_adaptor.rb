@@ -76,6 +76,21 @@ module WechatReplyAdaptor
         msg[:Content] = self.to_href hash[:uri], 
           I18n.t('chatreply.DELEGATE')
         WechatMessage::Text.new msg
+      when :report_location
+        msg[:MsgType] = 'text'
+        if hash[:located].present?
+          msg[:Content] = I18n.t 'chatreply.CURRENT_LOCATION', 
+            location: hash[:located]
+        elsif hash[:location].present?
+          msg[:Content] = I18n.t 'chatreply.AUTO_SET_LOCATION', 
+            location: hash[:location]
+        elsif hash[:locations].present?
+          msg[:Content] = I18n.t 'chatreply.MULTIPLE_LOCATIONS', 
+            locations: hash[:locations].join("\n")
+        else
+          msg[:Content] = I18n.t 'chatreply.NO_LOCATION_FOUND'
+        end
+        WechatMessage::Text.new msg
       when :noop
         msg[:MsgType] = 'text'
         msg[:Content] = I18n.t 'chatreply.INSTRUCTION_NOT_RECOGNIZED'

@@ -117,3 +117,11 @@ en:
       'Your food from %{restaurant}'
     INSTRUCTION_NOT_RECOGNIZED:
       'Sorry, your instruction is not recognized!'
+    CURRENT_LOCATION:
+      'Your current delivery location is configured as %{location}'
+    AUTO_SET_LOCATION:
+      'We have automatically set your location as %{location}'
+    MULTIPLE_LOCATIONS:
+      "We found several locations close to you \n %{locations}"
+    NO_LOCATION_FOUND:
+      'No known locations found that is close to you!'

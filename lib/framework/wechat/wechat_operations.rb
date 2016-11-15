@@ -43,6 +43,37 @@ module WechatOperations
     end
   end
 
+  class ReportLocation
+    def initialize(account, latitude, longitude, precision)
+      @current_account = account
+      @latitude = latitude
+      @longitude = longitude
+      @precision = precision
+    end
+
+    def execute
+      result = { op_code: :report_location }
+      if @current_account.building_id.nil?
+        buildings = Building.by_coordinate @latitude, @longitude, 
+          @precision
+        if buildings.size == 1
+          building = buildings.first
+          @current_account.update_attribute :building_id, building.id
+          result[:location] = building.describe
+        elsif buildings.size > 1
+          descriptions = []
+          buildings.each do |building|
+            descriptions.append building.describe
+          end
+          result[:locations] = descriptions
+        end
+      else
+        result[:located] = @current_account.building.describe
+      end
+      result
+    end
+  end
+
   class RequestMenu
     include Filterable
     before_execute :registration
