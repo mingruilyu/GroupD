@@ -4,9 +4,6 @@ class Catering < ActiveRecord::Base
 
   validate :shipping_valid_for_combo
 
-  scope :by_combo, ->(combo) { where(combo_id: combo) }
-  scope :by_shipping, ->(shipping) { where(shipping_id: shipping) }
-
   private
 
     def shipping_valid_for_combo

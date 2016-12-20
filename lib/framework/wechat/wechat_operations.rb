@@ -78,7 +78,7 @@ module WechatOperations
     include Filterable
     before_execute :registration
     before_execute :address_configuration
-    before_execute :cellphone_configuration
+    #before_execute :cellphone_configuration
 
     def initialize(account)
       @current_account = account
@@ -98,7 +98,7 @@ module WechatOperations
     include Filterable
     before_execute :registration
     before_execute :address_configuration
-    before_execute :cellphone_configuration
+    #before_execute :cellphone_configuration
 
     def initialize(account, index, quantity)
       @current_account = account
@@ -132,6 +132,30 @@ module WechatOperations
         combo: catering.combo.describe,
         total_price: current_order.total_price
       }
+    end
+  end
+
+  class CancelOrder
+    def initialize(account)
+      @current_account = account
+    end
+
+    def execute
+      result = { op_code: :cancel }
+      orders = Order.checked_out @current_account.id
+      if orders.size == 1
+        order = orders.first
+        order.cancel
+        result[:item] = order.order_items.first
+      elsif orders.size > 1
+        items = []
+        count = 1
+        orders.each do |order|
+          items.append "#{count}: #{order.order_items.first.describe}"
+        end
+        result[:items] = items
+      end
+      result
     end
   end
 
@@ -181,7 +205,7 @@ module WechatOperations
   class Delegate
     include Filterable
     before_execute :address_configuration
-    before_execute :cellphone_configuration
+    #before_execute :cellphone_configuration
 
     def initialize(account)
       @current_account = account
