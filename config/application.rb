@@ -27,6 +27,8 @@ module Delivery
 
     config.active_job.queue_adapter = :resque
 
+    config.time_zone = 'Pacific Time (US & Canada)'
+
     def load_credentials(environment = nil)
       credentials_path = Rails.root.join('config', 
         "credentials#{environment.nil? ? '' : '.' + environment}.yml")

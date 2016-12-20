@@ -16,23 +16,12 @@ class Restaurant < ActiveRecord::Base
   scope :open_by_merchant, ->(merchant) { 
     where(merchant_id: merchant, status: STATUS_OPEN) }
 
-  def self.name_valid?(name)
-    Restaurant.find_by_name(name).nil?
-  end
-
-  def self.create_restaurant(merchant_id, name, location, image_url, category, 
-    city)
-    Restaurant.create! merchant_id: merchant_id, name: name, 
-      location_id: location, image_url: image_url, 
-      category_id: category.id, city_id: city.id
-  end
-
-  def update name, location_id, image_url
+  def update! name, location_id, image_url
     self.update_attributes! name: name, location_id: location_id, 
       image_url: image_url
   end
 
-  def close
+  def close!
     Restaurant.transaction do
       self.lock!
       self.update_attribute :status, STATUS_CLOSED

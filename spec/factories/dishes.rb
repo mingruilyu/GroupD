@@ -5,12 +5,13 @@ FactoryGirl.define do
       if restaurant
         restaurant.id
       else
-        (create :restaurant).id
+        (create :restaurant, :unassociated).id
       end
     }
     sequence(:name) { |n| "tariyaki chicken#{n}" }
-    price         10.0
-    image_url     'http://dish/image.jpg'       
-    desc          'example dish'
+    price             10.0
+    image_url         'http://dish/image.jpg'       
+    desc              'example dish'
+    min_prepare_time  2
   end
 end

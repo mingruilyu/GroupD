@@ -1,12 +1,10 @@
 module Sanitization
-  TIME_INT_REGEX = /[[:digit:]]{4}*/
+  TIME_INT_REGEX = /\d{8}/
   QUERY_REGEX = /([[:alnum:]])+([[:blank:]]|[[:alnum:]])*/
   QUANTITY_REGEX = /\A+?\d+\z/
   MAX_LIST_SIZE = 20
 
   SANITIZER = {
-    date_int:   Proc.new { |date| 
-      Sanitization.sanitize_date_int date },
     time_int:   Proc.new { |time| 
       Sanitization.sanitize_time_int time },
     query:      Proc.new { |query| 
@@ -16,7 +14,7 @@ module Sanitization
     quantity:   Proc.new { |quantity|
       Sanitization.sanitize_quantity quantity.to_s },
     dishes:      Proc.new { |list| 
-      Sanitization.sanitize_list list, Combo::MAX_DISH_COUNT },
+      Sanitization.sanitize_list list },
     buildings:  Proc.new { |list|
       Sanitization.sanitize_list list },
   }
@@ -35,7 +33,8 @@ module Sanitization
     category:       Category,
     city:           City,
     order:          Order,
-    order_item:     OrderItem,
+    dish_order:     DishOrder,
+    combo_order:    ComboOrder,
     dish:           Dish,
     dishes:         Dish,
     payment:        Payment,
@@ -44,30 +43,28 @@ module Sanitization
   }
 
   def self.sanitize_time_int(time_int)
-    raise Exceptions::BadParameter \
-      if (time_int.to_s =~ TIME_INT_REGEX).nil? || time_int >= 2400 \
-        || time_int <= 0 || ((time_int % 100) % 15 != 0)
-    time_int
-  end
-
-  def self.sanitize_date_int(date_int)
-    raise Exceptions::BadParameter \
-      if (date_int.to_s =~ TIME_INT_REGEX).nil?
-    month = date_int / 100
-    day = date_int % 100
-    leap = Date.leap? Time.now.year
-    if [1, 3, 5, 7, 8, 10, 12].include? month
-      date_invalid = day < 0 || day > 31
-    elsif [4, 6, 9, 11].include? month
-      date_invalid = day < 0 || day > 30
-    elsif 2 == month
-      date_invalid = day < 0 || (leap && day > 29) ||\
-        (!leap && day > 28)
+    if (time_int.to_s =~ TIME_INT_REGEX).nil?
+      time_invalid = true
     else
-      date_invalid = true
+      month = time_int / 1000000 
+      day = (time_int / 10000) % 100
+      hour = (time_int / 100) % 100
+      min = time_int % 100
+      leap = Date.leap? Time.now.year
+      if [1, 3, 5, 7, 8, 10, 12].include? month
+        time_invalid = day < 0 || day > 31
+      elsif [4, 6, 9, 11].include? month
+        time_invalid = day < 0 || day > 30
+      elsif 2 == month
+        time_invalid = day < 0 || (leap && day > 29) ||\
+          (!leap && day > 28)
+      else 
+        time_invalid = true
+      end
+      time_invalid ||= (min % 15 != 0) || hour > 24 || hour < 0
     end
-    raise Exceptions::BadParameter if date_invalid
-    date_int
+    raise Exceptions::BadParameter if time_invalid
+    time_int
   end
 
   def self.sanitize_query(query)

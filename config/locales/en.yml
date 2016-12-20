@@ -91,6 +91,10 @@ en:
       'The transaction cannot be cancelled!'
     ADDRESS_NOT_CONFIGURED:
       'Please setup your address before any other operations!'
+    CATERING_TIME_INVALID:
+      'The catering timing is invalid!'
+    NOT_PENDING_FOR_APPROVAL:
+      'The combo order is not pending for approval!'
 
   chatreply:
     REPLY_WELCOME:

@@ -1,4 +1,4 @@
-class Customer::CustomerController < WebApplicationController
+class Customers::CustomerController < WebApplicationController
   before_action :authenticate_account!                   
   before_action :params_sanitization
   before_action :authorization

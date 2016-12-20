@@ -68,4 +68,49 @@ module SpecHelpers
     file = File.open Rails.root.join('test/fixtures/wechat_post_text')
     file.read.sub 'STUB', content
   end
+
+  def concurrency_test(concurrency_level, &block)
+    if block_given?
+      concurrency_level.times do |i|
+        puts "Forking Process #{i}"
+        fork_with_new_connection i, &block
+      end
+      Process.waitall
+    end
+  end
+
+  def fork_with_new_connection(number, &block)
+    config = ActiveRecord::Base.remove_connection
+    fork do
+      begin
+        ActiveRecord::Base.establish_connection(config)
+        block.call number
+      ensure
+        ActiveRecord::Base.remove_connection
+        Process.exit!
+      end
+    end
+    ActiveRecord::Base.establish_connection(config)
+  end
+
+  def delay_random_time
+    sleep (rand(0..50) / 100.0)
+  end
+
+  class GlobalStore
+    def initialize
+      @read, @write = IO.pipe
+    end
+
+    def write(data)
+      @write.puts data
+    end
+
+    def read
+      @write.close
+      data = @read.read
+      @read.close
+      data
+    end
+  end
 end

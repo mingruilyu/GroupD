@@ -1,4 +1,4 @@
-class Customer::QRCodesController < Customer::CustomerController
+class Customers::QRCodesController < Customers::CustomerController
   skip_before_action :authorization
   skip_before_action :cellphone_configuration
   skip_before_action :address_configuration

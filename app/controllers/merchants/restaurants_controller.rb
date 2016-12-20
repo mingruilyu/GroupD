@@ -5,24 +5,14 @@ class Merchant::RestaurantsController < Merchant::MerchantController
     render json: Response::JsonResponse.new(restaurants)
   end
 
-  def new
-    if Restaurant.name_valid? @name
-      render nothing: true
-    else
-      render json: Response::JsonResponse.new(nil, 
-        warning: I18n.t('warning.DUPLICATE_RESTAURANT_NAME')), 
-        status: :conflict
-    end
-  end
-
   def create
-    Restaurant.create_restaurant @merchant.id, @name, @location, 
-      @image_url, @category, @city
+    Restaurant.create! merchant_id: @merchant.id, @name, location_id: @location.id, 
+      image_url: @image_url, category_id: @category.id, city_id: @city.id
     render nothing: true, status: :created
   end
 
   def update
-    @restaurant.update @name, @location, @image_url
+    @restaurant.update! @name, @location, @image_url
     render nothing: true
   end
 

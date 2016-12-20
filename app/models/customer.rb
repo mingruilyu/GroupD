@@ -4,8 +4,5 @@ class Customer < Account
   has_many :debts, foreign_key: 'debtor_id'
   has_many :deposit, foreign_key: 'loaner_id'
 
-  def orders
-    Order.by_customer(self.id).includes(:cart)
-  end
-
+  scope :by_building, ->(building) { where(building_id: building) }
 end

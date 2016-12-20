@@ -7,9 +7,10 @@ FactoryGirl.define do
       if restaurant
         restaurant.id
       else
-        (create :restaurant).id
+        (create :restaurant, :unassociated).id
       end
     }
     image_url   "http://combo_image"
+    available_until 2.hour.from_now
   end
 end

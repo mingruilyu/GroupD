@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     put ':account_id/cellphone/:id' => 'cellphones#update' 
   end
 
-  resources :merchants, only: [:show, :update], module: :merchant, 
+  resources :merchants, only: [:show, :update], module: :merchants, 
     format: true, constraints: { format: :json } do
     resources :dropoffs, format: true, only: [:index, :create]
 
@@ -27,8 +27,11 @@ Rails.application.routes.draw do
       get 'combos/recent' => 'combos#recent'
     end
 
-    resources :caterings, only: [:update, :destroy] do
-      get 'list_items' => 'caterings#list_items'
+    resources :shippings, only: [:create, :update, :destroy] do
+      member do
+        get 'list_orders' => 'shippings#list_orders'
+        put 'update_state' => 'shippings#update_state'
+      end
     end
 
     resources :dishes, only: [:destroy, :update]
@@ -42,36 +45,27 @@ Rails.application.routes.draw do
     resources :transactions, only: [:index, :update, :destroy]
     get 'transactions/pending' => 'transactions#pending'
 
-    resources :shippings, only: :update
+    put 'orders/:id/approve' => 'orders#approve'
+    put 'orders/:id/pickup' => 'orders#pickup'
   end
 
   namespace :merchant, format: true, constraints: { format: :json } do
     resources :dropoffs, only: :destroy
     resources :restaurants, only: [:update, :destroy, :new]
-    resources :orders, only: :update
   end
   
-  resources :customers, module: :customer, format: true, 
+  resources :customers, module: :customers, format: true, 
     constraints: { format: :json } do
-    resources :orders, only: :index
+    resources :orders, only: [:index, :show]
     put 'orders/recent' => 'orders#recent'
+    put 'orders/:id/cancel' => 'orders#cancel' 
 
     resources :payments, only: [:create, :destroy, :show, :index]
-  end
-
-  namespace :customer, format: true, constraints: { format: :json } do
-    resources :orders, only: [:show, :update, :destroy] do
-      resources :order_items, only: [:index, :create, :new]
-    end
-    put 'orders/:id/cancel' => 'orders#cancel' 
-    resources :order_items, only: :destroy
-
     resources :qr_codes, only: :new
   end
-      
+
   resources :restaurants, module: :restaurant, only: :show, 
     format: true, constraints: { format: :json }do
-    get 'shippings/recent' => 'shippings#recent'
 
     resources :dishes, only: :index
 

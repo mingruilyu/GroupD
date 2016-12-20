@@ -19,18 +19,25 @@ class Transaction < ActiveRecord::Base
     order(:updated_at).where('sender_id = ? OR receiver_id = ?', id, id)\
     .where(status: STATUS_DONE) }
 
+  def self.pay(sender_id, receiver_id, amount, debt_id)
+    Transaction.create sender_id: sender_id, receiver_id: receiver_id, 
+      amount: amount, purpose: TYPE_PAYMENT, status: STATUS_DONE
+  end
+
+  def self.refund(sender_id, receiver_id, amount, debt_id)
+    Transaction.create sender_id: sender_id, receiver_id: receiver_id, 
+      amount: amount, purpose: TYPE_REFUND, status: STATUS_DONE
+  end
+
   def authorize
     unless pending?
       self.errors[:status] = I18n.t 'error.TRANSACTION_NOT_AUTHORIZABLE'
       raise Exceptions::NotEffective.new(self)
     end
-    Transaction.transaction do
-      self.update_attribute :status, STATUS_DONE
-      Debt.T_pay_debt self.receiver_id, self.sender_id, self.amount
-    end
+    self.update_attribute :status, STATUS_DONE
   end
 
-  def cancel(reason)
+  def decline(reason)
     unless pending?
       self.errors[:status] = I18n.t 'error.TRANSACTION_NOT_CANCELLABLE'
       raise Exceptions::NotEffective.new(self)
