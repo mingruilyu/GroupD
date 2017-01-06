@@ -26,7 +26,7 @@ RSpec.describe Shipping, type: :model do
       end
 
       it 'lists active shippings by restaurant' do
-        @shippings[0].update_attribute :status, Shipping::STATUS_CANCELLED
+        @shippings[0].update_attribute :status, Shipping::STATUS_CANCELED
         @shippings[2].update_attribute :restaurant_id, 100
         @shippings[3].update_attributes status: Shipping::STATUS_ARRIVE, 
           restaurant_id: 100
@@ -36,7 +36,7 @@ RSpec.describe Shipping, type: :model do
       end
 
       it 'lists active shippings by building' do
-        @shippings[0].update_attribute :status, Shipping::STATUS_CANCELLED
+        @shippings[0].update_attribute :status, Shipping::STATUS_CANCELED
         @shippings[2].update_attribute :building_id, 100
         @shippings[3].update_attributes status: Shipping::STATUS_ARRIVE, 
           building_id: 100
@@ -70,25 +70,22 @@ RSpec.describe Shipping, type: :model do
     end
 
     describe 'cancel!' do
-      it 'cancels the shipping as well as all caterings' do
+      it 'cancels the shipping as well as all orders' do
         restaurant = create :restaurant, :unassociated
-        combo = create :combo, restaurant_id: restaurant.id
+        food = create :food, restaurant_id: restaurant.id
         shipping = create :shipping, :unassociated
         payment = create :record_cash_payment, customer_id: 1
-        orders = create_list :combo_order, 3, :unassociated, 
-          shipping_id: shipping.id, combo_id: combo.id, 
+        orders = create_list :order, 3, :unassociated, 
+          shipping_id: shipping.id, food_id: food.id, 
           restaurant_id: restaurant.id, payment_id: payment.id, 
           customer_id: 1
         debt = create :debt, loaner_id: restaurant.merchant_id, 
           debtor_id: orders[0].customer_id
         orders[0].update_attribute :status, Order::STATUS_PENDING
-        caterings = create_list :catering, 3, shipping_id: shipping.id
-        expect {
-          shipping.cancel!
-        }.to change(Catering, :count).by(-3)
-        expect(shipping.reload.status).to eq(Shipping::STATUS_CANCELLED)
+        shipping.cancel!
+        expect(shipping.reload.status).to eq(Shipping::STATUS_CANCELED)
         orders.each do |order|
-          expect(order.reload.status).to eq(Order::STATUS_CANCEL) 
+          expect(order.reload.status).to eq(Order::STATUS_CANCELED) 
         end
       end
     end
@@ -111,7 +108,7 @@ RSpec.describe Shipping, type: :model do
 
       it 'fails because shipping cancelled' do
         shipping = create :shipping, :unassociated, 
-          status: Shipping::STATUS_CANCELLED
+          status: Shipping::STATUS_CANCELED
         expect {
           shipping.update_state!
         }.to raise_error(Exceptions::NotEffective)
@@ -123,7 +120,7 @@ RSpec.describe Shipping, type: :model do
     describe 'cancel! and add order' do
       it 'either cancel or add order' do
         shippings = create_list :shipping, 20, :default
-        combo = create :combo
+        food = create :food
         customer = create :customer
         payment = create :record_cash_payment, customer_id: customer.id
         20.times do |round|
@@ -131,7 +128,7 @@ RSpec.describe Shipping, type: :model do
             delay_random_time
             if i == 0
               begin
-                ComboOrder.place! shippings[round], combo, 2, customer, 
+                Order.place! shippings[round], food, 2, customer, 
                   payment
               rescue Exception => e
                 puts 'failure in creation ' + e.to_s
@@ -141,8 +138,8 @@ RSpec.describe Shipping, type: :model do
             end
           end
           expect(shippings[round].reload.status).to eq(
-            Shipping::STATUS_CANCELLED)
-          expect(combo.reload.order_count).to eq(0)
+            Shipping::STATUS_CANCELED)
+          expect(food.reload.order_count).to eq(0)
         end
       end
     end

@@ -2,14 +2,13 @@ class Shipping < ActiveRecord::Base
   belongs_to :location
   belongs_to :restaurant
   belongs_to :building
-  has_many :caterings
 
   STATUS_WAITING    = 0
   STATUS_DEPART     = 1
   STATUS_ARRIVE     = 2
   STATUS_PICKING_UP = 3
   STATUS_FULFILLED  = 4
-  STATUS_CANCELLED  = 5
+  STATUS_CANCELED  = 5
 
   MIN_SHIPPING_TIME = 10 # in min
 
@@ -95,9 +94,7 @@ class Shipping < ActiveRecord::Base
       orders.each do |order|
         order.cancel!
       end
-      # Casticadedly cancel all caterings
-      self.caterings.destroy_all
-      self.update_attribute :status, STATUS_CANCELLED 
+      self.update_attribute :status, STATUS_CANCELED 
     end
   end
 

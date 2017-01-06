@@ -2,7 +2,6 @@ FactoryGirl.define do
   factory :restaurant do
     trait :default do
       merchant_id  { merchant = (Merchant.find_or_create_by id: 1)
-                     puts 'merchant id ' + merchant.id
                      merchant.id }
       category             
       city             

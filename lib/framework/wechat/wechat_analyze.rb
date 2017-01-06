@@ -1,5 +1,12 @@
 module WechatAnalyze
-  def self.dispatch(message, account)
+  def self.follow_up_operation(message, account, cmd_type, 
+    arg_cache=nil)
+    case cmd_type
+    when 'confirm_order'
+      WechatOperations::ConfirmOrder.new(message)
+  end
+
+  def self.init_operation(message, account)
     case message.type
     when 'event'
       case message.event 

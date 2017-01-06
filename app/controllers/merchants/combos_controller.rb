@@ -1,22 +1,18 @@
-class Merchant::CombosController < Merchant::MerchantController
+class Merchants::CombosController < Merchants::MerchantController
 
   def create
-    Combo.create_combo @dishes, @restaurant, @price, @image_url
+    Combo.add! @dishes, @restaurant, @price, @image_url
     render nothing: true, status: :created
   end
 
   def update
-    @combo.update @dishes, @price, @image_url
+    @combo.update! @dishes, @price, @image_url
     render nothing: true
   end
 
   def destroy
-    caterings = @combo.cancel
-    if caterings.empty?
-      render nothing: true
-    else
-      render json: Response::JsonResponse.new(caterings)
-    end
+    @combo.cancel!
+    render nothing: true
   end 
 
   def show
@@ -25,7 +21,12 @@ class Merchant::CombosController < Merchant::MerchantController
   end
 
   def recent
-    combos = Combo.recent_by_restaurant @restaurant.id
+    combos = Combo.active_by_restaurant @restaurant.id
+    render json: Response::JsonResponse.new(combos)
+  end
+
+  def index
+    combos = Combo.by_restaurant @restaurant.id
     render json: Response::JsonResponse.new(combos)
   end
 

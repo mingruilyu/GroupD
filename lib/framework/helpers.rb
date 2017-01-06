@@ -5,4 +5,6 @@ module Helpers
       day: (int % 1000000) / 10000, hour: (int % 10000) / 100)  
   end
 
+  def self.time_to_timeint(time)
+  end
 end

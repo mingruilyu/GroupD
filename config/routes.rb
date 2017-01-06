@@ -57,6 +57,8 @@ Rails.application.routes.draw do
   resources :customers, module: :customers, format: true, 
     constraints: { format: :json } do
     resources :orders, only: [:index, :show]
+    resources :combo_orders, only: [:create]
+    resources :dish_orders, only: [:create]
     put 'orders/recent' => 'orders#recent'
     put 'orders/:id/cancel' => 'orders#cancel' 
 

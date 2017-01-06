@@ -1,7 +1,6 @@
 FactoryGirl.define do
-  factory :combo do    
+  factory :food do    
     price       10
-    dishes      { [(create :dish).id] }
     restaurant_id { 
       restaurant = Restaurant.first
       if restaurant
@@ -10,7 +9,9 @@ FactoryGirl.define do
         (create :restaurant, :unassociated).id
       end
     }
+    sequence(:name)  { |n| "Tariyaki Chicken #{n}" }
     image_url   "http://combo_image"
-    available_until 2.hour.from_now
+    min_prepare_time 1
+    quota       10
   end
 end

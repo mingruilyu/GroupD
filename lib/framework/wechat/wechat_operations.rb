@@ -16,14 +16,14 @@ module WechatOperations
       end
     end
 
-    def execute
+    def execute(session, account)
       run_callbacks :filters do
-        self.do
+        self.do session, account
       end
     end
 
     def current_account
-      @current_account
+      @account
     end
   end
 
@@ -34,7 +34,7 @@ module WechatOperations
       @type = type
     end
 
-    def execute
+    def execute(session, account)
       Account.omniauth_register type: @type, uid: @uid, 
         provider: @provider 
       result = {
@@ -80,18 +80,83 @@ module WechatOperations
     before_execute :address_configuration
     #before_execute :cellphone_configuration
 
-    def initialize(account)
-      @current_account = account
+    def initialize(building_id)
+      @building_id = building_id
     end
 
-    def do
-      caterings = Catering.get_recent_menu_by_building(
-        @current_account.building_id)
-      result = { 
-        op_code: :request_menu, 
-        caterings: caterings 
-      }
+    def do(session, account)
+      shippings = Shipping.active_by_building @building_id
+      session.expect_msg_type = :text
+      if shippings.size == 0
+        result = nil
+        session.next_op = nil
+      elsif shippings.size == 1
+        shipping = shippings.first
+        restaurant_id = shipping.restaurant_id
+        result, selector = list_food restaurant_id, shipping 
+        session.next_state = :execute
+        session.next_op = PlaceOrder.new
+        session.selector = selector
+      else
+        result = { restaurant: [] }
+        selector = {}
+        shippings.each do |shipping|
+          result[:restaurant] = shipping.restaurant
+          selector[(index + 1).to_s] shipping.id
+        end
+        session.next_op = self
+        session.next_state = :resume
+        session.selector = selector
+      end
+      result
     end
+
+    def resume(session, account, arg)
+      shipping = Shipping.find arg
+      result, selector = list_food shipping
+      session.expect_msg_type = :text
+      session.next_state = :execute
+      session.next_op = PlaceOrder.new session, account
+      session.selector = selector
+      result
+    end
+
+    def self.assembly_reply(reply, result)
+      if result.nil?
+        reply[:MsgType] = 'text'
+        reply[:Content] = I18n.t 'chatreply.NO_CATERING_TODAY'
+        WechatMessage::Text.new reply
+      else if result[:menu].present?
+        reply[:MsgType] = 'news'
+        articles = []
+        result[:menu].each do |object|
+          articles.append object.as_wechat_news
+        end
+        WechatMessage::NewsGroup.new reply, articles
+      else
+        reply[:MsgType] = 'text'
+        text = ''
+        result[:restaurant].each_with_index do |restaurant, index|
+          text << (index + 1).to_s << ':' << restaurant.name << "\n"
+        end
+        reply[:Content] = text
+        WechatMessage::Text.new reply
+      end
+    end
+
+    private
+      
+      def list_food(shipping)
+        result = {}
+        selector = {}
+        foods = Food.active_by_restaurant shipping.restaurant_id,
+          shipping.estimated_arrival_at
+        foods.each_with_index do |food, index|
+          result[:menu].append food
+          selector[(index + 1).to_s] = food.id
+        end
+        return result, selector
+      end
   end
 
   class PlaceOrder
@@ -100,13 +165,7 @@ module WechatOperations
     before_execute :address_configuration
     #before_execute :cellphone_configuration
 
-    def initialize(account, index, quantity)
-      @current_account = account
-      @index = index
-      @quantity = quantity
-    end
-
-    def do
+    def do(session, account)
       # TODO we may later need to check the user's overall order
       # quantity in one day.
 
@@ -114,7 +173,7 @@ module WechatOperations
       # make sure the catering order here is the same as customer see.
       # TODO use in-memory cache to cache the menu list.
       caterings = Catering.get_recent_menu_by_building(
-        @current_account.building_id)
+        @account.building_id)
       if @index < 0 || @index >= caterings.length
         raise Exceptions::InvalidCateringIndex
       end

@@ -11,7 +11,7 @@ class Customers::OrdersController < Customers::CustomerController
 
   def cancel
     @order.cancel!
-    render nothing: true 
+    render nothing: true
   end
 
 private

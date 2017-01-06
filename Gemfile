@@ -46,6 +46,10 @@ gem 'omniauth'
 
 gem 'rqrcode'
 
+gem 'redis'
+
+gem 'redis-namespace'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

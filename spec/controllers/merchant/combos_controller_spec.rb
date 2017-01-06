@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Merchant::CombosController, type: :controller do
+RSpec.describe Merchants::CombosController, type: :controller do
 
   context 'not logged in' do
     describe 'signin filter' do

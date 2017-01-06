@@ -86,7 +86,8 @@ module Services
 
     def self.dispatch(message)
       account = self.current_account(message)
-      WechatAnalyze.dispatch(message, account) 
+      session = WechatSession::Session.retrieve account.id
+      session.continue message, account
     end
 
     def self.current_account(message)
@@ -119,5 +120,26 @@ module Services
     def self.base64_encode(string)
       Base64.encode64 string
     end
+  end
+
+  class RedisCache
+
+    def self.get(key)
+      redis[key]
+    end
+
+    def self.put(key, val)
+      if val.is_a? String
+        redis[key] = val
+      else
+        redis[key] = Marshal.dump val
+      end
+    end
+
+    private
+      
+      def redis
+        $redis
+      end
   end
 end

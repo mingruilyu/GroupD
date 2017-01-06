@@ -2,7 +2,7 @@ class WebApplicationController < ApplicationController
   include DeviseTokenAuth::Concerns::SetUserByToken
   include Filter
 #  rescue_from StandardError, with: :internal_server_error
-=begin
+#=begin
   rescue_from ActiveRecord::RecordInvalid, with: :bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ActionController::ActionControllerError, 
@@ -13,7 +13,7 @@ class WebApplicationController < ApplicationController
   rescue_from Exceptions::NotEffective, with: :found
   rescue_from Exceptions::BadParameter, with: :bad_request
   rescue_from Exceptions::FileOversize, with: :bad_request
-=end
+#=end
   protect_from_forgery with: :null_session
 
   protected

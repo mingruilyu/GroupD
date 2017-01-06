@@ -1,7 +1,7 @@
-class Customers::ComboOrdersController < Customers::CustomerController
+class Customers::DishOrdersController < Customers::CustomerController
 
   def create
-    ComboOrder.place! @shipping, @combo, @quantity, @customer, @payment
+    DishOrder.place! @shipping, @dish, @quantity, @customer, @payment
     render nothing: true, status: :created
   end
 
@@ -9,7 +9,7 @@ private
   
   def params_sanitization
     sanitize :create, customer_id: :customer, shipping_id: :shipping,
-      combo_id: :combo, quantity: :quantity, payment_id: :payment
+      dish_id: :dish, quantity: :quantity, payment_id: :payment
   end
 
   def authorization

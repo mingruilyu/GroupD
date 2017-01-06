@@ -253,6 +253,8 @@ DEPENDENCIES
   pundit
   rails
   rails_layout
+  redis
+  redis-namespace
   resque
   rqrcode
   rspec-rails (~> 3.5)
