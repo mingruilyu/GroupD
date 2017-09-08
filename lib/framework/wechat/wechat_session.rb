@@ -1,54 +1,51 @@
 module WechatSession
   class Session
-    attr_accessor :expect_msg_type, :selector, :next_op, :next_state
+    attr_accessor :account
 
-    def self.retrieve(account_id)
-      session = RedisCache.get 'wechat:cmd:' + account_id
+    def initialize(account)
+      @account = account
+    end
+
+    def self.retrieve(uid)
+      session = RedisCache.get 'wechat:session:' + uid
       if session.nil?
-        session = Session.new
+        account = Customer.find_by_provider_and_uid 'wechat', uid
+        session = Session.new account
+        RedisCache.put 'wechat:session:' + uid, session 
       end
       session
     end
 
-    def continue(message, account)
-      if self.next_op.nil?
-        # this is a new session
+    def store(result)
+      @next_msg_type = result[:next_msg_type]
+      @selector = result[:selector]
+      @next_op = result[:next_op]
+      RedisCache.put 'wechat:session:' + @account.uid, self
+    end
+
+    def next_operation(message)
+      if @next_op.nil?
+        # current session does not have any previous operations
         op = WechatAnalyze.init_operation message, account
-        op.execute self, account
       else
-        if self.expect_msg_type != message.type
+        if @next_msg_type != message.type
           op = WechatOperation::Noop
         else
           case message.type
           when 'text'
-            selection = self.selector[message.content]
-            if arg.nil?
+            selected = @selector[message.content]
+            if selected.nil?
               op = WechatOperation::Noop
             else
-              op = self.next_op
-              if session.next_state == :resume
-                result = op.resume self, account, selection
-              else
-                result = op.execute self, account
-              end
+              args = {}
+              args[:selected] = selected
+              args[:account] = @account
+              op = @next_op.constantize
             end
           end
         end
       end
-      result
+      op, args
     end
-
-  def self.store(account_id, type, expect, args)
-    hash = {
-      expect_type:  type,
-      expect_val:   expect,
-      args:         args
-    }
-    RedisCache.put 'wechat:cmd:' + account_id, hash
   end
-    
-  end
-  
-
-  
 end

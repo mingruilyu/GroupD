@@ -84,15 +84,8 @@ module Services
     def self.decrypt(text)
     end
 
-    def self.dispatch(message)
-      account = self.current_account(message)
-      session = WechatSession::Session.retrieve account.id
-      session.continue message, account
-    end
-
-    def self.current_account(message)
-      Customer.find_by_provider_and_uid('wechat', 
-        message.from_user_name)
+    def self.get_session(message)
+      return WechatSession::Session.retrieve message.from_user_name
     end
 
     def self.construct_message(xml)

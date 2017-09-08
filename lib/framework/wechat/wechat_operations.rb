@@ -16,14 +16,32 @@ module WechatOperations
       end
     end
 
-    def execute(session, account)
+    def execute(args)
       run_callbacks :filters do
-        self.do session, account
+        self.do args
       end
     end
 
     def current_account
       @account
+    end
+  end
+
+  class Operation
+    def self.assembly_reply(sender, receiver, result)
+      hash = {
+        FromUserName: sender,
+        ToUserName:   receiver,
+        CreateTime:   Time.now.to_i
+      }
+      if result[:error].present?
+        hash[:MsgType] = 'text'
+        hash[:Content] = I18n.t 'chatreply.OPERATION_ERROR'
+        reply = WechatMessage::Text.new hash
+      else
+        reply = yield hash
+      end
+      reply
     end
   end
 
@@ -74,7 +92,7 @@ module WechatOperations
     end
   end
 
-  class RequestMenu
+  class RequestMenu < Operation
     include Filterable
     before_execute :registration
     before_execute :address_configuration
@@ -84,79 +102,56 @@ module WechatOperations
       @building_id = building_id
     end
 
-    def do(session, account)
+    def do(args)
       shippings = Shipping.active_by_building @building_id
       session.expect_msg_type = :text
       if shippings.size == 0
         result = nil
         session.next_op = nil
-      elsif shippings.size == 1
-        shipping = shippings.first
-        restaurant_id = shipping.restaurant_id
-        result, selector = list_food restaurant_id, shipping 
-        session.next_state = :execute
-        session.next_op = PlaceOrder.new
-        session.selector = selector
       else
-        result = { restaurant: [] }
+        result = {}
         selector = {}
+        index = 0
         shippings.each do |shipping|
-          result[:restaurant] = shipping.restaurant
-          selector[(index + 1).to_s] shipping.id
+          menu = []
+          foods = Food.active_by_restaurant shipping.restaurant_id,
+            shipping.estimated_arrival_at
+          foods.each do |food|
+            menu.append food
+            selector[(index + 1).to_s] food.id
+          end
+          result[shipping.restaurant.name] = menu
         end
-        session.next_op = self
-        session.next_state = :resume
+        session.next_op = ShowDetails.new
         session.selector = selector
       end
       result
     end
 
-    def resume(session, account, arg)
-      shipping = Shipping.find arg
-      result, selector = list_food shipping
-      session.expect_msg_type = :text
-      session.next_state = :execute
-      session.next_op = PlaceOrder.new session, account
-      session.selector = selector
-      result
-    end
-
-    def self.assembly_reply(reply, result)
+    def self.assembly_reply(sender, receiver, result)
+      super sender, receiver, result do |reply|
       if result.nil?
         reply[:MsgType] = 'text'
         reply[:Content] = I18n.t 'chatreply.NO_CATERING_TODAY'
         WechatMessage::Text.new reply
-      else if result[:menu].present?
-        reply[:MsgType] = 'news'
-        articles = []
-        result[:menu].each do |object|
-          articles.append object.as_wechat_news
-        end
-        WechatMessage::NewsGroup.new reply, articles
       else
         reply[:MsgType] = 'text'
         text = ''
-        result[:restaurant].each_with_index do |restaurant, index|
-          text << (index + 1).to_s << ':' << restaurant.name << "\n"
+        index = 1
+        result.each do |restaurant_name, menu|
+          text << "#{restaurant_name}:\n"
+          menu.each_with do |food|
+            text << "\t#{index: food.name}\n"
+            index += 1
+          end
         end
         reply[:Content] = text
         WechatMessage::Text.new reply
       end
     end
+  end
 
-    private
-      
-      def list_food(shipping)
-        result = {}
-        selector = {}
-        foods = Food.active_by_restaurant shipping.restaurant_id,
-          shipping.estimated_arrival_at
-        foods.each_with_index do |food, index|
-          result[:menu].append food
-          selector[(index + 1).to_s] = food.id
-        end
-        return result, selector
-      end
+  class ShowDetails
   end
 
   class PlaceOrder
